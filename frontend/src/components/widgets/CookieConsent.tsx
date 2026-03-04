@@ -1,0 +1,81 @@
+"use client";
+
+import { useState, useSyncExternalStore } from "react";
+import Link from "next/link";
+import { motion, AnimatePresence } from "framer-motion";
+import {
+  COOKIE_CONSENT_TEXT,
+  COOKIE_CONSENT_LINK_LABEL,
+  COOKIE_CONSENT_BUTTON,
+} from "@/lib/constants";
+
+const STORAGE_KEY = "skitza-cookie-consent";
+
+function subscribe() {
+  return () => {};
+}
+
+function getClientSnapshot() {
+  try {
+    return localStorage.getItem(STORAGE_KEY) === "true";
+  } catch {
+    return false;
+  }
+}
+
+function getServerSnapshot() {
+  return true;
+}
+
+export function CookieConsent() {
+  const [acceptedNow, setAcceptedNow] = useState(false);
+  const storedAccepted = useSyncExternalStore(
+    subscribe,
+    getClientSnapshot,
+    getServerSnapshot
+  );
+  const accepted = acceptedNow || storedAccepted;
+
+  function handleAccept() {
+    try {
+      localStorage.setItem(STORAGE_KEY, "true");
+    } catch {
+      // ignore
+    }
+    setAcceptedNow(true);
+  }
+
+  if (accepted) return null;
+
+  return (
+    <AnimatePresence>
+      <motion.div
+        className="fixed bottom-0 left-0 right-0 z-[60] border-t border-primary/20 bg-white/95 px-4 py-4 shadow-[0_-4px_20px_rgba(0,0,0,0.08)] backdrop-blur-md sm:bottom-0 sm:px-6"
+        initial={{ y: 100, opacity: 0 }}
+        animate={{ y: 0, opacity: 1 }}
+        exit={{ y: 100, opacity: 0 }}
+        transition={{ type: "spring", damping: 25 }}
+      >
+        <div className="mx-auto flex max-w-4xl flex-col items-center gap-4 sm:flex-row sm:justify-between">
+          <p className="text-center text-sm text-foreground sm:text-start">
+            {COOKIE_CONSENT_TEXT}
+            <Link
+              href="/privacy"
+              className="font-medium text-primary underline hover:no-underline"
+            >
+              {COOKIE_CONSENT_LINK_LABEL}
+            </Link>
+            .
+          </p>
+          <button
+            type="button"
+            onClick={handleAccept}
+            className="min-h-[44px] shrink-0 rounded-xl bg-primary px-6 py-2.5 text-sm font-medium text-primary-foreground transition hover:opacity-90 focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2"
+          >
+            {COOKIE_CONSENT_BUTTON}
+          </button>
+        </div>
+      </motion.div>
+    </AnimatePresence>
+  );
+}

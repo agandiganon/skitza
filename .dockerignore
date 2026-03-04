@@ -1,0 +1,29 @@
+# VCS
+.git
+.gitignore
+
+# Node modules / caches
+node_modules
+**/node_modules
+frontend/.next
+backend/dist
+.next
+
+# Runtime artifacts
+.playwright-cli
+.smoke-backend.log
+.smoke-frontend.log
+backend/data
+
+# macOS / logs
+.DS_Store
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+.pnpm-debug.log*
+
+# Env secrets
+.env
+.env.*
+!frontend/.env.example
+!backend/.env.example
