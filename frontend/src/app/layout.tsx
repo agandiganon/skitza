@@ -10,6 +10,7 @@ import { CookieConsent } from "@/components/widgets/CookieConsent";
 import { AccessibilityWidget } from "@/components/widgets/AccessibilityWidget";
 import { GtmNoScript, GtmScripts } from "@/components/analytics/GtmScripts";
 import { ADDRESS, PHONE_DISPLAY } from "@/lib/constants";
+import { Analytics } from "@vercel/analytics/next";
 
 const fallbackSiteUrl = "https://skitza-pack.co.il";
 const heebo = Heebo({
@@ -106,6 +107,7 @@ export default function RootLayout({
         <WhatsAppFloat />
         <MobileStickyBar />
         <CookieConsent />
+        <Analytics />
       </body>
     </html>
   );
