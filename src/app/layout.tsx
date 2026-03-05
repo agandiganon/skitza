@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Heebo } from "next/font/google";
 import { SpeedInsights } from "@vercel/speed-insights/next";
+import { Analytics } from "@vercel/analytics/next";
 import "./globals.css";
 import { Header } from "@/components/layout/Header";
 import { Footer } from "@/components/layout/Footer";
@@ -14,6 +15,8 @@ import { ADDRESS, PHONE_DISPLAY } from "@/lib/constants";
 
 const fallbackSiteUrl = "https://skitza-pack.co.il";
 const shouldLoadSpeedInsights =
+  process.env.NODE_ENV === "production" && process.env.VERCEL === "1";
+const shouldLoadAnalytics =
   process.env.NODE_ENV === "production" && process.env.VERCEL === "1";
 const heebo = Heebo({
   subsets: ["hebrew", "latin"],
@@ -110,6 +113,7 @@ export default function RootLayout({
         <MobileStickyBar />
         <CookieConsent />
         {shouldLoadSpeedInsights ? <SpeedInsights /> : null}
+        {shouldLoadAnalytics ? <Analytics /> : null}
       </body>
     </html>
   );
