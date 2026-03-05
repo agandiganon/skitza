@@ -8,6 +8,7 @@ out/
 # Temporary / generated
 .playwright-cli/
 .smoke-frontend.log
+.smoke-frontend*.log
 coverage/
 build/
 *.tsbuildinfo
