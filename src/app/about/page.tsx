@@ -20,108 +20,89 @@ export const metadata: Metadata = {
   },
 };
 
-const ABOUT_PARAGRAPHS = [
-  "סקיצה אריזות היא בית דפוס בחולון המתמחה בייעוץ, תכנון וייצור אריזות וקרטונים ממותגים לעסקים בכל סדר גודל. אנחנו מלווים כל פרויקט באופן אישי ומתרגמים צורך עסקי לפתרון אריזה פרקטי, מדויק וממותג.",
-  "העבודה שלנו משלבת חשיבה שיווקית, תכנון מבני נכון ויכולות ייצור מתקדמות במפעל עצמו. המטרה היא לא רק אריזה שנראית טוב, אלא אריזה שעובדת נכון על המדף, בלוגיסטיקה ובחוויה שהלקוח מקבל.",
-  "אנו מייצרים מגוון פתרונות: אריזות למוצרים קמעונאיים, קופסאות לתצוגה, חומרי קידום ממותגים ופרויקטים ייחודיים לפי דרישה, תוך התאמת חומרי גלם ותהליך ייצור לכל לקוח.",
+const ABOUT_FACTORY_PARAGRAPHS = [
+  "במפעל הדפוס שלנו אנו מציעים שירותי ייעוץ מהשורה הראשונה לאריזה ותכנון מארזים. צוות המומחים שלנו יעבוד איתך בשיתוף פעולה הדוק כדי להבין את הדרישות שלך, לספק פתרונות חדשניים ולהבטיח ביצוע מוצלח של הפרויקטים שלך.",
+  "אנו מתמחים בטיפול בפרויקטים מורכבים, לרבות עיצוב וייצור אריזות. בין אם אתם צריכים אריזות מותאמות אישית, קופסאות, תוויות או כל פתרון אריזה אחר, אנו מבטיחים רמת גימור מושלמת העומדת בסטנדרטים הגבוהים ביותר שלכם.",
+  "כדי להשיג איכות יוצאת דופן, אנו משתמשים רק בחומרי הגלם הטובים ביותר הקיימים בשוק. תהליך המקור שלנו מבטיח שהחומרים המשמשים באריזה שלך הם עמידים, ידידותיים לסביבה ומושכים חזותית. אנו מבינים את החשיבות של שימוש בחומרים בני קיימא, ואנו שואפים למזער את ההשפעה הסביבתית שלנו.",
+  "יתר על כן, מפעל הדפוס שלנו מצויד בטכנולוגיה מתקדמת. אנו עובדים עם מכונות הדפסה חדישות, ציוד גימור ומערכות בקרת איכות כדי לספק תוצאות יוצאות דופן. הטכנאים והמפעילים המיומנים שלנו מאומנים היטב בשימוש בכלים מתקדמים אלה כדי לייעל את היעילות ולהשיג תוצאות ייצור מעולות.",
+  "לסיכום, מפעל הדפוס שלנו מציע שירותי ייעוץ, תכנון מומחה של אריזות וקרטונים, ביצוע פרויקטים מורכבים, רמת גימור מושלמת, מיטב חומרי הגלם וטכנולוגיה חדישה. עם המחויבות שלנו למצוינות, אנו מבטיחים שצורכי האריזה שלך ייענו בתקני האיכות הגבוהים ביותר.",
 ];
 
-const PROCESS_STEPS = [
-  {
-    title: "אפיון ודיוק הצרכים",
-    description:
-      "אנחנו מתחילים בהבנה מלאה של המוצר, קהל היעד, ערכי המותג והדרישות התפעוליות כדי לבנות תשתית נכונה לפיתוח האריזה.",
-  },
-  {
-    title: "תכנון קונספט ומבנה אריזה",
-    description:
-      "צוות סקיצה בונה כיוון עיצובי ומבני, כולל בחינת פורמטים, התאמה לחומרי גלם ולשיטת הייצור המתאימה לפרויקט.",
-  },
-  {
-    title: "דגמים והדמיה לפני ייצור",
-    description:
-      "באמצעות חיתוך דגמים בפלוטר והדמיות מקדימות ניתן לבחון את התוצאה בפועל, לדייק פרטים ולמנוע טעויות בשלב הייצור.",
-  },
-  {
-    title: "ייצור מוקפד ובקרת איכות",
-    description:
-      "לאחר אישור, הפרויקט עובר לייצור במפעל עם בקרת איכות קפדנית, עמידה בזמנים ושמירה על גימור גבוה ועקביות מלאה.",
-  },
-];
-
-const ABOUT_ADVANTAGES = [
-  "התמחות בהפקות דפוס ואריזות לעסקים",
-  "שילוב תכנון, עיצוב וייצור תחת קורת גג אחת",
-  "התאמת חומרי גלם לפי עמידות, נראות ותקציב",
-  "מיקוד בפתרונות איכותיים וידידותיים יותר לסביבה",
-  "ליווי אישי וזמינות גבוהה לאורך כל הפרויקט",
-  "יכולת טיפול בפרויקטים פשוטים ומורכבים כאחד",
+const ABOUT_VISION_PARAGRAPHS = [
+  "במפעל הדפוס שלנו, אנו נותנים עדיפות לאיכות ללא פשרות. אנו מבינים שהאריזה שלך צריכה לייצג את המותג שלך ולספק חווית לקוח חיובית. לכן, אנו מבטיחים שכל פרויקט יבוצע תוך הקפדה על הפרטים הקטנים ביותר. יש לנו מומחיות בעבודה עם כל סוגי הנייר, הקרטון והקרטון הגלי. בין אם אתם זקוקים לפתרון אריזה יציב או עיצוב עדין יותר, יש לנו את החומרים שיתאימו לדרישות שלכם.",
+  "הצוות שלנו יסייע לכם בבחירת החומרים הטובים ביותר המתאימים לחזון שלכם. כדי להחיות את עיצובי האריזה שלך, אנו משתמשים בפלוטר מתקדם לחיתוך דגמים. טכנולוגיה זו מאפשרת לנו לחתוך ולעצב במדויק את החומרים בהתאם למפרט שלך. בנוסף, אנו מציעים הדמיה חיה המבוססת על קובץ הלקוחות בצורה מכוונת, ומספקת לך הזדמנות ייחודית לראות את עיצוב האריזה שלך מתעורר לחיים לפני תחילת הייצור. מפעל הדפוס שלנו מצויד היטב לטיפול בפרויקטים מורכבים, לרבות הקמה ואריזה.",
+  "יש לנו את המומחיות והמשאבים להתמודד עם עיצובים מורכבים, צורות ייחודיות ואפקטים מיוחדים להדפסה. הצוות שלנו עובד בחריצות כדי להבטיח שהפרויקט שלך יתבצע ללא רבב מתחילתו ועד סופו. בכל הנוגע למוצר הסופי, אנו מבטיחים רמת גימור מושלמת. בעלי המלאכה המיומנים שלנו שמים לב לכל פרט, ומבטיחים שהאריזה שלך תיראה ללא רבב. אנו מבינים את החשיבות של יצירת רושם חיובי, ואנו שואפים לספק איכות יוצאת דופן בכל פרויקט שאנו מבצעים, כמובן בלוחות זמנים הכי טובים.",
 ];
 
 export default function AboutPage() {
   return (
-    <main className="min-h-screen bg-gradient-to-b from-blue-50 via-white to-blue-50 px-4 pt-6 pb-16 sm:pt-8 sm:pb-20">
+    <main className="min-h-screen bg-gradient-to-b from-blue-50 via-white to-blue-50 px-4 pt-8 pb-16 sm:pt-10 sm:pb-20">
       <div className="mx-auto max-w-5xl">
         <AnimatedSection>
-          <div className="rounded-2xl border-2 border-blue-100 bg-white/80 p-8 shadow-lg ring-1 ring-blue-50 sm:p-10">
-            <h1 className="mb-8 text-center text-3xl font-bold text-primary sm:text-4xl">
-              אודות המפעל
+          <section className="rounded-[2rem] border border-blue-100 bg-white/85 p-6 shadow-[0_24px_70px_-40px_rgba(31,78,161,0.45)] ring-1 ring-blue-50 sm:p-8">
+            <p className="mb-2 text-center text-sm font-semibold tracking-wide text-blue-700">אודות</p>
+            <h1 className="mb-8 text-center text-4xl font-black leading-tight tracking-tight text-primary sm:text-5xl">
+              אודות סקיצה אריזות
             </h1>
 
-            <div className="space-y-6 text-lg leading-relaxed text-foreground/90">
-              {ABOUT_PARAGRAPHS.map((para, i) => (
-                <p key={i}>{para}</p>
-              ))}
-            </div>
-
-            <section className="mt-10" aria-labelledby="about-process-heading">
-              <h2
-                id="about-process-heading"
-                className="mb-5 text-2xl font-extrabold text-primary sm:text-3xl"
-              >
-                איך אנחנו עובדים
+            <section aria-labelledby="about-factory-heading">
+              <h2 id="about-factory-heading" className="mb-4 text-2xl font-extrabold text-primary sm:text-3xl">
+                אודות המפעל
               </h2>
-              <div className="grid gap-4 sm:grid-cols-2">
-                {PROCESS_STEPS.map((step) => (
-                  <article
-                    key={step.title}
-                    className="rounded-xl border border-blue-100 bg-blue-50/70 p-5 shadow-sm"
-                  >
-                    <h3 className="mb-2 text-lg font-bold text-primary">{step.title}</h3>
-                    <p className="text-base leading-relaxed text-foreground/85">{step.description}</p>
-                  </article>
+              <div className="space-y-4 text-lg leading-relaxed text-foreground/90">
+                {ABOUT_FACTORY_PARAGRAPHS.map((para, i) => (
+                  <p key={i}>{para}</p>
                 ))}
               </div>
             </section>
 
-            <section className="mt-10" aria-labelledby="about-advantages-heading">
-              <h2
-                id="about-advantages-heading"
-                className="mb-4 text-2xl font-extrabold text-primary sm:text-3xl"
-              >
-                למה עסקים בוחרים בסקיצה
+            <section className="mt-10" aria-labelledby="about-vision-heading">
+              <h2 id="about-vision-heading" className="mb-4 text-2xl font-extrabold text-primary sm:text-3xl">
+                החזון שלנו
               </h2>
-              <ul className="grid gap-3 sm:grid-cols-2">
-                {ABOUT_ADVANTAGES.map((advantage) => (
-                  <li
-                    key={advantage}
-                    className="rounded-lg border border-blue-100 bg-white px-4 py-3 text-base font-medium text-foreground/90 shadow-sm"
-                  >
-                    {advantage}
-                  </li>
+              <div className="space-y-4 text-lg leading-relaxed text-foreground/90">
+                {ABOUT_VISION_PARAGRAPHS.map((para, i) => (
+                  <p key={i}>{para}</p>
                 ))}
-              </ul>
+              </div>
             </section>
 
-            <p className="pt-8">
+            <section className="mt-10" aria-label="סרטונים">
+              <div className="grid gap-4 sm:grid-cols-2">
+                <article className="overflow-hidden rounded-2xl border border-blue-100 bg-white shadow-sm">
+                  <video
+                    className="aspect-video w-full object-cover"
+                    controls
+                    playsInline
+                    preload="metadata"
+                  >
+                    <source src="/vidmp4/vid1.mp4" type="video/mp4" />
+                    הדפדפן שלך לא תומך בניגון וידאו.
+                  </video>
+                </article>
+                <article className="overflow-hidden rounded-2xl border border-blue-100 bg-white shadow-sm">
+                  <video
+                    className="aspect-video w-full object-cover"
+                    controls
+                    playsInline
+                    preload="metadata"
+                  >
+                    <source src="/vidmp4/vid2.mp4" type="video/mp4" />
+                    הדפדפן שלך לא תומך בניגון וידאו.
+                  </video>
+                </article>
+              </div>
+            </section>
+
+            <p className="mt-8 text-center">
               <Link
                 href="/contact"
-                className="inline-flex min-h-[44px] items-center justify-center rounded-xl bg-gradient-to-l from-accent-cyan via-blue-500 to-primary px-6 py-3 font-semibold text-white shadow-lg transition hover:opacity-95"
+                className="inline-flex min-h-[46px] items-center justify-center rounded-xl bg-gradient-to-l from-accent-cyan via-blue-500 to-primary px-7 py-3 text-base font-semibold text-white shadow-lg transition hover:opacity-95 focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2"
               >
                 צור קשר
               </Link>
             </p>
-          </div>
+          </section>
         </AnimatedSection>
       </div>
     </main>
