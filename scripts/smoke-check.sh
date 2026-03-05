@@ -7,16 +7,10 @@ cd "$ROOT_DIR"
 FRONTEND_PORT="${FRONTEND_PORT:-3300}"
 FRONTEND_ORIGIN="http://localhost:${FRONTEND_PORT}"
 FRONTEND_LOG="${ROOT_DIR}/.smoke-frontend.log"
-BACKEND_PORT="${BACKEND_PORT:-4300}"
-BACKEND_ORIGIN="http://localhost:${BACKEND_PORT}"
-BACKEND_LOG="${ROOT_DIR}/.smoke-backend.log"
 
 cleanup() {
   if [[ -n "${FRONTEND_PID:-}" ]] && kill -0 "$FRONTEND_PID" 2>/dev/null; then
     kill "$FRONTEND_PID" 2>/dev/null || true
-  fi
-  if [[ -n "${BACKEND_PID:-}" ]] && kill -0 "$BACKEND_PID" 2>/dev/null; then
-    kill "$BACKEND_PID" 2>/dev/null || true
   fi
 
   export CODEX_HOME="${CODEX_HOME:-$HOME/.codex}"
@@ -94,19 +88,11 @@ check_console_level() {
   fi
 }
 
-echo "[smoke] building backend and frontend for smoke run"
-npm run build -w backend >/dev/null
-NEXT_PUBLIC_BACKEND_ORIGIN="$BACKEND_ORIGIN" npm run build -w frontend >/dev/null
-
-echo "[smoke] starting backend on ${BACKEND_ORIGIN}"
-PORT="$BACKEND_PORT" npm run start -w backend >"$BACKEND_LOG" 2>&1 &
-BACKEND_PID=$!
-
-wait_for_url "${BACKEND_ORIGIN}/api/health"
+echo "[smoke] building frontend"
+npm run build >/dev/null
 
 echo "[smoke] starting frontend on ${FRONTEND_ORIGIN}"
-NEXT_PUBLIC_BACKEND_ORIGIN="$BACKEND_ORIGIN" \
-  npm run start -w frontend -- --port "$FRONTEND_PORT" >"$FRONTEND_LOG" 2>&1 &
+npm run start -- --port "$FRONTEND_PORT" >"$FRONTEND_LOG" 2>&1 &
 FRONTEND_PID=$!
 
 wait_for_url "${FRONTEND_ORIGIN}"
@@ -119,11 +105,11 @@ assert_response_header "${FRONTEND_ORIGIN}/" "permissions-policy"
 assert_response_header "${FRONTEND_ORIGIN}/" "strict-transport-security"
 assert_response_header "${FRONTEND_ORIGIN}/" "content-security-policy"
 
-echo "[smoke] API checks"
-contact_invalid_status=$(curl -s -o /tmp/smoke_contact_invalid.json -w "%{http_code}" -X POST "${BACKEND_ORIGIN}/api/contact" -H 'Content-Type: application/json' -d '{"name":"","phone":"abc","email":"bad","service":""}')
+echo "[smoke] API checks (/api/contact)"
+contact_invalid_status=$(curl -s -o /tmp/smoke_contact_invalid.json -w "%{http_code}" -X POST "${FRONTEND_ORIGIN}/api/contact" -H 'Content-Type: application/json' -d '{"name":"","phone":"abc","email":"bad","service":""}')
 assert_status "400" "$contact_invalid_status" "contact validation request"
 
-contact_success_status=$(curl -s -o /tmp/smoke_contact_success.json -w "%{http_code}" -X POST "${BACKEND_ORIGIN}/api/contact" -H 'Content-Type: application/json' -d '{"name":"בדיקת סמוק","phone":"054-1234567","email":"smoke@example.com","service":"תכנון ועיצוב מוצר"}')
+contact_success_status=$(curl -s -o /tmp/smoke_contact_success.json -w "%{http_code}" -X POST "${FRONTEND_ORIGIN}/api/contact" -H 'Content-Type: application/json' -d '{"name":"בדיקת סמוק","phone":"054-1234567","email":"smoke@example.com","service":"תכנון ועיצוב מוצר"}')
 
 if [[ "$contact_success_status" != "200" && "$contact_success_status" != "500" ]]; then
   echo "contact request expected 200 or 500, got ${contact_success_status}" >&2

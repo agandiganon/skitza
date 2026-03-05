@@ -245,7 +245,6 @@ function HeroCenterContent({ reduceMotion, isMobile = false }: HeroCenterContent
           height={1706}
           className="h-auto w-[340px] object-contain drop-shadow-[0_10px_22px_rgba(15,23,42,0.14)] sm:w-[390px] lg:w-[680px]"
           sizes="(max-width: 640px) 340px, (max-width: 1024px) 390px, 680px"
-          priority
         />
         <motion.div
           className="pointer-events-none absolute inset-y-[16%] -left-[45%] w-[26%] bg-gradient-to-r from-transparent via-white/45 to-transparent opacity-0 mix-blend-screen blur-[1px]"

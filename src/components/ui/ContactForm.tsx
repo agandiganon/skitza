@@ -8,18 +8,7 @@ import type { ApiErrorResponse } from "@/types/api";
 import type { ContactPayload } from "@/types/contact";
 
 const SERVICE_OPTIONS = [...CONTACT_SERVICE_OPTIONS];
-const CONFIGURED_BACKEND_ORIGIN = process.env.NEXT_PUBLIC_BACKEND_ORIGIN?.trim();
-const LOCAL_FALLBACK_API_URL = "/api/contact";
-
-function getContactApiUrl(): string {
-  const backendOrigin = CONFIGURED_BACKEND_ORIGIN;
-  if (backendOrigin) {
-    return `${backendOrigin.replace(/\/+$/, "")}/api/contact`;
-  }
-  return LOCAL_FALLBACK_API_URL;
-}
-
-const CONTACT_API_URL = getContactApiUrl();
+const CONTACT_API_URL = "/api/contact";
 
 async function postContactRequest(payload: ContactPayload, url: string) {
   return fetch(url, {
@@ -98,15 +87,7 @@ export function ContactForm({ variant = "dark" }: { variant?: "dark" | "light" }
         service: String(formData.get("service") ?? "").trim(),
       };
 
-      let res: Response;
-      try {
-        res = await postContactRequest(payload, CONTACT_API_URL);
-      } catch {
-        if (CONTACT_API_URL === LOCAL_FALLBACK_API_URL) {
-          throw new Error("CONTACT_REQUEST_FAILED");
-        }
-        res = await postContactRequest(payload, LOCAL_FALLBACK_API_URL);
-      }
+      const res = await postContactRequest(payload, CONTACT_API_URL);
 
       const data = (await res.json().catch(() => null)) as ApiErrorResponse | null;
       if (!res.ok) {

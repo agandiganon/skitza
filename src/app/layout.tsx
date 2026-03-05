@@ -13,6 +13,8 @@ import { GtmNoScript, GtmScripts } from "@/components/analytics/GtmScripts";
 import { ADDRESS, PHONE_DISPLAY } from "@/lib/constants";
 
 const fallbackSiteUrl = "https://skitza-pack.co.il";
+const shouldLoadSpeedInsights =
+  process.env.NODE_ENV === "production" && process.env.VERCEL === "1";
 const heebo = Heebo({
   subsets: ["hebrew", "latin"],
   weight: ["400", "500", "600", "700", "800", "900"],
@@ -107,7 +109,7 @@ export default function RootLayout({
         <WhatsAppFloat />
         <MobileStickyBar />
         <CookieConsent />
-        <SpeedInsights />
+        {shouldLoadSpeedInsights ? <SpeedInsights /> : null}
       </body>
     </html>
   );

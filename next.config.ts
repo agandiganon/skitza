@@ -10,14 +10,10 @@ const createNextConfig = (phase: string): NextConfig => {
   const isProductionPhase =
     phase === PHASE_PRODUCTION_BUILD || phase === PHASE_PRODUCTION_SERVER;
 
-  const backendOrigin = process.env.NEXT_PUBLIC_BACKEND_ORIGIN
-    ?.trim()
-    .replace(/\/+$/, "");
   const connectSrcOrigins = [
     "'self'",
     "https://www.googletagmanager.com",
     "https://www.google-analytics.com",
-    backendOrigin,
   ].filter(Boolean);
 
   const contentSecurityPolicy = [
