@@ -172,4 +172,8 @@ export const PROJECTS: readonly ProjectItem[] = [
   },
 ];
 
-export const HOME_FEATURED_PROJECTS = PROJECTS.filter((project) => project.featuredHome).slice(0, 6);
+const explicitFeaturedProjects = PROJECTS.filter((project) => project.featuredHome);
+
+export const HOME_FEATURED_PROJECTS = (
+  explicitFeaturedProjects.length >= 12 ? explicitFeaturedProjects : PROJECTS
+).slice(0, 12);

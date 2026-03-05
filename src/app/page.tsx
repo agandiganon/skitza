@@ -35,11 +35,11 @@ export default function Home() {
     <main>
       <Hero />
       <About />
+      <ClientLogosSection />
       <Services />
       <Portfolio mode="home" />
       <WhySkitza />
       <StatsStrip />
-      <ClientLogosSection />
     </main>
   );
 }
