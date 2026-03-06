@@ -7,7 +7,7 @@ import sharp from "sharp";
 const ROOT_DIR = process.cwd();
 const PICTURES_DIR = path.join(ROOT_DIR, "public", "pictures");
 const SUPPORTED_SOURCE_EXTENSIONS = new Set([".png", ".jpg", ".jpeg"]);
-const QUALITY = 78;
+const QUALITY = 82;
 
 async function main() {
   const entries = await fs.readdir(PICTURES_DIR, { withFileTypes: true });

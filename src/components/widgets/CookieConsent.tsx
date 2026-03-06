@@ -7,24 +7,33 @@ import {
   COOKIE_CONSENT_TEXT,
   COOKIE_CONSENT_LINK_LABEL,
   COOKIE_CONSENT_BUTTON,
+  COOKIE_CONSENT_STORAGE_KEY,
 } from "@/lib/constants";
 
-const STORAGE_KEY = "skitza-cookie-consent";
+function subscribe(callback: () => void) {
+  const handleChange = () => {
+    callback();
+  };
 
-function subscribe() {
-  return () => {};
+  window.addEventListener("storage", handleChange);
+  window.addEventListener("cookie-consent-sync", handleChange);
+
+  return () => {
+    window.removeEventListener("storage", handleChange);
+    window.removeEventListener("cookie-consent-sync", handleChange);
+  };
 }
 
 function getClientSnapshot() {
   try {
-    return localStorage.getItem(STORAGE_KEY) === "true";
+    return localStorage.getItem(COOKIE_CONSENT_STORAGE_KEY) === "true";
   } catch {
     return false;
   }
 }
 
 function getServerSnapshot() {
-  return true;
+  return false;
 }
 
 export function CookieConsent() {
@@ -38,7 +47,8 @@ export function CookieConsent() {
 
   function handleAccept() {
     try {
-      localStorage.setItem(STORAGE_KEY, "true");
+      localStorage.setItem(COOKIE_CONSENT_STORAGE_KEY, "true");
+      window.dispatchEvent(new Event("cookie-consent-sync"));
     } catch {
       // ignore
     }

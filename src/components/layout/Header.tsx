@@ -3,6 +3,7 @@
 import { useState, useRef, useEffect } from "react";
 import Link from "next/link";
 import Image from "next/image";
+import { usePathname } from "next/navigation";
 import { Menu, X, Phone, ChevronDown, MapPin } from "lucide-react";
 import { ADDRESS, ADDRESS_MAP_URL, PHONE_DISPLAY, PHONE_TEL, SERVICE_PAGES } from "@/lib/constants";
 import { pushToDataLayer } from "@/lib/analytics/datalayer";
@@ -15,6 +16,7 @@ const mainNavItems = [
 ];
 
 export function Header() {
+  const pathname = usePathname();
   const [mobileOpen, setMobileOpen] = useState(false);
   const [servicesOpen, setServicesOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
@@ -29,11 +31,17 @@ export function Header() {
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
-  function handleHomeNavigation(e: React.MouseEvent<HTMLAnchorElement>) {
+  function handleNavLinkClick(
+    href: string,
+    event?: React.MouseEvent<HTMLAnchorElement>
+  ) {
     setMobileOpen(false);
     setServicesOpen(false);
-    e.preventDefault();
-    window.location.assign("/");
+
+    if (href === "/" && pathname === "/" && event) {
+      event.preventDefault();
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    }
   }
 
   return (
@@ -56,7 +64,7 @@ export function Header() {
             href="/"
             className="group flex shrink-0 items-center rounded-lg outline-none transition-transform duration-200 active:scale-[0.985] focus:outline-none focus:ring-0 focus-visible:ring-1 focus-visible:ring-blue-300 focus-visible:ring-offset-1 focus-visible:ring-offset-white"
             aria-label="סקיצה אריזות - דף הבית"
-            onClick={handleHomeNavigation}
+            onClick={(event) => handleNavLinkClick("/", event)}
           >
             <Image
               src="/logo.png"
@@ -85,8 +93,13 @@ export function Header() {
             <Link
               key={href}
               href={href}
-              className="min-h-[44px] shrink-0 px-3 py-2.5 text-base font-semibold text-foreground transition hover:text-blue-600 sm:px-4"
-              onClick={href === "/" ? handleHomeNavigation : undefined}
+              aria-current={pathname === href ? "page" : undefined}
+              className={`min-h-[44px] shrink-0 rounded-xl px-3 py-2.5 text-base font-semibold transition sm:px-4 ${
+                pathname === href
+                  ? "bg-blue-50 text-blue-700"
+                  : "text-foreground hover:text-blue-600"
+              }`}
+              onClick={(event) => handleNavLinkClick(href, event)}
             >
               {label}
             </Link>
@@ -159,13 +172,14 @@ export function Header() {
             <Link
               key={href}
               href={href}
-              className="min-h-[44px] px-6 py-3 text-base font-medium text-foreground hover:bg-primary/5 hover:text-primary"
+              aria-current={pathname === href ? "page" : undefined}
+              className={`min-h-[44px] px-6 py-3 text-base font-medium transition ${
+                pathname === href
+                  ? "bg-primary/6 text-primary"
+                  : "text-foreground hover:bg-primary/5 hover:text-primary"
+              }`}
               onClick={(e) => {
-                if (href === "/") {
-                  handleHomeNavigation(e);
-                  return;
-                }
-                setMobileOpen(false);
+                handleNavLinkClick(href, e);
               }}
             >
               {label}

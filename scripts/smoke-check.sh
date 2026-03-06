@@ -139,13 +139,13 @@ check_console_level "warning" "Warnings" "0" "Desktop"
 echo "[smoke] mobile UI checks"
 "$PWCLI" goto "${FRONTEND_ORIGIN}/" >/dev/null
 "$PWCLI" resize 390 844 >/dev/null
-"$PWCLI" run-code "await page.getByRole('button', { name: /פתח תפריט|סגור תפריט/ }).click();" >/dev/null
-"$PWCLI" run-code "await page.getByRole('navigation', { name: 'ניווט נייד' }).getByRole('link', { name: 'גלריה' }).click();" >/dev/null
-"$PWCLI" run-code "await page.waitForURL('**/gallery');" >/dev/null
+"$PWCLI" run-code "await page.getByRole('button', { name: /פתח תפריט|סגור תפריט/ }).click()" >/dev/null
+"$PWCLI" run-code "await page.getByRole('navigation', { name: 'ניווט נייד' }).getByRole('link', { name: 'גלריה' }).click()" >/dev/null
+"$PWCLI" run-code "await page.waitForURL('**/gallery')" >/dev/null
 "$PWCLI" goto "${FRONTEND_ORIGIN}/" >/dev/null
-"$PWCLI" run-code "await page.getByRole('button', { name: /פתח תפריט|סגור תפריט/ }).click();" >/dev/null
-"$PWCLI" run-code "await page.getByRole('navigation', { name: 'ניווט נייד' }).getByRole('link', { name: 'צור קשר' }).click();" >/dev/null
-"$PWCLI" run-code "await page.waitForURL('**/contact');" >/dev/null
+"$PWCLI" run-code "await page.getByRole('button', { name: /פתח תפריט|סגור תפריט/ }).click()" >/dev/null
+"$PWCLI" run-code "await page.getByRole('navigation', { name: 'ניווט נייד' }).getByRole('link', { name: 'צור קשר' }).click()" >/dev/null
+"$PWCLI" run-code "await page.waitForURL('**/contact')" >/dev/null
 
 check_console_level "error" "Errors" "0" "Mobile"
 check_console_level "warning" "Warnings" "0" "Mobile"

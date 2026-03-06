@@ -23,7 +23,7 @@ const createNextConfig = (phase: string): NextConfig => {
     "img-src 'self' data: blob: https://www.googletagmanager.com https://www.google-analytics.com",
     "font-src 'self' data:",
     `connect-src ${connectSrcOrigins.join(" ")}`,
-    "frame-src https://www.googletagmanager.com",
+    "frame-src https://www.googletagmanager.com https://www.openstreetmap.org",
     "object-src 'none'",
     "base-uri 'self'",
     "frame-ancestors 'self'",
@@ -56,6 +56,14 @@ const createNextConfig = (phase: string): NextConfig => {
     },
   ];
 
+  const staticMediaSources = [
+    "/pictures/:path*",
+    "/company-logos/:path*",
+    "/logo.png",
+    "/tab-icon.png",
+    "/vidmp4/:path*",
+  ];
+
   return {
     devIndicators: false,
     async headers() {
@@ -64,10 +72,10 @@ const createNextConfig = (phase: string): NextConfig => {
       }
 
       return [
-        {
-          source: "/pictures/:path*",
+        ...staticMediaSources.map((source) => ({
+          source,
           headers: imageCacheHeaders,
-        },
+        })),
         {
           source: "/(.*)",
           headers: securityHeaders,
@@ -76,7 +84,7 @@ const createNextConfig = (phase: string): NextConfig => {
     },
     images: {
       formats: ["image/avif", "image/webp"],
-      qualities: [62, 66, 72, 75],
+      qualities: [62, 66, 72, 75, 82],
       minimumCacheTTL: 60 * 60 * 24 * 7,
       remotePatterns: [
         { protocol: "https", hostname: "picsum.photos", pathname: "/**" },

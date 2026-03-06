@@ -26,3 +26,4 @@ export const COOKIE_CONSENT_TEXT =
   'אנו משתמשים בקבצי קוקיז וטכנולוגיות ניטור כדי לאפשר לאתר לפעול, לשפר חווית משתמש ולסייע בשיווק. למידע נוסף ראו ';
 export const COOKIE_CONSENT_LINK_LABEL = "מדיניות פרטיות";
 export const COOKIE_CONSENT_BUTTON = "הבנתי";
+export const COOKIE_CONSENT_STORAGE_KEY = "skitza-cookie-consent";

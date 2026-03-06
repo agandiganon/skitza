@@ -9,7 +9,7 @@ import { WhatsAppFloat } from "@/components/widgets/WhatsAppFloat";
 import { MobileStickyBar } from "@/components/widgets/MobileStickyBar";
 import { CookieConsent } from "@/components/widgets/CookieConsent";
 import { AccessibilityWidget } from "@/components/widgets/AccessibilityWidget";
-import { GtmNoScript, GtmScripts } from "@/components/analytics/GtmScripts";
+import { GtmScripts } from "@/components/analytics/GtmScripts";
 import { ADDRESS, PHONE_DISPLAY } from "@/lib/constants";
 
 const fallbackSiteUrl = "https://skitza-pack.co.il";
@@ -89,21 +89,25 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="he" dir="rtl" suppressHydrationWarning>
-      <head>
-        <GtmScripts />
-      </head>
+      <head />
       <body
         className={`${heebo.variable} font-sans antialiased pb-20 sm:pb-0`}
         suppressHydrationWarning
       >
+        <a
+          href="#site-content"
+          className="sr-only fixed right-4 top-4 z-[200] rounded-full bg-primary px-4 py-2 text-sm font-semibold text-primary-foreground shadow-lg focus:not-sr-only focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-primary"
+        >
+          דלג לתוכן הראשי
+        </a>
+        <GtmScripts />
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: JSON.stringify(localBusinessJsonLd) }}
         />
         <ScrollToTopOnRouteChange />
-        <GtmNoScript />
         <Header />
-        {children}
+        <div id="site-content">{children}</div>
         <Footer />
         <AccessibilityWidget />
         <WhatsAppFloat />
