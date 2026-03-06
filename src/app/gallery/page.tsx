@@ -1,5 +1,7 @@
 import type { Metadata } from "next";
 import { Portfolio } from "@/components/sections/Portfolio";
+import { orderProjectsForGallery } from "@/lib/content/galleryOrder";
+import { getProjects } from "@/lib/content/projects.server";
 
 export const metadata: Metadata = {
   title: "גלריה",
@@ -20,9 +22,12 @@ export const metadata: Metadata = {
 };
 
 export default function GalleryPage() {
+  const { allProjects } = getProjects();
+  const orderedProjects = orderProjectsForGallery(allProjects);
+
   return (
     <main className="min-h-screen bg-gradient-to-b from-blue-50 via-white to-blue-50">
-      <Portfolio mode="full" />
+      <Portfolio mode="full" projects={orderedProjects} />
     </main>
   );
 }

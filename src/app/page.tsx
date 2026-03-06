@@ -6,6 +6,7 @@ import { Portfolio } from "@/components/sections/Portfolio";
 import { WhySkitza } from "@/components/sections/WhySkitza";
 import { StatsStrip } from "@/components/sections/StatsStrip";
 import { ClientLogosSection } from "@/components/sections/ClientLogosSection";
+import { getProjects } from "@/lib/content/projects.server";
 
 export const metadata: Metadata = {
   title: "בית דפוס לאריזות בחולון",
@@ -31,13 +32,15 @@ export const metadata: Metadata = {
 };
 
 export default function Home() {
+  const { allProjects, featuredProjects } = getProjects();
+
   return (
     <main>
-      <Hero />
+      <Hero images={allProjects.map((project) => ({ src: project.imageSrc, alt: project.imageAlt }))} />
       <About />
       <ClientLogosSection />
       <Services />
-      <Portfolio mode="home" />
+      <Portfolio mode="home" projects={featuredProjects} />
       <WhySkitza />
       <StatsStrip />
     </main>

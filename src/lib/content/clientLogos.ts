@@ -12,14 +12,26 @@ const LOGOS_DIR = path.join(process.cwd(), "public", "company-logos");
 const ALLOWED_EXTENSIONS = new Set([".png", ".jpg", ".jpeg", ".webp", ".gif", ".svg", ".avif"]);
 
 const NAME_OVERRIDES: Record<string, string> = {
+  "176990742_247384466827013_2134977926166012855_n.jpg": "לקוח שותף",
+  "beautyca.jpeg": "Beautyca",
+  "cacharel-paris-vector-logo.png": "Cacharel",
+  "clinique.svg": "Clinique",
+  "delta.png": "Delta",
+  "drjart.png": "Dr. Jart+",
   "golda.png": "גולדה",
   "seaofspa.png": "Sea of Spa",
   "mifal-hapais.png": "מפעל הפיס",
   "kin.png": "כינרת זמורה דביר",
   "habad.gif": "חב\"ד",
   "someone-cares.png": "מישהו שאכפת לו",
+  "logo_kinder.svg.png": "Kinder",
+  "mac-cosmetics-logo.png": "MAC Cosmetics",
+  "moroccanoil_logo.png": "Moroccanoil",
+  "terminal_x_logo.png": "Terminal X",
+  "tictac.png": "Tic Tac",
+  "vaseline_new_logo.png": "Vaseline",
+  "yes.png": "yes",
   "company-256.png": "מותג שותף",
-  "clinique.svg": "Clinique",
   "logo-small.png": "לוגו שותף",
   "logo-transparent.png": "לוגו שותף",
 };

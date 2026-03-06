@@ -8,6 +8,7 @@
     "start": "next start",
     "lint": "eslint . --ignore-pattern archive/**",
     "typecheck": "rm -f tsconfig.tsbuildinfo && next typegen && tsc --noEmit -p tsconfig.json",
+    "convert:gallery-images": "node scripts/convert-gallery-images.mjs",
     "smoke": "bash scripts/smoke-check.sh",
     "clean": "rm -rf .next .next-dev .next-prod .playwright-cli .smoke-frontend.log"
   },
@@ -28,6 +29,7 @@
     "@types/react-dom": "^19",
     "eslint": "^9",
     "eslint-config-next": "16.1.6",
+    "sharp": "^0.34.5",
     "tailwindcss": "^4",
     "typescript": "^5"
   }

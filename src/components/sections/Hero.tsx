@@ -1,12 +1,11 @@
 "use client";
 
-import { useMemo } from "react";
+import { useEffect, useMemo, useState } from "react";
 import type { DragEvent as ReactDragEvent } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { ArrowUpLeft } from "lucide-react";
 import { motion } from "framer-motion";
-import { PROJECTS } from "@/lib/content/projects";
 import { useStableReducedMotion } from "@/lib/hooks/useStableReducedMotion";
 import { useInteractiveMarquee } from "@/lib/hooks/useInteractiveMarquee";
 
@@ -14,6 +13,17 @@ type HeroGalleryImage = {
   src: string;
   alt: string;
 };
+
+function shuffleImages(images: readonly HeroGalleryImage[]): HeroGalleryImage[] {
+  const shuffled = [...images];
+
+  for (let index = shuffled.length - 1; index > 0; index -= 1) {
+    const randomIndex = Math.floor(Math.random() * (index + 1));
+    [shuffled[index], shuffled[randomIndex]] = [shuffled[randomIndex], shuffled[index]];
+  }
+
+  return shuffled;
+}
 
 function preventNativeDrag(event: ReactDragEvent<HTMLElement>) {
   event.preventDefault();
@@ -160,13 +170,26 @@ function HorizontalMarqueeRow({ images, reduceMotion }: HorizontalMarqueeRowProp
   );
 }
 
-export function Hero() {
+type HeroProps = {
+  images: readonly HeroGalleryImage[];
+};
+
+export function Hero({ images }: HeroProps) {
   const reduceMotion = useStableReducedMotion();
-  const heroImages = useMemo(
-    () => PROJECTS.map((project) => ({ src: project.imageSrc, alt: project.imageAlt })),
-    []
+  const [shuffledImages, setShuffledImages] = useState<readonly HeroGalleryImage[]>(images);
+
+  useEffect(() => {
+    setShuffledImages(shuffleImages(images));
+  }, [images]);
+
+  const leftColumnImages = useMemo(
+    () => shuffledImages.filter((_, index) => index % 2 === 0),
+    [shuffledImages]
   );
-  const reversedHeroImages = useMemo(() => [...heroImages].reverse(), [heroImages]);
+  const rightColumnImages = useMemo(
+    () => [...shuffledImages.filter((_, index) => index % 2 === 1)].reverse(),
+    [shuffledImages]
+  );
 
   return (
     <section
@@ -192,14 +215,14 @@ export function Hero() {
       <div className="relative mx-auto max-w-7xl">
         <div className="hidden items-center gap-6 lg:grid lg:grid-cols-[minmax(220px,1fr)_minmax(560px,1.6fr)_minmax(220px,1fr)]">
           <VerticalMarqueeColumn
-            images={heroImages}
+            images={leftColumnImages}
             reduceMotion={reduceMotion}
             direction={-1}
             initialOffsetRatio={0.08}
           />
           <HeroCenterContent reduceMotion={reduceMotion} />
           <VerticalMarqueeColumn
-            images={reversedHeroImages}
+            images={rightColumnImages}
             reduceMotion={reduceMotion}
             direction={1}
             initialOffsetRatio={0.56}
@@ -208,7 +231,7 @@ export function Hero() {
 
         <div className="flex flex-col items-center lg:hidden">
           <HeroCenterContent reduceMotion={reduceMotion} isMobile />
-          <HorizontalMarqueeRow images={heroImages} reduceMotion={reduceMotion} />
+          <HorizontalMarqueeRow images={shuffledImages} reduceMotion={reduceMotion} />
         </div>
       </div>
     </section>
