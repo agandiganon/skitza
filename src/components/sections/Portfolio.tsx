@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useRef, useState } from "react";
-import { motion } from "framer-motion";
+import { AnimatePresence, motion } from "framer-motion";
 import Image from "next/image";
 import Link from "next/link";
 import { createPortal } from "react-dom";
@@ -23,8 +23,9 @@ export function Portfolio({ mode = "home", projects }: PortfolioProps) {
   const priorityImagesCount = isHome ? 1 : 1;
   const [activeIndex, setActiveIndex] = useState<number | null>(null);
   const triggerRef = useRef<HTMLButtonElement | null>(null);
-  const closeButtonRef = useRef<HTMLButtonElement | null>(null);
+  const dialogRef = useRef<HTMLDivElement | null>(null);
   const thumbnailRefs = useRef<(HTMLButtonElement | null)[]>([]);
+  const previousActiveIndexRef = useRef<number | null>(null);
 
   const visibleProjects = useMemo(() => projects, [projects]);
   const activeProject = activeIndex === null ? null : visibleProjects[activeIndex] ?? null;
@@ -36,13 +37,13 @@ export function Portfolio({ mode = "home", projects }: PortfolioProps) {
     : "grid gap-4 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 lg:gap-6";
   const cardClassName = isHome
     ? "group overflow-hidden rounded-[1.8rem] border border-slate-200/80 bg-white/95 p-2 shadow-[0_24px_54px_-34px_rgba(15,23,42,0.42)]"
-    : "group overflow-hidden rounded-[2rem] border border-slate-200/80 bg-white/95 p-2.5 shadow-[0_28px_72px_-44px_rgba(15,23,42,0.48)] backdrop-blur-sm";
+    : "group overflow-hidden rounded-[1.9rem] border border-white/75 bg-white/86 p-2.5 shadow-[0_28px_72px_-44px_rgba(15,23,42,0.38)] backdrop-blur-sm transition duration-300 hover:-translate-y-1 hover:shadow-[0_30px_70px_-34px_rgba(15,23,42,0.42)]";
   const frameClassName = isHome
     ? "relative aspect-square overflow-hidden rounded-[1.35rem] border border-slate-100 bg-[radial-gradient(circle_at_top,_rgba(255,255,255,0.98),_rgba(241,245,249,0.92)_52%,_rgba(226,232,240,0.74)_100%)]"
-    : "relative aspect-square overflow-hidden rounded-[1.45rem] border border-slate-100 bg-[radial-gradient(circle_at_top,_rgba(255,255,255,0.98),_rgba(244,247,251,0.94)_54%,_rgba(226,232,240,0.72)_100%)]";
+    : "relative aspect-square overflow-hidden rounded-[1.45rem] border border-white/80 bg-[linear-gradient(180deg,_rgba(255,255,255,0.98),_rgba(244,247,251,0.92)_58%,_rgba(232,239,247,0.86)_100%)]";
   const imageClassName = isHome
     ? "object-contain p-3 transition duration-500 ease-out group-hover:scale-[1.025]"
-    : "object-contain p-4 transition duration-700 ease-out group-hover:scale-[1.03]";
+    : "object-contain p-3.5 transition duration-500 ease-out group-hover:scale-[1.025]";
   const portalTarget = typeof document !== "undefined" ? document.body : null;
 
   useEffect(() => {
@@ -84,17 +85,23 @@ export function Portfolio({ mode = "home", projects }: PortfolioProps) {
   }, [activeIndex, isHome, visibleProjects.length]);
 
   useEffect(() => {
+    const wasOpen = previousActiveIndexRef.current !== null;
+
     if (activeIndex !== null) {
-      closeButtonRef.current?.focus();
+      if (!wasOpen) {
+        dialogRef.current?.focus();
+      }
+
       thumbnailRefs.current[activeIndex]?.scrollIntoView({
         behavior: "smooth",
         inline: "center",
         block: "nearest",
       });
-      return;
+    } else if (wasOpen) {
+      triggerRef.current?.focus();
     }
 
-    triggerRef.current?.focus();
+    previousActiveIndexRef.current = activeIndex;
   }, [activeIndex]);
 
   function openLightbox(index: number, trigger: HTMLButtonElement) {
@@ -115,122 +122,164 @@ export function Portfolio({ mode = "home", projects }: PortfolioProps) {
   }
 
   const lightbox =
-    !isHome && activeProject && portalTarget
+    !isHome && portalTarget
       ? createPortal(
-          <div
-            className="fixed inset-0 z-[160] bg-slate-950/94 backdrop-blur-xl"
-            role="dialog"
-            aria-modal="true"
-            aria-label={activeProject.imageAlt}
-            onClick={() => setActiveIndex(null)}
-          >
-            <div
-              className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_top,_rgba(56,189,248,0.16),_transparent_32%),radial-gradient(circle_at_bottom,_rgba(37,99,235,0.12),_transparent_28%)]"
-              aria-hidden
-            />
-            <div
-              className="relative z-[1] flex h-full min-h-0 flex-col"
-              onClick={(event) => event.stopPropagation()}
-            >
-              <div className="flex items-center justify-between gap-3 px-4 pb-3 pt-[max(1rem,env(safe-area-inset-top))] sm:px-6 sm:pb-4 lg:px-8">
-                <button
-                  ref={closeButtonRef}
-                  type="button"
-                  onClick={() => setActiveIndex(null)}
-                  className="inline-flex h-12 w-12 shrink-0 items-center justify-center rounded-full border border-white/14 bg-white/8 text-white shadow-[0_18px_40px_-24px_rgba(15,23,42,0.9)] transition hover:bg-white/14 focus:outline-none focus:ring-2 focus:ring-white/80 focus:ring-offset-2 focus:ring-offset-slate-950"
-                  aria-label="סגור תמונה מוגדלת"
+          <AnimatePresence initial={false}>
+            {activeProject ? (
+              <motion.div
+                key="gallery-lightbox"
+                className="fixed inset-0 z-[160] overflow-hidden bg-slate-950/18 backdrop-blur-[14px] backdrop-saturate-150"
+                role="dialog"
+                aria-modal="true"
+                aria-label={activeProject.imageAlt}
+                onClick={() => setActiveIndex(null)}
+                initial={reduceMotion ? false : { opacity: 0 }}
+                animate={reduceMotion ? { opacity: 1 } : { opacity: 1 }}
+                exit={reduceMotion ? { opacity: 0 } : { opacity: 0 }}
+                transition={{ duration: reduceMotion ? 0 : 0.22, ease: "easeOut" }}
+              >
+                <div
+                  className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_top,_rgba(255,255,255,0.12),_transparent_24%),radial-gradient(circle_at_18%_20%,_rgba(56,189,248,0.12),_transparent_22%),radial-gradient(circle_at_80%_18%,_rgba(37,99,235,0.12),_transparent_24%),linear-gradient(180deg,_rgba(2,6,23,0.06),_rgba(2,6,23,0.24))]"
+                  aria-hidden
+                />
+                <motion.div
+                  ref={dialogRef}
+                  tabIndex={-1}
+                  className="relative z-[1] flex h-full flex-col px-3 pb-[max(0.6rem,env(safe-area-inset-bottom))] pt-[max(0.6rem,env(safe-area-inset-top))] outline-none sm:px-5 sm:pb-[max(0.8rem,env(safe-area-inset-bottom))] sm:pt-[max(0.8rem,env(safe-area-inset-top))] lg:px-8"
+                  onClick={(event) => event.stopPropagation()}
+                  initial={reduceMotion ? false : { opacity: 0, y: 14, scale: 0.992 }}
+                  animate={reduceMotion ? { opacity: 1, y: 0, scale: 1 } : { opacity: 1, y: 0, scale: 1 }}
+                  exit={reduceMotion ? { opacity: 0, y: 6, scale: 0.996 } : { opacity: 0, y: 10, scale: 0.996 }}
+                  transition={{ duration: reduceMotion ? 0 : 0.24, ease: [0.22, 1, 0.36, 1] }}
                 >
-                  <X className="h-5 w-5" aria-hidden />
-                </button>
+                  <div className="mx-auto flex w-full max-w-[min(96vw,1680px)] items-center justify-between gap-3 pb-2 sm:pb-4">
+                    <div className="min-w-11 sm:min-w-12" aria-hidden />
+                    <div className="rounded-full border border-white/16 bg-white/10 px-4 py-2 text-center text-white shadow-[0_18px_44px_-28px_rgba(15,23,42,0.65)] backdrop-blur-xl sm:px-5">
+                      <p className="text-[0.65rem] font-semibold uppercase tracking-[0.24em] text-white/55 sm:text-[0.72rem]">
+                        גלריית פרויקטים
+                      </p>
+                      <p dir="ltr" className="mt-1 text-sm font-semibold text-white/90 sm:text-base">
+                        {(activeIndex ?? 0) + 1} / {visibleProjects.length}
+                      </p>
+                    </div>
+                    <button
+                      type="button"
+                      onClick={() => setActiveIndex(null)}
+                      className="inline-flex h-11 w-11 items-center justify-center rounded-full border border-white/18 bg-white/10 text-white shadow-[0_18px_44px_-26px_rgba(15,23,42,0.72)] backdrop-blur-xl transition duration-200 hover:-translate-y-0.5 hover:bg-white/16 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/80 focus-visible:ring-offset-2 focus-visible:ring-offset-slate-900/70 sm:h-12 sm:w-12"
+                      aria-label="סגור תמונה מוגדלת"
+                    >
+                      <X className="h-5 w-5" aria-hidden />
+                    </button>
+                  </div>
 
-                <div className="text-center text-white">
-                  <p className="text-[0.7rem] font-semibold uppercase tracking-[0.28em] text-white/55 sm:text-xs">
-                    גלריית פרויקטים
-                  </p>
-                  <p dir="ltr" className="mt-1 text-sm font-semibold text-white/88 sm:text-base">
-                    {(activeIndex ?? 0) + 1} / {visibleProjects.length}
-                  </p>
-                </div>
+                  <div className="mx-auto flex w-full max-w-[min(98vw,1820px)] flex-1 min-h-0 items-center gap-3 sm:gap-4 lg:gap-5">
+                    <button
+                      type="button"
+                      onClick={showPrevious}
+                      className="hidden h-12 w-12 shrink-0 items-center justify-center rounded-full border border-white/16 bg-white/10 text-white shadow-[0_18px_44px_-28px_rgba(15,23,42,0.7)] backdrop-blur-xl transition duration-200 hover:-translate-y-0.5 hover:bg-white/16 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/80 focus-visible:ring-offset-2 focus-visible:ring-offset-slate-900/70 sm:inline-flex lg:h-14 lg:w-14"
+                      aria-label="התמונה הקודמת"
+                    >
+                      <ChevronRight className="h-5 w-5" aria-hidden />
+                    </button>
 
-                <div className="h-12 w-12 shrink-0" aria-hidden />
-              </div>
+                    <div className="relative min-h-0 flex-1">
+                      <div className="pointer-events-none absolute inset-x-[10%] top-[8%] h-24 rounded-full bg-cyan-300/10 blur-3xl" aria-hidden />
+                      <div className="relative h-[min(71svh,680px)] w-full overflow-hidden rounded-[1.9rem] border border-white/14 bg-white/[0.08] shadow-[0_30px_90px_-40px_rgba(15,23,42,0.6)] backdrop-blur-xl sm:h-[min(72svh,760px)] sm:rounded-[2.2rem] lg:h-[min(78vh,880px)] lg:rounded-[2.6rem]">
+                        <div className="pointer-events-none absolute inset-0 bg-[linear-gradient(180deg,_rgba(255,255,255,0.06),_rgba(255,255,255,0.02))]" aria-hidden />
+                        <AnimatePresence mode="wait" initial={false}>
+                          <motion.div
+                            key={activeProject.id}
+                            className="absolute inset-0"
+                            initial={reduceMotion ? false : { opacity: 0, scale: 0.988 }}
+                            animate={reduceMotion ? { opacity: 1, scale: 1 } : { opacity: 1, scale: 1 }}
+                            exit={reduceMotion ? { opacity: 0 } : { opacity: 0, scale: 1.008 }}
+                            transition={{ duration: reduceMotion ? 0 : 0.22, ease: "easeOut" }}
+                          >
+                            <Image
+                              src={activeProject.imageSrc}
+                              alt={activeProject.imageAlt}
+                              fill
+                              sizes="(max-width: 640px) 92vw, 88vw"
+                              className="object-contain p-2 sm:p-4 lg:p-5"
+                              quality={82}
+                              priority
+                            />
+                          </motion.div>
+                        </AnimatePresence>
 
-              <div className="relative flex min-h-0 flex-1 items-center justify-center px-3 py-2 sm:px-6 lg:px-8">
-                <button
-                  type="button"
-                  onClick={showPrevious}
-                  className="absolute right-3 top-1/2 z-[2] inline-flex h-11 w-11 -translate-y-1/2 items-center justify-center rounded-full border border-white/12 bg-black/30 text-white shadow-[0_20px_44px_-26px_rgba(15,23,42,0.88)] transition hover:bg-black/45 focus:outline-none focus:ring-2 focus:ring-white/80 focus:ring-offset-2 focus:ring-offset-slate-950 sm:right-5 sm:h-12 sm:w-12"
-                  aria-label="התמונה הקודמת"
-                >
-                  <ChevronRight className="h-5 w-5" aria-hidden />
-                </button>
+                        <div className="absolute inset-x-0 bottom-0 flex items-end justify-between px-3 pb-3 sm:hidden">
+                          <button
+                            type="button"
+                            onClick={showPrevious}
+                            className="inline-flex h-10 w-10 items-center justify-center rounded-full border border-white/18 bg-slate-950/34 text-white shadow-[0_18px_34px_-22px_rgba(15,23,42,0.75)] backdrop-blur-xl transition duration-200 hover:bg-slate-950/46 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/80 focus-visible:ring-offset-2 focus-visible:ring-offset-slate-900/70"
+                            aria-label="התמונה הקודמת"
+                          >
+                            <ChevronRight className="h-5 w-5" aria-hidden />
+                          </button>
+                          <button
+                            type="button"
+                            onClick={showNext}
+                            className="inline-flex h-10 w-10 items-center justify-center rounded-full border border-white/18 bg-slate-950/34 text-white shadow-[0_18px_34px_-22px_rgba(15,23,42,0.75)] backdrop-blur-xl transition duration-200 hover:bg-slate-950/46 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/80 focus-visible:ring-offset-2 focus-visible:ring-offset-slate-900/70"
+                            aria-label="התמונה הבאה"
+                          >
+                            <ChevronLeft className="h-5 w-5" aria-hidden />
+                          </button>
+                        </div>
+                      </div>
+                    </div>
 
-                <div className="flex h-full w-full items-center justify-center">
-                  <div className="relative h-full max-h-full w-full max-w-[min(92vw,1520px)] overflow-hidden rounded-[1.8rem] border border-white/10 bg-white/[0.03] shadow-[0_30px_90px_-42px_rgba(15,23,42,0.92)] sm:rounded-[2.2rem]">
-                    <div className="relative h-full min-h-[340px] w-full sm:min-h-[420px]">
-                      <Image
-                        src={activeProject.imageSrc}
-                        alt={activeProject.imageAlt}
-                        fill
-                        sizes="92vw"
-                        className="object-contain p-4 sm:p-6 lg:p-8"
-                        quality={80}
-                        priority
-                      />
+                    <button
+                      type="button"
+                      onClick={showNext}
+                      className="hidden h-12 w-12 shrink-0 items-center justify-center rounded-full border border-white/16 bg-white/10 text-white shadow-[0_18px_44px_-28px_rgba(15,23,42,0.7)] backdrop-blur-xl transition duration-200 hover:-translate-y-0.5 hover:bg-white/16 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/80 focus-visible:ring-offset-2 focus-visible:ring-offset-slate-900/70 sm:inline-flex lg:h-14 lg:w-14"
+                      aria-label="התמונה הבאה"
+                    >
+                      <ChevronLeft className="h-5 w-5" aria-hidden />
+                    </button>
+                  </div>
+
+                  <div className="mx-auto mt-3 w-full max-w-[min(96vw,1640px)]">
+                    <div className="rounded-[1.35rem] border border-white/12 bg-slate-950/18 p-2 shadow-[0_22px_60px_-38px_rgba(15,23,42,0.66)] backdrop-blur-xl sm:rounded-[1.55rem] sm:p-2.5">
+                      <div className="lightbox-thumbnails flex gap-2 overflow-x-auto py-0.5 sm:gap-2.5">
+                        {visibleProjects.map((project, index) => {
+                          const isActive = index === activeIndex;
+
+                          return (
+                            <button
+                              key={`thumb-${project.id}`}
+                              ref={(element) => {
+                                thumbnailRefs.current[index] = element;
+                              }}
+                              type="button"
+                              onClick={() => setActiveIndex(index)}
+                              aria-label={`עבור לתמונה ${index + 1}`}
+                              aria-current={isActive ? "true" : undefined}
+                              className={`relative h-13 w-13 shrink-0 overflow-hidden rounded-[1rem] border transition duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/80 focus-visible:ring-offset-2 focus-visible:ring-offset-slate-900/70 sm:h-[3.65rem] sm:w-[3.65rem] lg:h-[4.1rem] lg:w-[4.1rem] ${
+                                isActive
+                                  ? "border-white/85 bg-white/16 shadow-[0_18px_40px_-24px_rgba(125,211,252,0.58)]"
+                                  : "border-white/12 bg-white/8 opacity-80 hover:-translate-y-0.5 hover:border-white/30 hover:bg-white/12 hover:opacity-100"
+                              }`}
+                            >
+                              <Image
+                                src={project.imageSrc}
+                                alt=""
+                                fill
+                                sizes="80px"
+                                className="object-contain p-1.5"
+                                quality={62}
+                                loading="lazy"
+                                decoding="async"
+                              />
+                            </button>
+                          );
+                        })}
+                      </div>
                     </div>
                   </div>
-                </div>
-
-                <button
-                  type="button"
-                  onClick={showNext}
-                  className="absolute left-3 top-1/2 z-[2] inline-flex h-11 w-11 -translate-y-1/2 items-center justify-center rounded-full border border-white/12 bg-black/30 text-white shadow-[0_20px_44px_-26px_rgba(15,23,42,0.88)] transition hover:bg-black/45 focus:outline-none focus:ring-2 focus:ring-white/80 focus:ring-offset-2 focus:ring-offset-slate-950 sm:left-5 sm:h-12 sm:w-12"
-                  aria-label="התמונה הבאה"
-                >
-                  <ChevronLeft className="h-5 w-5" aria-hidden />
-                </button>
-              </div>
-
-              <div className="px-3 pb-[max(0.9rem,env(safe-area-inset-bottom))] pt-2 sm:px-6 lg:px-8">
-                <div className="mx-auto max-w-[min(92vw,1320px)]">
-                  <div className="lightbox-thumbnails flex gap-2 overflow-x-auto py-1 sm:gap-3">
-                    {visibleProjects.map((project, index) => {
-                      const isActive = index === activeIndex;
-
-                      return (
-                        <button
-                          key={`thumb-${project.id}`}
-                          ref={(element) => {
-                            thumbnailRefs.current[index] = element;
-                          }}
-                          type="button"
-                          onClick={() => setActiveIndex(index)}
-                          aria-label={`עבור לתמונה ${index + 1}`}
-                          aria-current={isActive ? "true" : undefined}
-                          className={`relative h-16 w-16 shrink-0 overflow-hidden rounded-2xl border bg-white/6 transition focus:outline-none focus:ring-2 focus:ring-white/80 focus:ring-offset-2 focus:ring-offset-slate-950 sm:h-20 sm:w-20 ${
-                            isActive
-                              ? "border-white/85 shadow-[0_18px_40px_-24px_rgba(125,211,252,0.65)]"
-                              : "border-white/12 opacity-70 hover:border-white/35 hover:opacity-100"
-                          }`}
-                        >
-                          <Image
-                            src={project.imageSrc}
-                            alt=""
-                            fill
-                            sizes="80px"
-                            className="object-contain p-1.5"
-                            quality={62}
-                            loading="lazy"
-                            decoding="async"
-                          />
-                        </button>
-                      );
-                    })}
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>,
+                </motion.div>
+              </motion.div>
+            ) : null}
+          </AnimatePresence>,
           portalTarget
         )
       : null;
