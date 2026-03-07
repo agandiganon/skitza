@@ -11,7 +11,9 @@ out/
 .smoke-frontend*.log
 coverage/
 build/
+output/
 *.tsbuildinfo
+public/pictures-derived/
 
 # Local env files
 .env*

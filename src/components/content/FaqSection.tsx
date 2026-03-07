@@ -23,7 +23,7 @@ export function FaqSection({
     <section
       id={id}
       aria-labelledby={`${id}-heading`}
-      className={`rounded-[2rem] border border-blue-100 bg-white/92 p-6 shadow-[0_22px_60px_-40px_rgba(15,23,42,0.32)] sm:p-8 ${className}`.trim()}
+      className={`cv-auto rounded-[2rem] border border-blue-100 bg-white/92 p-6 shadow-[0_22px_60px_-40px_rgba(15,23,42,0.32)] sm:p-8 ${className}`.trim()}
     >
       <div className="mx-auto max-w-4xl">
         <h2
@@ -44,7 +44,7 @@ export function FaqSection({
               key={item.question}
               className="group rounded-[1.35rem] border border-blue-100 bg-blue-50/55 px-5 py-4 transition hover:border-blue-200 hover:bg-white"
             >
-              <summary className="cursor-pointer list-none text-lg font-bold text-primary marker:hidden">
+              <summary className="cursor-pointer list-none rounded-xl text-lg font-bold text-primary marker:hidden focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2">
                 <span className="flex items-start justify-between gap-4">
                   <span>{item.question}</span>
                   <span

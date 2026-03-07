@@ -56,6 +56,13 @@ const createNextConfig = (phase: string): NextConfig => {
     },
   ];
 
+  const immutableImageCacheHeaders = [
+    {
+      key: "Cache-Control",
+      value: "public, max-age=31536000, immutable",
+    },
+  ];
+
   const staticMediaSources = [
     "/pictures/:path*",
     "/company-logos/:path*",
@@ -72,6 +79,10 @@ const createNextConfig = (phase: string): NextConfig => {
       }
 
       return [
+        {
+          source: "/pictures-derived/:path*",
+          headers: immutableImageCacheHeaders,
+        },
         ...staticMediaSources.map((source) => ({
           source,
           headers: imageCacheHeaders,

@@ -1,43 +1,127 @@
 "use client";
 
-import { useEffect, useMemo, useRef, useState } from "react";
-import { AnimatePresence, motion } from "framer-motion";
+import { useEffect, useRef, useState } from "react";
+import type { Dispatch, RefObject, SetStateAction } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { createPortal } from "react-dom";
-import { useStableReducedMotion } from "@/lib/hooks/useStableReducedMotion";
-import type { ProjectItem } from "@/lib/content/projects";
 import { ChevronLeft, ChevronRight, X } from "lucide-react";
+import type { ProjectItem } from "@/lib/content/projects";
+import { pushToDataLayer } from "@/lib/analytics/datalayer";
 
 type PortfolioMode = "home" | "full";
 
 type PortfolioProps = {
   mode?: PortfolioMode;
   projects: readonly ProjectItem[];
+  enableLightbox?: boolean;
+  lightboxPlacement?: "home_gallery" | "gallery_page";
 };
 
-export function Portfolio({ mode = "home", projects }: PortfolioProps) {
+function getNeighborIndices(index: number, length: number) {
+  if (length <= 1) {
+    return [];
+  }
+
+  const previousIndex = (index - 1 + length) % length;
+  const nextIndex = (index + 1) % length;
+  return previousIndex === nextIndex ? [previousIndex] : [previousIndex, nextIndex];
+}
+
+function markOriginalLoaded(
+  sourcePath: string,
+  setLoadedOriginals: Dispatch<SetStateAction<Record<string, true>>>
+) {
+  setLoadedOriginals((current) => {
+    if (current[sourcePath]) {
+      return current;
+    }
+
+    return {
+      ...current,
+      [sourcePath]: true,
+    };
+  });
+}
+
+function markOriginalFailed(
+  sourcePath: string,
+  setFailedOriginals: Dispatch<SetStateAction<Record<string, true>>>
+) {
+  setFailedOriginals((current) => {
+    if (current[sourcePath]) {
+      return current;
+    }
+
+    return {
+      ...current,
+      [sourcePath]: true,
+    };
+  });
+}
+
+function preloadProjectOriginal(
+  sourcePath: string,
+  preloadedOriginalsRef: RefObject<Set<string>>,
+  setLoadedOriginals: Dispatch<SetStateAction<Record<string, true>>>,
+  setFailedOriginals: Dispatch<SetStateAction<Record<string, true>>>
+) {
+  if (!sourcePath || typeof window === "undefined") {
+    return;
+  }
+
+  if (preloadedOriginalsRef.current?.has(sourcePath)) {
+    return;
+  }
+
+  preloadedOriginalsRef.current?.add(sourcePath);
+
+  const image = new window.Image();
+  image.decoding = "async";
+  image.onload = () => {
+    markOriginalLoaded(sourcePath, setLoadedOriginals);
+  };
+  image.onerror = () => {
+    markOriginalFailed(sourcePath, setFailedOriginals);
+    preloadedOriginalsRef.current?.delete(sourcePath);
+  };
+  image.src = sourcePath;
+}
+
+export function Portfolio({
+  mode = "home",
+  projects,
+  enableLightbox,
+  lightboxPlacement,
+}: PortfolioProps) {
   const isHome = mode === "home";
-  const reduceMotion = useStableReducedMotion();
+  const resolvedEnableLightbox = enableLightbox ?? true;
+  const resolvedLightboxPlacement =
+    lightboxPlacement ?? (isHome ? "home_gallery" : "gallery_page");
   const eagerImagesCount = isHome ? 2 : 1;
-  const priorityImagesCount = isHome ? 1 : 1;
+  const priorityImagesCount = 1;
   const [activeIndex, setActiveIndex] = useState<number | null>(null);
+  const [loadedOriginals, setLoadedOriginals] = useState<Record<string, true>>({});
+  const [failedOriginals, setFailedOriginals] = useState<Record<string, true>>({});
   const triggerRef = useRef<HTMLButtonElement | null>(null);
   const dialogRef = useRef<HTMLDivElement | null>(null);
   const thumbnailRefs = useRef<(HTMLButtonElement | null)[]>([]);
+  const preloadedOriginalsRef = useRef<Set<string>>(new Set());
   const previousActiveIndexRef = useRef<number | null>(null);
 
-  const visibleProjects = useMemo(() => projects, [projects]);
-  const activeProject = activeIndex === null ? null : visibleProjects[activeIndex] ?? null;
+  const activeProject = activeIndex === null ? null : projects[activeIndex] ?? null;
+  const activeOriginalSrc = activeProject?.originalSrc ?? null;
+  const activeOriginalLoaded = activeOriginalSrc ? Boolean(loadedOriginals[activeOriginalSrc]) : false;
+  const activeOriginalFailed = activeOriginalSrc ? Boolean(failedOriginals[activeOriginalSrc]) : false;
   const sectionClassName = isHome
-    ? "bg-white px-4 py-14 sm:py-16 lg:py-20"
-    : "bg-transparent px-4 pt-8 pb-16 sm:pt-10 sm:pb-20 lg:pt-12 lg:pb-24";
+    ? "cv-auto bg-white px-4 py-14 sm:py-16 lg:py-20"
+    : "cv-auto bg-transparent px-4 pt-8 pb-16 sm:pt-10 sm:pb-20 lg:pt-12 lg:pb-24";
   const gridClassName = isHome
     ? "grid gap-4 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 lg:gap-4"
     : "grid gap-4 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 lg:gap-6";
   const cardClassName = isHome
     ? "group overflow-hidden rounded-[1.8rem] border border-slate-200/80 bg-white/95 p-2 shadow-[0_24px_54px_-34px_rgba(15,23,42,0.42)]"
-    : "group overflow-hidden rounded-[1.9rem] border border-white/75 bg-white/86 p-2.5 shadow-[0_28px_72px_-44px_rgba(15,23,42,0.38)] backdrop-blur-sm transition duration-300 hover:-translate-y-1 hover:shadow-[0_30px_70px_-34px_rgba(15,23,42,0.42)]";
+    : "group gallery-card overflow-hidden rounded-[1.9rem] border border-white/75 bg-white/88 p-2.5 shadow-[0_28px_72px_-44px_rgba(15,23,42,0.38)] backdrop-blur-sm";
   const frameClassName = isHome
     ? "relative aspect-square overflow-hidden rounded-[1.35rem] border border-slate-100 bg-[radial-gradient(circle_at_top,_rgba(255,255,255,0.98),_rgba(241,245,249,0.92)_52%,_rgba(226,232,240,0.74)_100%)]"
     : "relative aspect-square overflow-hidden rounded-[1.45rem] border border-white/80 bg-[linear-gradient(180deg,_rgba(255,255,255,0.98),_rgba(244,247,251,0.92)_58%,_rgba(232,239,247,0.86)_100%)]";
@@ -47,12 +131,30 @@ export function Portfolio({ mode = "home", projects }: PortfolioProps) {
   const portalTarget = typeof document !== "undefined" ? document.body : null;
 
   useEffect(() => {
-    if (isHome || activeIndex === null) {
+    if (!resolvedEnableLightbox || activeIndex === null || !activeProject) {
       return;
     }
 
     const previousOverflow = document.body.style.overflow;
     document.body.style.overflow = "hidden";
+
+    preloadProjectOriginal(
+      activeProject.originalSrc,
+      preloadedOriginalsRef,
+      setLoadedOriginals,
+      setFailedOriginals
+    );
+    getNeighborIndices(activeIndex, projects.length).forEach((neighborIndex) => {
+      const neighborProject = projects[neighborIndex];
+      if (neighborProject) {
+        preloadProjectOriginal(
+          neighborProject.originalSrc,
+          preloadedOriginalsRef,
+          setLoadedOriginals,
+          setFailedOriginals
+        );
+      }
+    });
 
     const handleKeyDown = (event: KeyboardEvent) => {
       if (event.key === "Escape") {
@@ -64,14 +166,14 @@ export function Portfolio({ mode = "home", projects }: PortfolioProps) {
       if (event.key === "ArrowLeft") {
         event.preventDefault();
         setActiveIndex((current) =>
-          current === null ? current : (current + 1) % visibleProjects.length
+          current === null ? current : (current + 1) % projects.length
         );
       }
 
       if (event.key === "ArrowRight") {
         event.preventDefault();
         setActiveIndex((current) =>
-          current === null ? current : (current - 1 + visibleProjects.length) % visibleProjects.length
+          current === null ? current : (current - 1 + projects.length) % projects.length
         );
       }
     };
@@ -82,7 +184,7 @@ export function Portfolio({ mode = "home", projects }: PortfolioProps) {
       document.body.style.overflow = previousOverflow;
       document.removeEventListener("keydown", handleKeyDown);
     };
-  }, [activeIndex, isHome, visibleProjects.length]);
+  }, [activeIndex, activeProject, projects, resolvedEnableLightbox]);
 
   useEffect(() => {
     const wasOpen = previousActiveIndexRef.current !== null;
@@ -105,271 +207,374 @@ export function Portfolio({ mode = "home", projects }: PortfolioProps) {
   }, [activeIndex]);
 
   function openLightbox(index: number, trigger: HTMLButtonElement) {
+    if (!resolvedEnableLightbox) {
+      return;
+    }
+
+    const project = projects[index];
+    if (!project) {
+      return;
+    }
+
     triggerRef.current = trigger;
+    preloadProjectOriginal(
+      project.originalSrc,
+      preloadedOriginalsRef,
+      setLoadedOriginals,
+      setFailedOriginals
+    );
     setActiveIndex(index);
+    pushToDataLayer("gallery_lightbox_open", {
+      placement: resolvedLightboxPlacement,
+      image_index: index + 1,
+    });
   }
 
   function showPrevious() {
     setActiveIndex((current) =>
-      current === null ? current : (current - 1 + visibleProjects.length) % visibleProjects.length
+      current === null ? current : (current - 1 + projects.length) % projects.length
     );
   }
 
   function showNext() {
     setActiveIndex((current) =>
-      current === null ? current : (current + 1) % visibleProjects.length
+      current === null ? current : (current + 1) % projects.length
     );
   }
 
   const lightbox =
-    !isHome && portalTarget
+    resolvedEnableLightbox && portalTarget && activeProject
       ? createPortal(
-          <AnimatePresence initial={false}>
-            {activeProject ? (
-              <motion.div
-                key="gallery-lightbox"
-                className="fixed inset-0 z-[160] overflow-hidden bg-slate-950/18 backdrop-blur-[14px] backdrop-saturate-150"
-                role="dialog"
-                aria-modal="true"
-                aria-label={activeProject.imageAlt}
-                onClick={() => setActiveIndex(null)}
-                initial={reduceMotion ? false : { opacity: 0 }}
-                animate={reduceMotion ? { opacity: 1 } : { opacity: 1 }}
-                exit={reduceMotion ? { opacity: 0 } : { opacity: 0 }}
-                transition={{ duration: reduceMotion ? 0 : 0.22, ease: "easeOut" }}
-              >
-                <div
-                  className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_top,_rgba(255,255,255,0.12),_transparent_24%),radial-gradient(circle_at_18%_20%,_rgba(56,189,248,0.12),_transparent_22%),radial-gradient(circle_at_80%_18%,_rgba(37,99,235,0.12),_transparent_24%),linear-gradient(180deg,_rgba(2,6,23,0.06),_rgba(2,6,23,0.24))]"
-                  aria-hidden
-                />
-                <motion.div
-                  ref={dialogRef}
-                  tabIndex={-1}
-                  className="relative z-[1] flex h-full flex-col px-3 pb-[max(0.6rem,env(safe-area-inset-bottom))] pt-[max(0.6rem,env(safe-area-inset-top))] outline-none sm:px-5 sm:pb-[max(0.8rem,env(safe-area-inset-bottom))] sm:pt-[max(0.8rem,env(safe-area-inset-top))] lg:px-8"
-                  onClick={(event) => event.stopPropagation()}
-                  initial={reduceMotion ? false : { opacity: 0, y: 14, scale: 0.992 }}
-                  animate={reduceMotion ? { opacity: 1, y: 0, scale: 1 } : { opacity: 1, y: 0, scale: 1 }}
-                  exit={reduceMotion ? { opacity: 0, y: 6, scale: 0.996 } : { opacity: 0, y: 10, scale: 0.996 }}
-                  transition={{ duration: reduceMotion ? 0 : 0.24, ease: [0.22, 1, 0.36, 1] }}
+          <div
+            className="gallery-lightbox-backdrop fixed inset-0 z-[160] overflow-hidden"
+            role="dialog"
+            aria-modal="true"
+            aria-label={activeProject.imageAlt}
+            onClick={() => setActiveIndex(null)}
+          >
+            <div
+              ref={dialogRef}
+              tabIndex={-1}
+              className="gallery-lightbox-shell relative z-[1] flex h-full flex-col px-3 pb-[max(0.6rem,env(safe-area-inset-bottom))] pt-[max(0.65rem,env(safe-area-inset-top))] outline-none sm:px-5 sm:pb-[max(0.8rem,env(safe-area-inset-bottom))] sm:pt-[max(0.8rem,env(safe-area-inset-top))] lg:px-8"
+              onClick={(event) => event.stopPropagation()}
+            >
+              <div className="mx-auto flex w-full max-w-[min(96vw,1720px)] items-center justify-between gap-3 pb-2 sm:pb-4">
+                <div className="min-w-11 sm:min-w-12" aria-hidden />
+                <div className="rounded-full border border-white/18 bg-white/10 px-4 py-2 text-center text-white shadow-[0_18px_44px_-28px_rgba(15,23,42,0.65)] backdrop-blur-xl sm:px-5">
+                  <p className="text-[0.65rem] font-semibold uppercase tracking-[0.24em] text-white/55 sm:text-[0.72rem]">
+                    גלריית פרויקטים
+                  </p>
+                  <p dir="ltr" className="mt-1 text-sm font-semibold text-white/90 sm:text-base">
+                    {(activeIndex ?? 0) + 1} / {projects.length}
+                  </p>
+                </div>
+                <button
+                  type="button"
+                  onClick={() => setActiveIndex(null)}
+                  className="inline-flex h-11 w-11 items-center justify-center rounded-full border border-white/18 bg-white/10 text-white shadow-[0_18px_44px_-26px_rgba(15,23,42,0.72)] backdrop-blur-xl transition duration-200 hover:-translate-y-0.5 hover:bg-white/16 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/80 focus-visible:ring-offset-2 focus-visible:ring-offset-slate-900/70 sm:h-12 sm:w-12"
+                  aria-label="סגור תמונה מוגדלת"
                 >
-                  <div className="mx-auto flex w-full max-w-[min(96vw,1680px)] items-center justify-between gap-3 pb-2 sm:pb-4">
-                    <div className="min-w-11 sm:min-w-12" aria-hidden />
-                    <div className="rounded-full border border-white/16 bg-white/10 px-4 py-2 text-center text-white shadow-[0_18px_44px_-28px_rgba(15,23,42,0.65)] backdrop-blur-xl sm:px-5">
-                      <p className="text-[0.65rem] font-semibold uppercase tracking-[0.24em] text-white/55 sm:text-[0.72rem]">
-                        גלריית פרויקטים
-                      </p>
-                      <p dir="ltr" className="mt-1 text-sm font-semibold text-white/90 sm:text-base">
-                        {(activeIndex ?? 0) + 1} / {visibleProjects.length}
-                      </p>
+                  <X className="h-5 w-5" aria-hidden />
+                </button>
+              </div>
+
+              <div className="mx-auto flex w-full max-w-[min(98vw,1860px)] flex-1 min-h-0 items-center gap-3 sm:gap-4 lg:gap-5">
+                <button
+                  type="button"
+                  onClick={showPrevious}
+                  className="hidden h-12 w-12 shrink-0 items-center justify-center rounded-full border border-white/16 bg-white/10 text-white shadow-[0_18px_44px_-28px_rgba(15,23,42,0.7)] backdrop-blur-xl transition duration-200 hover:-translate-y-0.5 hover:bg-white/16 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/80 focus-visible:ring-offset-2 focus-visible:ring-offset-slate-900/70 sm:inline-flex lg:h-14 lg:w-14"
+                  aria-label="התמונה הקודמת"
+                >
+                  <ChevronRight className="h-5 w-5" aria-hidden />
+                </button>
+
+                <div className="relative min-h-0 flex-1">
+                  <div
+                    className="pointer-events-none absolute inset-0 rounded-[2rem] bg-[radial-gradient(circle_at_top,_rgba(255,255,255,0.14),_transparent_26%),radial-gradient(circle_at_16%_20%,_rgba(56,189,248,0.14),_transparent_22%),radial-gradient(circle_at_84%_18%,_rgba(37,99,235,0.14),_transparent_24%)]"
+                    aria-hidden
+                  />
+                  <div className="gallery-lightbox-stage relative h-[min(76svh,760px)] w-full overflow-hidden rounded-[1.95rem] border border-white/14 bg-white/[0.08] shadow-[0_30px_90px_-40px_rgba(15,23,42,0.6)] backdrop-blur-xl sm:h-[min(77svh,820px)] sm:rounded-[2.25rem] lg:h-[min(81vh,920px)] lg:rounded-[2.75rem]">
+                    <div
+                      className="pointer-events-none absolute inset-0 bg-[linear-gradient(180deg,_rgba(255,255,255,0.08),_rgba(255,255,255,0.02))]"
+                      aria-hidden
+                    />
+                    <div className="pointer-events-none absolute inset-0 overflow-hidden">
+                      {/* eslint-disable-next-line @next/next/no-img-element */}
+                      <img
+                        src={activeProject.cardSrc}
+                        alt=""
+                        aria-hidden="true"
+                        className="h-full w-full scale-105 object-contain p-2 opacity-45 blur-2xl sm:p-4 lg:p-5"
+                      />
                     </div>
-                    <button
-                      type="button"
-                      onClick={() => setActiveIndex(null)}
-                      className="inline-flex h-11 w-11 items-center justify-center rounded-full border border-white/18 bg-white/10 text-white shadow-[0_18px_44px_-26px_rgba(15,23,42,0.72)] backdrop-blur-xl transition duration-200 hover:-translate-y-0.5 hover:bg-white/16 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/80 focus-visible:ring-offset-2 focus-visible:ring-offset-slate-900/70 sm:h-12 sm:w-12"
-                      aria-label="סגור תמונה מוגדלת"
-                    >
-                      <X className="h-5 w-5" aria-hidden />
-                    </button>
-                  </div>
-
-                  <div className="mx-auto flex w-full max-w-[min(98vw,1820px)] flex-1 min-h-0 items-center gap-3 sm:gap-4 lg:gap-5">
-                    <button
-                      type="button"
-                      onClick={showPrevious}
-                      className="hidden h-12 w-12 shrink-0 items-center justify-center rounded-full border border-white/16 bg-white/10 text-white shadow-[0_18px_44px_-28px_rgba(15,23,42,0.7)] backdrop-blur-xl transition duration-200 hover:-translate-y-0.5 hover:bg-white/16 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/80 focus-visible:ring-offset-2 focus-visible:ring-offset-slate-900/70 sm:inline-flex lg:h-14 lg:w-14"
-                      aria-label="התמונה הקודמת"
-                    >
-                      <ChevronRight className="h-5 w-5" aria-hidden />
-                    </button>
-
-                    <div className="relative min-h-0 flex-1">
-                      <div className="pointer-events-none absolute inset-x-[10%] top-[8%] h-24 rounded-full bg-cyan-300/10 blur-3xl" aria-hidden />
-                      <div className="relative h-[min(71svh,680px)] w-full overflow-hidden rounded-[1.9rem] border border-white/14 bg-white/[0.08] shadow-[0_30px_90px_-40px_rgba(15,23,42,0.6)] backdrop-blur-xl sm:h-[min(72svh,760px)] sm:rounded-[2.2rem] lg:h-[min(78vh,880px)] lg:rounded-[2.6rem]">
-                        <div className="pointer-events-none absolute inset-0 bg-[linear-gradient(180deg,_rgba(255,255,255,0.06),_rgba(255,255,255,0.02))]" aria-hidden />
-                        <AnimatePresence mode="wait" initial={false}>
-                          <motion.div
-                            key={activeProject.id}
-                            className="absolute inset-0"
-                            initial={reduceMotion ? false : { opacity: 0, scale: 0.988 }}
-                            animate={reduceMotion ? { opacity: 1, scale: 1 } : { opacity: 1, scale: 1 }}
-                            exit={reduceMotion ? { opacity: 0 } : { opacity: 0, scale: 1.008 }}
-                            transition={{ duration: reduceMotion ? 0 : 0.22, ease: "easeOut" }}
-                          >
-                            <Image
-                              src={activeProject.imageSrc}
-                              alt={activeProject.imageAlt}
-                              fill
-                              sizes="(max-width: 640px) 92vw, 88vw"
-                              className="object-contain p-2 sm:p-4 lg:p-5"
-                              quality={82}
-                              priority
-                            />
-                          </motion.div>
-                        </AnimatePresence>
-
-                        <div className="absolute inset-x-0 bottom-0 flex items-end justify-between px-3 pb-3 sm:hidden">
-                          <button
-                            type="button"
-                            onClick={showPrevious}
-                            className="inline-flex h-10 w-10 items-center justify-center rounded-full border border-white/18 bg-slate-950/34 text-white shadow-[0_18px_34px_-22px_rgba(15,23,42,0.75)] backdrop-blur-xl transition duration-200 hover:bg-slate-950/46 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/80 focus-visible:ring-offset-2 focus-visible:ring-offset-slate-900/70"
-                            aria-label="התמונה הקודמת"
-                          >
-                            <ChevronRight className="h-5 w-5" aria-hidden />
-                          </button>
-                          <button
-                            type="button"
-                            onClick={showNext}
-                            className="inline-flex h-10 w-10 items-center justify-center rounded-full border border-white/18 bg-slate-950/34 text-white shadow-[0_18px_34px_-22px_rgba(15,23,42,0.75)] backdrop-blur-xl transition duration-200 hover:bg-slate-950/46 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/80 focus-visible:ring-offset-2 focus-visible:ring-offset-slate-900/70"
-                            aria-label="התמונה הבאה"
-                          >
-                            <ChevronLeft className="h-5 w-5" aria-hidden />
-                          </button>
+                    {!activeOriginalLoaded && !activeOriginalFailed ? (
+                      <div className="absolute inset-0 flex items-center justify-center">
+                        <div className="rounded-[1.6rem] border border-white/12 bg-slate-950/28 px-5 py-4 text-center text-white shadow-[0_22px_52px_-30px_rgba(15,23,42,0.72)] backdrop-blur-xl">
+                          <span className="mx-auto block h-10 w-10 animate-spin rounded-full border-2 border-white/28 border-t-white" />
+                          <p className="mt-3 text-sm font-semibold text-white/84">
+                            טוען תמונה באיכות מלאה
+                          </p>
                         </div>
                       </div>
-                    </div>
-
-                    <button
-                      type="button"
-                      onClick={showNext}
-                      className="hidden h-12 w-12 shrink-0 items-center justify-center rounded-full border border-white/16 bg-white/10 text-white shadow-[0_18px_44px_-28px_rgba(15,23,42,0.7)] backdrop-blur-xl transition duration-200 hover:-translate-y-0.5 hover:bg-white/16 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/80 focus-visible:ring-offset-2 focus-visible:ring-offset-slate-900/70 sm:inline-flex lg:h-14 lg:w-14"
-                      aria-label="התמונה הבאה"
-                    >
-                      <ChevronLeft className="h-5 w-5" aria-hidden />
-                    </button>
-                  </div>
-
-                  <div className="mx-auto mt-3 w-full max-w-[min(96vw,1640px)]">
-                    <div className="rounded-[1.35rem] border border-white/12 bg-slate-950/18 p-2 shadow-[0_22px_60px_-38px_rgba(15,23,42,0.66)] backdrop-blur-xl sm:rounded-[1.55rem] sm:p-2.5">
-                      <div className="lightbox-thumbnails flex gap-2 overflow-x-auto py-0.5 sm:gap-2.5">
-                        {visibleProjects.map((project, index) => {
-                          const isActive = index === activeIndex;
-
-                          return (
-                            <button
-                              key={`thumb-${project.id}`}
-                              ref={(element) => {
-                                thumbnailRefs.current[index] = element;
-                              }}
-                              type="button"
-                              onClick={() => setActiveIndex(index)}
-                              aria-label={`עבור לתמונה ${index + 1}`}
-                              aria-current={isActive ? "true" : undefined}
-                              className={`relative h-13 w-13 shrink-0 overflow-hidden rounded-[1rem] border transition duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/80 focus-visible:ring-offset-2 focus-visible:ring-offset-slate-900/70 sm:h-[3.65rem] sm:w-[3.65rem] lg:h-[4.1rem] lg:w-[4.1rem] ${
-                                isActive
-                                  ? "border-white/85 bg-white/16 shadow-[0_18px_40px_-24px_rgba(125,211,252,0.58)]"
-                                  : "border-white/12 bg-white/8 opacity-80 hover:-translate-y-0.5 hover:border-white/30 hover:bg-white/12 hover:opacity-100"
-                              }`}
-                            >
-                              <Image
-                                src={project.imageSrc}
-                                alt=""
-                                fill
-                                sizes="80px"
-                                className="object-contain p-1.5"
-                                quality={62}
-                                loading="lazy"
-                                decoding="async"
-                              />
-                            </button>
-                          );
-                        })}
+                    ) : null}
+                    {activeOriginalFailed ? (
+                      <div className="absolute inset-0 flex items-center justify-center">
+                        <div className="rounded-[1.6rem] border border-rose-200/35 bg-slate-950/34 px-5 py-4 text-center text-white shadow-[0_22px_52px_-30px_rgba(15,23,42,0.72)] backdrop-blur-xl">
+                          <p className="text-sm font-semibold text-white">
+                            לא הצלחנו לטעון את התמונה המלאה כרגע
+                          </p>
+                        </div>
                       </div>
+                    ) : null}
+                    <div className="gallery-lightbox-media absolute inset-0">
+                      {/* eslint-disable-next-line @next/next/no-img-element */}
+                      <img
+                        key={activeProject.originalSrc}
+                        src={activeProject.originalSrc}
+                        alt={activeProject.imageAlt}
+                        decoding="async"
+                        loading="eager"
+                        fetchPriority="high"
+                        onLoad={() =>
+                          markOriginalLoaded(activeProject.originalSrc, setLoadedOriginals)
+                        }
+                        onError={() =>
+                          markOriginalFailed(activeProject.originalSrc, setFailedOriginals)
+                        }
+                        className={`h-full w-full object-contain p-2 transition-opacity duration-300 sm:p-4 lg:p-5 ${
+                          activeOriginalLoaded ? "opacity-100" : "opacity-0"
+                        }`}
+                      />
+                    </div>
+
+                    <div className="absolute inset-x-0 bottom-0 flex items-end justify-between px-3 pb-3 sm:hidden">
+                      <button
+                        type="button"
+                        onClick={showPrevious}
+                        className="inline-flex h-10 w-10 items-center justify-center rounded-full border border-white/18 bg-slate-950/34 text-white shadow-[0_18px_34px_-22px_rgba(15,23,42,0.75)] backdrop-blur-xl transition duration-200 hover:bg-slate-950/46 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/80 focus-visible:ring-offset-2 focus-visible:ring-offset-slate-900/70"
+                        aria-label="התמונה הקודמת"
+                      >
+                        <ChevronRight className="h-5 w-5" aria-hidden />
+                      </button>
+                      <button
+                        type="button"
+                        onClick={showNext}
+                        className="inline-flex h-10 w-10 items-center justify-center rounded-full border border-white/18 bg-slate-950/34 text-white shadow-[0_18px_34px_-22px_rgba(15,23,42,0.75)] backdrop-blur-xl transition duration-200 hover:bg-slate-950/46 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/80 focus-visible:ring-offset-2 focus-visible:ring-offset-slate-900/70"
+                        aria-label="התמונה הבאה"
+                      >
+                        <ChevronLeft className="h-5 w-5" aria-hidden />
+                      </button>
                     </div>
                   </div>
-                </motion.div>
-              </motion.div>
-            ) : null}
-          </AnimatePresence>,
+                </div>
+
+                <button
+                  type="button"
+                  onClick={showNext}
+                  className="hidden h-12 w-12 shrink-0 items-center justify-center rounded-full border border-white/16 bg-white/10 text-white shadow-[0_18px_44px_-28px_rgba(15,23,42,0.7)] backdrop-blur-xl transition duration-200 hover:-translate-y-0.5 hover:bg-white/16 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/80 focus-visible:ring-offset-2 focus-visible:ring-offset-slate-900/70 sm:inline-flex lg:h-14 lg:w-14"
+                  aria-label="התמונה הבאה"
+                >
+                  <ChevronLeft className="h-5 w-5" aria-hidden />
+                </button>
+              </div>
+
+              <div className="mx-auto mt-3 w-full max-w-[min(96vw,1680px)]">
+                <div className="rounded-[1.35rem] border border-white/12 bg-slate-950/18 p-2 shadow-[0_22px_60px_-38px_rgba(15,23,42,0.66)] backdrop-blur-xl sm:rounded-[1.55rem] sm:p-2.5">
+                  <div className="lightbox-thumbnails flex gap-2 overflow-x-auto py-0.5 sm:gap-2.5">
+                    {projects.map((project, index) => {
+                      const isActive = index === activeIndex;
+
+                      return (
+                        <button
+                          key={`thumb-${project.id}`}
+                          ref={(element) => {
+                            thumbnailRefs.current[index] = element;
+                          }}
+                          type="button"
+                          onClick={() => setActiveIndex(index)}
+                          onMouseEnter={() =>
+                            preloadProjectOriginal(
+                              project.originalSrc,
+                              preloadedOriginalsRef,
+                              setLoadedOriginals,
+                              setFailedOriginals
+                            )
+                          }
+                          onFocus={() =>
+                            preloadProjectOriginal(
+                              project.originalSrc,
+                              preloadedOriginalsRef,
+                              setLoadedOriginals,
+                              setFailedOriginals
+                            )
+                          }
+                          onTouchStart={() =>
+                            preloadProjectOriginal(
+                              project.originalSrc,
+                              preloadedOriginalsRef,
+                              setLoadedOriginals,
+                              setFailedOriginals
+                            )
+                          }
+                          aria-label={`עבור לתמונה ${index + 1}`}
+                          aria-current={isActive ? "true" : undefined}
+                          className={`relative h-[3.25rem] w-[3.25rem] shrink-0 overflow-hidden rounded-[1rem] border transition duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/80 focus-visible:ring-offset-2 focus-visible:ring-offset-slate-900/70 sm:h-[3.65rem] sm:w-[3.65rem] lg:h-[4.1rem] lg:w-[4.1rem] ${
+                            isActive
+                              ? "border-white/85 bg-white/16 shadow-[0_18px_40px_-24px_rgba(125,211,252,0.58)]"
+                              : "border-white/12 bg-white/8 opacity-80 hover:-translate-y-0.5 hover:border-white/30 hover:bg-white/12 hover:opacity-100"
+                          }`}
+                        >
+                          <Image
+                            src={project.thumbSrc}
+                            alt=""
+                            fill
+                            unoptimized
+                            sizes="80px"
+                            className="object-contain p-1.5"
+                            loading="lazy"
+                            decoding="async"
+                          />
+                        </button>
+                      );
+                    })}
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>,
           portalTarget
         )
       : null;
 
   return (
-    <section
-      id={isHome ? "gallery" : undefined}
-      aria-labelledby={isHome ? "home-gallery-heading" : "gallery-page-heading"}
-      className={sectionClassName}
-    >
-      <div className="mx-auto max-w-7xl">
-        {!isHome && (
-          <p className="mb-2 text-center text-sm font-semibold tracking-[0.18em] text-sky-800/80">העבודות שלנו</p>
-        )}
-        <h2
-          id={isHome ? "home-gallery-heading" : "gallery-page-heading"}
-          className="mb-5 text-center text-4xl font-black leading-tight tracking-tight text-primary sm:text-5xl lg:text-[3.35rem]"
-        >
-          {isHome ? "פרויקטים נבחרים" : "גלריית פרויקטים מלאה"}
-        </h2>
-        {!isHome && (
-          <p className="mx-auto mb-10 max-w-3xl text-center text-[0.98rem] leading-relaxed text-foreground/72 sm:mb-12">
-            מבחר העבודות מוצג כאן בגלריה נקייה ומדויקת, עם פתיחה מהירה לצפייה גדולה יותר בכל פרויקט.
-          </p>
-        )}
-        <div className={gridClassName}>
-          {visibleProjects.map((project, index) => (
-            <motion.article
-              key={project.id}
-              initial={reduceMotion ? false : { opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true, margin: "-40px" }}
-              transition={{ duration: 0.4, delay: reduceMotion ? 0 : index * 0.05 }}
-              className={cardClassName}
-            >
-              {isHome ? (
-                <div className={frameClassName}>
-                  <Image
-                    src={project.imageSrc}
-                    alt={project.imageAlt}
-                    fill
-                    sizes="(max-width: 640px) 46vw, (max-width: 1024px) 30vw, (max-width: 1280px) 18vw, 15vw"
-                    className={imageClassName}
-                    quality={72}
-                    loading={index < eagerImagesCount ? "eager" : "lazy"}
-                    priority={index < priorityImagesCount}
-                    decoding="async"
-                  />
-                </div>
-              ) : (
-                <button
-                  type="button"
-                  aria-label={`פתח תמונה מוגדלת עבור ${project.imageAlt}`}
-                  onClick={(event) => openLightbox(index, event.currentTarget)}
-                  className={`${frameClassName} block w-full focus:outline-none focus:ring-2 focus:ring-primary focus:ring-inset`}
-                >
-                  <Image
-                    src={project.imageSrc}
-                    alt={project.imageAlt}
-                    fill
-                    sizes="(max-width: 640px) 46vw, (max-width: 1024px) 30vw, (max-width: 1440px) 22vw, 18vw"
-                    className={imageClassName}
-                    quality={72}
-                    loading={index < eagerImagesCount ? "eager" : "lazy"}
-                    priority={index < priorityImagesCount}
-                    decoding="async"
-                  />
-                </button>
-              )}
-            </motion.article>
-          ))}
+    <>
+      <section
+        id={isHome ? "gallery" : undefined}
+        aria-labelledby={isHome ? "home-gallery-heading" : "gallery-page-heading"}
+        className={sectionClassName}
+      >
+        <div className="mx-auto max-w-7xl">
+          {!isHome ? (
+            <div className="mb-10 text-center sm:mb-12">
+              <p className="text-sm font-semibold tracking-[0.18em] text-sky-800/80">העבודות שלנו</p>
+              <h2
+                id="gallery-page-heading"
+                className="mt-3 text-center text-4xl font-black leading-tight tracking-tight text-primary sm:text-5xl lg:text-[3.35rem]"
+              >
+                גלריית פרויקטים מלאה
+              </h2>
+              <p className="mx-auto mt-4 max-w-3xl text-[0.98rem] leading-relaxed text-foreground/72">
+                עבודות אמיתיות מתוך פרויקטים של אריזות, דפוס ומיתוג. בלחיצה על כל תמונה אפשר
+                לראות את הפרויקט בגדול ולדפדף בכל הגלריה.
+              </p>
+            </div>
+          ) : (
+            <>
+              <p className="mb-2 text-center text-sm font-black uppercase tracking-[0.24em] text-blue-700/75">
+                עבודות נבחרות
+              </p>
+              <h2
+                id="home-gallery-heading"
+                className="mb-5 text-center text-4xl font-black tracking-tight text-primary sm:text-5xl lg:text-[3.35rem]"
+              >
+                פרויקטים שממחישים את רמת הביצוע
+              </h2>
+              <p className="mx-auto mb-10 max-w-3xl text-center text-[1rem] leading-relaxed text-foreground/72 sm:mb-12">
+                מבחר עבודות מתוך פרויקטים של אריזות, קרטונים ופתרונות דפוס שנבנו לעסקים
+                שרצו תוצאה מדויקת, יציבה וממותגת.
+              </p>
+            </>
+          )}
+
+          <div className={gridClassName}>
+            {projects.map((project, index) => (
+              <article key={project.id} className={cardClassName}>
+                {resolvedEnableLightbox ? (
+                  <button
+                    type="button"
+                    aria-label={`פתח תמונה מוגדלת עבור ${project.imageAlt}`}
+                    onClick={(event) => openLightbox(index, event.currentTarget)}
+                    onMouseEnter={() =>
+                      preloadProjectOriginal(
+                        project.originalSrc,
+                        preloadedOriginalsRef,
+                        setLoadedOriginals,
+                        setFailedOriginals
+                      )
+                    }
+                    onFocus={() =>
+                      preloadProjectOriginal(
+                        project.originalSrc,
+                        preloadedOriginalsRef,
+                        setLoadedOriginals,
+                        setFailedOriginals
+                      )
+                    }
+                    onTouchStart={() =>
+                      preloadProjectOriginal(
+                        project.originalSrc,
+                        preloadedOriginalsRef,
+                        setLoadedOriginals,
+                        setFailedOriginals
+                      )
+                    }
+                    className={`${frameClassName} block w-full focus:outline-none focus:ring-2 focus:ring-primary focus:ring-inset`}
+                  >
+                    <Image
+                      src={project.cardSrc}
+                      alt={project.imageAlt}
+                      fill
+                      unoptimized
+                      sizes={
+                        isHome
+                          ? "(max-width: 640px) 46vw, (max-width: 1024px) 30vw, (max-width: 1280px) 18vw, 15vw"
+                          : "(max-width: 640px) 46vw, (max-width: 1024px) 30vw, (max-width: 1440px) 22vw, 18vw"
+                      }
+                      className={imageClassName}
+                      loading={index < eagerImagesCount ? "eager" : "lazy"}
+                      priority={index < priorityImagesCount}
+                      decoding="async"
+                    />
+                  </button>
+                ) : (
+                  <div className={frameClassName}>
+                    <Image
+                      src={project.cardSrc}
+                      alt={project.imageAlt}
+                      fill
+                      unoptimized
+                      sizes={
+                        isHome
+                          ? "(max-width: 640px) 46vw, (max-width: 1024px) 30vw, (max-width: 1280px) 18vw, 15vw"
+                          : "(max-width: 640px) 46vw, (max-width: 1024px) 30vw, (max-width: 1440px) 22vw, 18vw"
+                      }
+                      className={imageClassName}
+                      loading={index < eagerImagesCount ? "eager" : "lazy"}
+                      priority={index < priorityImagesCount}
+                      decoding="async"
+                    />
+                  </div>
+                )}
+              </article>
+            ))}
+          </div>
+
+          {isHome ? (
+            <div className="mt-10 flex justify-center">
+              <Link
+                href="/gallery"
+                data-track-event="cta_click"
+                data-track-placement="home_gallery"
+                data-track-label="home_gallery_more"
+                className="inline-flex min-h-[48px] items-center justify-center rounded-2xl border border-blue-200 bg-white px-7 py-3 text-base font-semibold text-primary shadow-sm transition hover:-translate-y-0.5 hover:border-blue-300 hover:bg-blue-50 focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2"
+              >
+                הצג עוד פרויקטים
+              </Link>
+            </div>
+          ) : null}
         </div>
-        {isHome && (
-          <motion.div
-            className="mt-10 flex justify-center"
-            initial={reduceMotion ? false : { opacity: 0 }}
-            whileInView={{ opacity: 1 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.35 }}
-          >
-            <Link
-              href="/gallery"
-              className="inline-flex min-h-[48px] items-center justify-center rounded-full border border-slate-300 bg-white px-8 py-3.5 font-semibold text-primary shadow-[0_16px_34px_-20px_rgba(15,23,42,0.35)] transition duration-300 hover:-translate-y-0.5 hover:border-primary hover:bg-primary hover:text-primary-foreground focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2"
-            >
-              הצג עוד פרויקטים
-            </Link>
-          </motion.div>
-        )}
-      </div>
+      </section>
       {lightbox}
-    </section>
+    </>
   );
 }

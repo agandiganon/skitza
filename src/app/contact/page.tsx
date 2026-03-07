@@ -9,11 +9,14 @@ import { CONTACT_FAQ_ITEMS } from "@/lib/content/servicePages";
 import {
   ADDRESS,
   ADDRESS_MAP_URL,
+  CONTACT_SERVICE_CHOICES,
   EMAIL,
   PHONE_DISPLAY,
   PHONE_TEL,
   SERVICE_PAGES,
-  getContactServiceValueFromQuery,
+  getContactServiceHref,
+  getContactServiceKeyFromQuery,
+  getContactServiceLabelByKey,
 } from "@/lib/constants";
 import {
   buildBreadcrumbSchema,
@@ -52,23 +55,30 @@ type ContactPageProps = {
   searchParams?: SearchParamsInput;
 };
 
-function getQueryServiceValue(rawService: string | string[] | undefined) {
+function getQueryServiceKey(rawService: string | string[] | undefined) {
   if (Array.isArray(rawService)) {
-    return getContactServiceValueFromQuery(rawService[0]);
+    return getContactServiceKeyFromQuery(rawService[0]);
   }
 
-  return getContactServiceValueFromQuery(rawService);
+  return getContactServiceKeyFromQuery(rawService);
 }
 
 const trustPoints = [
   "אפשר להתחיל גם משלב הרעיון וגם ממוצר קיים.",
   "התהליך יכול לחבר בין תכנון, הדמיה, עיצוב והפקה.",
-  "הפנייה מגיעה ישירות לשירות הרלוונטי שבחרתם.",
+  "הפנייה מגיעה ישירות לכיוון שבחרתם בטופס.",
+] as const;
+
+const nextSteps = [
+  "משאירים פרטים ובוחרים את סוג הפנייה.",
+  "אנחנו עוברים על הפרטים וחוזרים עם המשך תיאום.",
+  "ממשיכים יחד לתכנון, הדמיה, עיצוב או הפקה לפי הצורך.",
 ] as const;
 
 export default async function ContactPage({ searchParams }: ContactPageProps) {
   const resolvedSearchParams = searchParams ? await searchParams : {};
-  const selectedService = getQueryServiceValue(resolvedSearchParams.service);
+  const selectedServiceKey = getQueryServiceKey(resolvedSearchParams.service);
+  const selectedService = getContactServiceLabelByKey(selectedServiceKey);
 
   return (
     <>
@@ -89,7 +99,7 @@ export default async function ContactPage({ searchParams }: ContactPageProps) {
         <div className="mx-auto max-w-6xl">
           <Breadcrumbs items={[{ label: "דף הבית", href: "/" }, { label: "צור קשר" }]} />
 
-          <section className="rounded-[2.3rem] border border-blue-100 bg-white/92 p-6 shadow-[0_30px_90px_-48px_rgba(15,23,42,0.42)] sm:p-8 lg:p-10">
+          <section className="cv-auto rounded-[2.3rem] border border-blue-100 bg-white/92 p-6 shadow-[0_30px_90px_-48px_rgba(15,23,42,0.42)] sm:p-8 lg:p-10">
             <div className="grid gap-8 lg:grid-cols-[minmax(0,1.1fr)_minmax(340px,0.9fr)] lg:items-start">
               <div>
                 <p className="text-sm font-black uppercase tracking-[0.28em] text-blue-700/75">
@@ -103,15 +113,19 @@ export default async function ContactPage({ searchParams }: ContactPageProps) {
                 </p>
 
                 <div className="mt-7 rounded-[1.7rem] border border-blue-100 bg-blue-50/55 p-5">
-                  <h2 className="text-xl font-bold text-primary">בחרו במה תרצו שנתחיל לטפל</h2>
+                  <h2 className="text-xl font-bold text-primary">בחרו את סוג הפנייה</h2>
                   <div className="mt-4 grid gap-3 sm:grid-cols-2">
-                    {SERVICE_PAGES.map((service) => {
-                      const isSelected = selectedService === service.contactValue;
+                    {CONTACT_SERVICE_CHOICES.map((service) => {
+                      const isSelected = selectedServiceKey === service.key;
 
                       return (
                         <Link
                           key={service.key}
-                          href={`/contact?service=${service.key}#contact-form`}
+                          href={getContactServiceHref(service.key)}
+                          data-track-event="service_navigation_click"
+                          data-track-placement="contact_page_service_picker"
+                          data-track-label={getContactServiceHref(service.key)}
+                          data-track-service={service.key}
                           className={`rounded-2xl border px-4 py-4 text-sm font-semibold transition focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 ${
                             isSelected
                               ? "border-blue-500 bg-white text-primary shadow-md"
@@ -135,6 +149,23 @@ export default async function ContactPage({ searchParams }: ContactPageProps) {
                     </div>
                   ))}
                 </div>
+
+                <section className="mt-6 rounded-[1.7rem] border border-blue-100 bg-white/82 p-5 shadow-[0_18px_44px_-34px_rgba(15,23,42,0.26)]">
+                  <h2 className="text-xl font-black text-primary">מה קורה אחרי שמשאירים פרטים?</h2>
+                  <ol className="mt-4 space-y-3">
+                    {nextSteps.map((step, index) => (
+                      <li
+                        key={step}
+                        className="flex items-start gap-3 rounded-2xl border border-blue-100 bg-blue-50/55 px-4 py-3 text-sm font-semibold text-foreground/78"
+                      >
+                        <span className="inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-gradient-to-l from-accent-cyan via-blue-500 to-primary text-xs font-black text-white">
+                          0{index + 1}
+                        </span>
+                        <span>{step}</span>
+                      </li>
+                    ))}
+                  </ol>
+                </section>
               </div>
 
               <section
@@ -146,16 +177,20 @@ export default async function ContactPage({ searchParams }: ContactPageProps) {
                   השאירו פרטים ונחזור אליכם
                 </h2>
                 <p className="mt-3 text-base leading-relaxed text-foreground/72">
-                  מלאו את הפרטים, בחרו את סוג השירות, ואנחנו נחזור להמשך התאמה של הפתרון.
+                  מלאו את הפרטים, בחרו את סוג הפנייה, ואנחנו נחזור להמשך התאמה של הפתרון.
                 </p>
                 <div className="mt-6">
-                  <ContactForm key={selectedService ?? "default"} variant="light" defaultService={selectedService ?? undefined} />
+                  <ContactForm
+                    key={selectedServiceKey ?? "default"}
+                    variant="light"
+                    defaultService={selectedService ?? undefined}
+                  />
                 </div>
               </section>
             </div>
           </section>
 
-          <section className="mt-10 grid gap-5 lg:mt-12 lg:grid-cols-[minmax(0,1.05fr)_minmax(340px,0.95fr)]">
+          <section className="cv-auto mt-10 grid gap-5 lg:mt-12 lg:grid-cols-[minmax(0,1.05fr)_minmax(340px,0.95fr)]">
             <div className="rounded-[2rem] border border-blue-100 bg-white/92 p-6 shadow-[0_22px_60px_-42px_rgba(15,23,42,0.36)] sm:p-8">
               <h2 className="text-3xl font-black tracking-tight text-primary sm:text-4xl">
                 רוצים לדבר ישירות?
@@ -176,7 +211,9 @@ export default async function ContactPage({ searchParams }: ContactPageProps) {
                 <li>
                   <a
                     id="cta-call-contact-page"
-                    data-track="phone-call"
+                    data-track-event="click_to_call"
+                    data-track-placement="contact_page"
+                    data-track-label="contact_page_phone"
                     href={`tel:${PHONE_TEL}`}
                     className="flex items-center gap-3 font-medium text-primary transition hover:underline"
                   >
@@ -187,6 +224,9 @@ export default async function ContactPage({ searchParams }: ContactPageProps) {
                 <li>
                   <a
                     href={`mailto:${EMAIL}`}
+                    data-track-event="contact_click"
+                    data-track-placement="contact_page"
+                    data-track-label="contact_page_email"
                     className="flex items-center gap-3 font-medium text-primary transition hover:underline"
                   >
                     <Mail className="h-5 w-5 shrink-0" aria-hidden />
@@ -202,6 +242,10 @@ export default async function ContactPage({ searchParams }: ContactPageProps) {
                     <Link
                       key={service.key}
                       href={service.href}
+                      data-track-event="service_navigation_click"
+                      data-track-placement="contact_page_quick_links"
+                      data-track-label={service.href}
+                      data-track-service={service.key}
                       className="rounded-full border border-blue-200 bg-white px-4 py-2 text-sm font-semibold text-primary transition hover:border-blue-300 hover:bg-blue-50"
                     >
                       {service.label}
@@ -232,6 +276,9 @@ export default async function ContactPage({ searchParams }: ContactPageProps) {
                   href={ADDRESS_MAP_URL}
                   target="_blank"
                   rel="noopener noreferrer"
+                  data-track-event="contact_click"
+                  data-track-placement="contact_page"
+                  data-track-label="contact_page_map"
                   className="block bg-blue-100 py-3 text-center text-sm font-semibold text-blue-800 transition hover:bg-blue-200"
                 >
                   פתחו את הכתובת במפה

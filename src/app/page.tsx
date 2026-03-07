@@ -8,6 +8,7 @@ import { Portfolio } from "@/components/sections/Portfolio";
 import { WhySkitza } from "@/components/sections/WhySkitza";
 import { StatsStrip } from "@/components/sections/StatsStrip";
 import { ClientLogosSection } from "@/components/sections/ClientLogosSection";
+import { LeadCta } from "@/components/sections/LeadCta";
 import { HOME_FAQ_ITEMS } from "@/lib/content/servicePages";
 import { getProjects } from "@/lib/content/projects.server";
 import { buildFaqSchema } from "@/lib/seo/schema";
@@ -43,14 +44,20 @@ export default function Home() {
       <JsonLd data={buildFaqSchema(HOME_FAQ_ITEMS)} />
       <main>
         <Hero
-          images={allProjects.map((project) => ({ src: project.imageSrc, alt: project.imageAlt }))}
+          images={allProjects.map((project) => ({ src: project.heroSrc, alt: project.imageAlt }))}
         />
         <About />
         <ClientLogosSection />
         <Services />
-        <Portfolio mode="home" projects={featuredProjects} />
+        <Portfolio
+          mode="home"
+          projects={featuredProjects}
+          enableLightbox
+          lightboxPlacement="home_gallery"
+        />
         <WhySkitza />
-        <section className="bg-gradient-to-b from-white via-blue-50/45 to-white px-4 py-14 sm:py-16 lg:py-20">
+        <LeadCta />
+        <section className="cv-auto bg-gradient-to-b from-white via-blue-50/45 to-white px-4 py-14 sm:py-16 lg:py-20">
           <div className="mx-auto max-w-7xl">
             <FaqSection
               id="home-faq"

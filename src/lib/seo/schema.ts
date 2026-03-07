@@ -48,6 +48,16 @@ export function buildLocalBusinessSchema({
   };
 }
 
+export function buildWebsiteSchema() {
+  return {
+    "@context": "https://schema.org",
+    "@type": "WebSite",
+    name: "סקיצה אריזות",
+    url: getAbsoluteUrl("/"),
+    inLanguage: "he-IL",
+  };
+}
+
 export function buildBreadcrumbSchema(items: readonly BreadcrumbItem[]) {
   return {
     "@context": "https://schema.org",

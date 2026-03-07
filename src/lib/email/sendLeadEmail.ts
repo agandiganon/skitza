@@ -66,7 +66,7 @@ function buildLeadEmailHtml(payload: ContactPayload, submittedAt: string): strin
                       <td style="background:#f7faff;border:1px solid #e1ebff;border-radius:10px;padding:10px 12px;">${email}</td>
                     </tr>
                     <tr>
-                      <td style="width:140px;font-weight:700;color:#32517f;">סוג שירות</td>
+                      <td style="width:140px;font-weight:700;color:#32517f;">סוג פנייה</td>
                       <td style="background:#f7faff;border:1px solid #e1ebff;border-radius:10px;padding:10px 12px;">${service}</td>
                     </tr>
                     <tr>
@@ -133,7 +133,7 @@ export async function sendLeadEmail(payload: ContactPayload): Promise<void> {
       `שם: ${safePayload.name}`,
       `טלפון: ${safePayload.phone}`,
       `דוא\"ל: ${safePayload.email}`,
-      `סוג שירות: ${safePayload.service}`,
+      `סוג פנייה: ${safePayload.service}`,
       `מקור: website-contact-form`,
       `זמן: ${submittedAt}`,
     ].join("\n"),

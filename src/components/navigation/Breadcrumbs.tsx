@@ -32,7 +32,9 @@ export function Breadcrumbs({ items, className = "" }: BreadcrumbsProps) {
                   {item.label}
                 </Link>
               ) : (
-                <span className={isLast ? "font-bold text-primary" : ""}>{item.label}</span>
+                <span aria-current={isLast ? "page" : undefined} className={isLast ? "font-bold text-primary" : ""}>
+                  {item.label}
+                </span>
               )}
             </li>
           );

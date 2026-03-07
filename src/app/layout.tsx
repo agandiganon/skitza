@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { Heebo } from "next/font/google";
+import { Analytics } from "@vercel/analytics/next";
 import { SpeedInsights } from "@vercel/speed-insights/next";
 import "./globals.css";
 import { Header } from "@/components/layout/Header";
@@ -8,9 +9,10 @@ import { DeferredWidgets } from "@/components/layout/DeferredWidgets";
 import { ScrollToTopOnRouteChange } from "@/components/layout/ScrollToTopOnRouteChange";
 import { MobileStickyBar } from "@/components/widgets/MobileStickyBar";
 import { GtmScripts } from "@/components/analytics/GtmScripts";
+import { InteractionTracker } from "@/components/analytics/InteractionTracker";
 import { JsonLd } from "@/components/seo/JsonLd";
 import { ADDRESS, PHONE_DISPLAY } from "@/lib/constants";
-import { buildLocalBusinessSchema } from "@/lib/seo/schema";
+import { buildLocalBusinessSchema, buildWebsiteSchema } from "@/lib/seo/schema";
 
 const fallbackSiteUrl = "https://skitza-pack.co.il";
 const shouldLoadSpeedInsights =
@@ -58,9 +60,24 @@ export const metadata: Metadata = {
     siteName: "סקיצה אריזות",
     url: "/",
     locale: "he_IL",
+    images: [
+      {
+        url: "/logo.png",
+        width: 1536,
+        height: 1024,
+        alt: "סקיצה אריזות",
+      },
+    ],
   },
   alternates: {
     canonical: "/",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "סקיצה אריזות | בית דפוס לאריזות בחולון",
+    description:
+      "בית דפוס בחולון המתמחה בהדפסת אריזות, אריזות מותאמות אישית ופתרונות מיתוג לעסקים.",
+    images: ["/logo.png"],
   },
 };
 
@@ -84,21 +101,26 @@ export default function RootLayout({
         </a>
         <GtmScripts />
         <JsonLd
-          data={buildLocalBusinessSchema({
-            name: "סקיצה אריזות",
-            image: "/logo.png",
-            telephone: PHONE_DISPLAY,
-            address: ADDRESS,
-            description:
-              "בית דפוס בחולון המתמחה בהדפסת אריזות ואריזות מותאמות אישית לעסקים.",
-          })}
+          data={[
+            buildLocalBusinessSchema({
+              name: "סקיצה אריזות",
+              image: "/logo.png",
+              telephone: PHONE_DISPLAY,
+              address: ADDRESS,
+              description:
+                "בית דפוס בחולון המתמחה בהדפסת אריזות ואריזות מותאמות אישית לעסקים.",
+            }),
+            buildWebsiteSchema(),
+          ]}
         />
         <ScrollToTopOnRouteChange />
+        <InteractionTracker />
         <Header />
         <div id="site-content">{children}</div>
         <Footer />
         <MobileStickyBar />
         <DeferredWidgets />
+        <Analytics />
         {shouldLoadSpeedInsights ? <SpeedInsights /> : null}
       </body>
     </html>

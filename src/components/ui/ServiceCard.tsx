@@ -28,6 +28,9 @@ export function ServiceCard({ title, description, icon: Icon, href }: ServiceCar
   return href ? (
     <Link
       href={href}
+      data-track-event="service_navigation_click"
+      data-track-placement="home_services"
+      data-track-label={href}
       className="block h-full rounded-[1.7rem] focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2"
     >
       {content}

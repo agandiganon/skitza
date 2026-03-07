@@ -1,19 +1,19 @@
 "use client";
 
 import { PHONE_TEL, WA_PHONE } from "@/lib/constants";
-import { pushToDataLayer } from "@/lib/analytics/datalayer";
 
 const WA_MESSAGE = "שלום סקיצה אריזות, הגעתי מהאתר ואשמח לקבל הצעת מחיר לאריזות.";
 const WA_URL = `https://wa.me/${WA_PHONE}?text=${encodeURIComponent(WA_MESSAGE)}`;
 
 export function MobileStickyBar() {
   return (
-    <div className="fixed inset-x-0 bottom-0 z-[55] flex gap-2 border-t border-primary/12 bg-white/92 px-3 pb-[calc(env(safe-area-inset-bottom)+0.7rem)] pt-3 shadow-[0_-14px_30px_-22px_rgba(15,23,42,0.42)] backdrop-blur-xl sm:hidden">
+    <div className="fixed inset-x-0 bottom-0 z-[55] flex gap-2 border-t border-primary/12 bg-white/94 px-3 pb-[calc(env(safe-area-inset-bottom)+0.7rem)] pt-3 shadow-[0_-16px_34px_-22px_rgba(15,23,42,0.42)] backdrop-blur-xl sm:hidden">
       <a
         id="cta-call-mobile"
-        data-track="phone-call"
+        data-track-event="click_to_call"
+        data-track-placement="mobile_sticky_bar"
+        data-track-label="mobile_call"
         href={`tel:${PHONE_TEL}`}
-        onClick={() => pushToDataLayer("click_to_call", { placement: "mobile_sticky_bar" })}
         className="flex min-h-[50px] flex-1 items-center justify-center gap-2 rounded-2xl bg-primary px-4 py-3 font-semibold text-primary-foreground shadow-lg transition active:opacity-90"
         aria-label="התקשר עכשיו"
       >
@@ -24,15 +24,12 @@ export function MobileStickyBar() {
       </a>
       <a
         id="cta-whatsapp-mobile"
-        data-track="whatsapp-click"
+        data-track-event="whatsapp_click"
+        data-track-placement="mobile_sticky_bar"
+        data-track-label="mobile_whatsapp"
         href={WA_URL}
         target="_blank"
         rel="noopener noreferrer"
-        onClick={() =>
-          pushToDataLayer("whatsapp_click", {
-            placement: "mobile_sticky_bar",
-          })
-        }
         className="flex min-h-[50px] flex-1 items-center justify-center gap-2 rounded-2xl bg-[#25D366] px-4 py-3 font-semibold text-white shadow-lg transition active:opacity-90"
         aria-label="שלח הודעה בוואטסאפ"
       >

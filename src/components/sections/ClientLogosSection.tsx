@@ -7,7 +7,7 @@ export function ClientLogosSection() {
       id="partners"
       aria-labelledby="home-partners-heading"
       dir="rtl"
-      className="partners-showcase-section px-4 py-12 sm:py-16 lg:py-20"
+      className="cv-auto partners-showcase-section px-4 py-12 sm:py-16 lg:py-20"
     >
       <div className="mx-auto w-full max-w-7xl">
         <div className="partners-showcase-shell overflow-hidden rounded-[2rem] border border-white/70 bg-white/78 px-4 py-5 shadow-[0_28px_80px_-54px_rgba(15,23,42,0.42)] backdrop-blur-xl sm:px-6 sm:py-7 lg:px-10 lg:py-10">

@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { Breadcrumbs } from "@/components/navigation/Breadcrumbs";
 import { JsonLd } from "@/components/seo/JsonLd";
+import { SERVICE_PAGES } from "@/lib/constants";
 import { buildBreadcrumbSchema } from "@/lib/seo/schema";
 
 export const metadata: Metadata = {
@@ -49,7 +50,7 @@ export default function AboutPage() {
         <div className="mx-auto max-w-5xl">
           <Breadcrumbs items={[{ label: "דף הבית", href: "/" }, { label: "אודות" }]} />
 
-          <section className="rounded-[2rem] border border-blue-100 bg-white/85 p-6 shadow-[0_24px_70px_-40px_rgba(31,78,161,0.45)] ring-1 ring-blue-50 sm:p-8">
+          <section className="cv-auto rounded-[2rem] border border-blue-100 bg-white/85 p-6 shadow-[0_24px_70px_-40px_rgba(31,78,161,0.45)] ring-1 ring-blue-50 sm:p-8">
             <p className="mb-2 text-center text-sm font-semibold tracking-wide text-blue-700">אודות</p>
             <h1 className="mb-8 text-center text-4xl font-black leading-tight tracking-tight text-primary sm:text-5xl">
               אודות סקיצה אריזות
@@ -104,14 +105,51 @@ export default function AboutPage() {
               </div>
             </section>
 
-            <p className="mt-8 text-center">
+            <section className="mt-10 rounded-[1.8rem] border border-blue-100 bg-blue-50/55 p-5" aria-labelledby="about-services-heading">
+              <h2 id="about-services-heading" className="text-2xl font-extrabold text-primary sm:text-3xl">
+                שירותים שממשיכים את התהליך
+              </h2>
+              <p className="mt-3 max-w-3xl text-base leading-relaxed text-foreground/78">
+                אם אתם כבר יודעים לאיזה כיוון הפרויקט מתקדם, אפשר לעבור מכאן ישירות לשירות
+                הרלוונטי או להשאיר פרטים להמשך תיאום.
+              </p>
+              <div className="mt-5 flex flex-wrap gap-3">
+                {SERVICE_PAGES.map((service) => (
+                  <Link
+                    key={service.key}
+                    href={service.href}
+                    data-track-event="service_navigation_click"
+                    data-track-placement="about_page"
+                    data-track-label={service.href}
+                    data-track-service={service.key}
+                    className="rounded-full border border-blue-200 bg-white px-4 py-2 text-sm font-semibold text-primary transition hover:border-blue-300 hover:bg-blue-50"
+                  >
+                    {service.label}
+                  </Link>
+                ))}
+              </div>
+            </section>
+
+            <div className="mt-8 flex flex-col items-center justify-center gap-3 sm:flex-row">
               <Link
                 href="/contact"
+                data-track-event="cta_click"
+                data-track-placement="about_page"
+                data-track-label="about_contact"
                 className="inline-flex min-h-[46px] items-center justify-center rounded-xl bg-gradient-to-l from-accent-cyan via-blue-500 to-primary px-7 py-3 text-base font-semibold text-white shadow-lg transition hover:opacity-95 focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2"
               >
                 צור קשר
               </Link>
-            </p>
+              <Link
+                href="/gallery"
+                data-track-event="cta_click"
+                data-track-placement="about_page"
+                data-track-label="about_gallery"
+                className="inline-flex min-h-[46px] items-center justify-center rounded-xl border border-blue-200 bg-white px-7 py-3 text-base font-semibold text-primary shadow-sm transition hover:border-blue-300 hover:bg-blue-50 focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2"
+              >
+                מעבר לגלריה
+              </Link>
+            </div>
           </section>
         </div>
       </main>

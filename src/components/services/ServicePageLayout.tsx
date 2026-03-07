@@ -2,6 +2,7 @@ import Link from "next/link";
 import { ArrowUpLeft } from "lucide-react";
 import { Breadcrumbs } from "@/components/navigation/Breadcrumbs";
 import { FaqSection } from "@/components/content/FaqSection";
+import { getContactServiceHrefForServicePage } from "@/lib/constants";
 import { getRelatedServices, type ServicePageDefinition } from "@/lib/content/servicePages";
 
 type ServicePageLayoutProps = {
@@ -22,7 +23,7 @@ export function ServicePageLayout({ page }: ServicePageLayoutProps) {
           ]}
         />
 
-        <section className="relative overflow-hidden rounded-[2.3rem] border border-blue-100 bg-white/92 px-6 py-10 shadow-[0_30px_90px_-48px_rgba(15,23,42,0.4)] ring-1 ring-blue-100 sm:px-10 sm:py-12">
+        <section className="cv-auto relative overflow-hidden rounded-[2.3rem] border border-blue-100 bg-white/92 px-6 py-10 shadow-[0_30px_90px_-48px_rgba(15,23,42,0.4)] ring-1 ring-blue-100 sm:px-10 sm:py-12">
           <div
             className="pointer-events-none absolute inset-0 opacity-30"
             style={{
@@ -44,24 +45,50 @@ export function ServicePageLayout({ page }: ServicePageLayoutProps) {
             <p className="mx-auto mt-4 max-w-3xl text-base leading-relaxed text-foreground/75 sm:text-lg">
               {page.heroBody}
             </p>
+            <div className="mt-6 flex flex-wrap items-center justify-center gap-2.5">
+              <span className="rounded-full border border-blue-100 bg-white/80 px-4 py-2 text-sm font-semibold text-primary">
+                מתאים לעסקים שצריכים תהליך מסודר
+              </span>
+              <span className="rounded-full border border-blue-100 bg-white/80 px-4 py-2 text-sm font-semibold text-primary">
+                אפשר להתחיל גם מרעיון וגם ממוצר קיים
+              </span>
+            </div>
             <div className="mt-8 flex flex-col items-center justify-center gap-3 sm:flex-row">
               <Link
-                href={`/contact?service=${page.key}#contact-form`}
+                href={getContactServiceHrefForServicePage(page.key)}
+                data-track-event="cta_click"
+                data-track-placement="service_hero"
+                data-track-label={`${page.href}::primary_contact`}
+                data-track-service={page.key}
                 className="inline-flex min-h-[48px] items-center justify-center rounded-2xl bg-gradient-to-l from-accent-cyan via-blue-500 to-primary px-8 py-3.5 text-base font-semibold text-white shadow-lg transition hover:-translate-y-0.5 hover:opacity-95 focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2"
               >
                 {page.primaryCtaLabel}
               </Link>
               <Link
                 href="/contact"
+                data-track-event="cta_click"
+                data-track-placement="service_hero"
+                data-track-label={`${page.href}::contact_page`}
+                data-track-service={page.key}
                 className="inline-flex min-h-[48px] items-center justify-center rounded-2xl border border-blue-200 bg-white/85 px-8 py-3.5 text-base font-semibold text-primary transition hover:border-blue-300 hover:bg-blue-50 focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2"
               >
                 מעבר לעמוד צור קשר
+              </Link>
+              <Link
+                href="/gallery"
+                data-track-event="cta_click"
+                data-track-placement="service_hero"
+                data-track-label={`${page.href}::gallery`}
+                data-track-service={page.key}
+                className="inline-flex min-h-[48px] items-center justify-center rounded-2xl border border-blue-100 bg-blue-50/55 px-8 py-3.5 text-base font-semibold text-primary transition hover:border-blue-200 hover:bg-white focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2"
+              >
+                צפייה בעבודות
               </Link>
             </div>
           </div>
         </section>
 
-        <section className="mt-10 grid gap-4 sm:mt-12 sm:grid-cols-3 lg:gap-5" aria-labelledby={`${page.key}-value-heading`}>
+        <section className="cv-auto mt-10 grid gap-4 sm:mt-12 sm:grid-cols-3 lg:gap-5" aria-labelledby={`${page.key}-value-heading`}>
           <div className="sm:col-span-3">
             <h2
               id={`${page.key}-value-heading`}
@@ -82,7 +109,7 @@ export function ServicePageLayout({ page }: ServicePageLayoutProps) {
           ))}
         </section>
 
-        <section className="mt-10 grid gap-5 lg:mt-12 lg:grid-cols-[minmax(0,1.35fr)_minmax(280px,0.95fr)]">
+        <section className="cv-auto mt-10 grid gap-5 lg:mt-12 lg:grid-cols-[minmax(0,1.35fr)_minmax(280px,0.95fr)]">
           <div className="rounded-[2rem] border border-blue-100 bg-white/92 p-6 shadow-[0_22px_60px_-42px_rgba(15,23,42,0.36)] sm:p-8">
             <h2 className="text-3xl font-black tracking-tight text-primary sm:text-4xl">
               איך עובדים
@@ -131,7 +158,7 @@ export function ServicePageLayout({ page }: ServicePageLayoutProps) {
         />
 
         <section
-          className="mt-10 rounded-[2rem] border border-blue-100 bg-white/92 p-6 shadow-[0_22px_60px_-42px_rgba(15,23,42,0.36)] sm:mt-12 sm:p-8"
+          className="cv-auto mt-10 rounded-[2rem] border border-blue-100 bg-white/92 p-6 shadow-[0_22px_60px_-42px_rgba(15,23,42,0.36)] sm:mt-12 sm:p-8"
           aria-labelledby={`${page.key}-related-heading`}
         >
           <div className="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
@@ -154,6 +181,10 @@ export function ServicePageLayout({ page }: ServicePageLayoutProps) {
               <Link
                 key={relatedService.key}
                 href={relatedService.href}
+                data-track-event="service_navigation_click"
+                data-track-placement="service_related"
+                data-track-label={relatedService.href}
+                data-track-service={relatedService.key}
                 className="group rounded-[1.45rem] border border-blue-100 bg-blue-50/50 p-5 transition hover:-translate-y-0.5 hover:border-blue-200 hover:bg-white hover:shadow-md focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2"
               >
                 <h3 className="text-lg font-bold text-primary">{relatedService.label}</h3>
@@ -166,6 +197,45 @@ export function ServicePageLayout({ page }: ServicePageLayoutProps) {
                 </span>
               </Link>
             ))}
+          </div>
+        </section>
+
+        <section className="cv-auto mt-10 rounded-[2rem] border border-blue-100 bg-gradient-to-l from-primary via-blue-800 to-primary p-6 text-white shadow-[0_26px_70px_-40px_rgba(15,23,42,0.55)] sm:mt-12 sm:p-8">
+          <div className="flex flex-col gap-5 lg:flex-row lg:items-center lg:justify-between">
+            <div className="max-w-3xl">
+              <p className="text-sm font-black uppercase tracking-[0.24em] text-cyan-200/80">
+                השלב הבא
+              </p>
+              <h2 className="mt-3 text-3xl font-black tracking-tight sm:text-4xl">
+                אם הכיוון ברור, אפשר להתחיל מהשארת פרטים מסודרת
+              </h2>
+              <p className="mt-4 text-base leading-relaxed text-white/78 sm:text-lg">
+                ספרו לנו בקצרה מה צריך לייצר או לתכנן, בחרו את סוג הפנייה, ונחזור להמשך
+                בירור והתאמת פתרון לפרויקט.
+              </p>
+            </div>
+            <div className="flex flex-col gap-3 sm:flex-row lg:justify-end">
+              <Link
+                href={getContactServiceHrefForServicePage(page.key)}
+                data-track-event="cta_click"
+                data-track-placement="service_bottom"
+                data-track-label={`${page.href}::bottom_contact`}
+                data-track-service={page.key}
+                className="inline-flex min-h-[48px] items-center justify-center rounded-2xl bg-white px-7 py-3 text-base font-semibold text-primary shadow-md transition hover:-translate-y-0.5 hover:bg-cyan-50 focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-blue-900"
+              >
+                מעבר לטופס יצירת קשר
+              </Link>
+              <Link
+                href="/gallery"
+                data-track-event="cta_click"
+                data-track-placement="service_bottom"
+                data-track-label={`${page.href}::bottom_gallery`}
+                data-track-service={page.key}
+                className="inline-flex min-h-[48px] items-center justify-center rounded-2xl border border-white/25 bg-white/10 px-7 py-3 text-base font-semibold text-white transition hover:bg-white/16 focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-blue-900"
+              >
+                צפייה בגלריה
+              </Link>
+            </div>
           </div>
         </section>
       </div>

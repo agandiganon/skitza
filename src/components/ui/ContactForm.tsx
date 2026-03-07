@@ -1,7 +1,8 @@
 "use client";
 
 import { useActionState, useEffect, useRef, useState } from "react";
-import type { FormEvent } from "react";
+import type { ChangeEvent, FormEvent } from "react";
+import Link from "next/link";
 
 import { submitContactFormAction } from "@/app/actions/contact";
 import { pushToDataLayer } from "@/lib/analytics/datalayer";
@@ -80,7 +81,7 @@ export function ContactForm({ variant = "dark", defaultService }: ContactFormPro
     else if (!/^[\d\s\-]+$/.test(phone)) errors.phone = "נא להזין מספר תקין";
     if (!email) errors.email = "נא להזין דוא\"ל";
     else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) errors.email = "נא להזין דוא\"ל תקין";
-    if (!service) errors.service = "נא לבחור סוג שירות";
+    if (!service) errors.service = "נא לבחור סוג פנייה";
 
     return errors;
   }
@@ -99,7 +100,26 @@ export function ContactForm({ variant = "dark", defaultService }: ContactFormPro
     pushToDataLayer("form_submit", { form_name: "contact" });
   }
 
-  const activeFieldErrors = hasFieldErrors(clientFieldErrors) ? clientFieldErrors : state.fieldErrors;
+  function handleServiceChange(event: ChangeEvent<HTMLSelectElement>) {
+    const value = event.target.value.trim();
+    setClientFieldErrors((current) => ({ ...current, service: undefined }));
+
+    if (!value) {
+      return;
+    }
+
+    pushToDataLayer("contact_service_select", {
+      form_name: "contact",
+      service_type: value,
+    });
+  }
+
+  const activeFieldErrors =
+    state.status === "success"
+      ? {}
+      : hasFieldErrors(clientFieldErrors)
+        ? clientFieldErrors
+        : state.fieldErrors;
   const showSuccess = !isPending && state.status === "success";
   const showFormError = !isPending && state.status === "error" && Boolean(state.formError);
 
@@ -109,7 +129,6 @@ export function ContactForm({ variant = "dark", defaultService }: ContactFormPro
       action={formAction}
       onSubmit={handleSubmit}
       className="space-y-4"
-      data-track="form-submit"
     >
       <div>
         <label htmlFor="contact-name" className="mb-1 block text-sm font-medium">
@@ -176,18 +195,19 @@ export function ContactForm({ variant = "dark", defaultService }: ContactFormPro
       </div>
       <div>
         <label htmlFor="contact-service" className="mb-1 block text-sm font-medium">
-          סוג שירות
+          סוג פנייה
         </label>
         <select
           id="contact-service"
           name="service"
           required
           defaultValue={defaultService ?? ""}
+          onChange={handleServiceChange}
           aria-invalid={!!activeFieldErrors.service}
           aria-describedby={activeFieldErrors.service ? "contact-service-error" : undefined}
           className={inputCn}
         >
-          <option value="">בחר סוג שירות</option>
+          <option value="">בחר סוג פנייה</option>
           {SERVICE_OPTIONS.map((option) => (
             <option key={option} value={option}>
               {option}
@@ -202,7 +222,6 @@ export function ContactForm({ variant = "dark", defaultService }: ContactFormPro
       </div>
       <button
         id="cta-contact-submit"
-        data-track="form-submit"
         type="submit"
         disabled={isPending}
         className="w-full min-h-[44px] rounded-xl bg-gradient-to-l from-accent-cyan via-blue-500 to-primary px-6 py-3 font-medium text-white shadow-lg transition hover:opacity-95 disabled:opacity-70 focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-primary"
@@ -210,14 +229,53 @@ export function ContactForm({ variant = "dark", defaultService }: ContactFormPro
         {isPending ? "שולח..." : "שלח פנייה"}
       </button>
       {showSuccess && (
-        <p
+        <div
           id="contact-form-success"
-          data-track="form-submit-success"
-          className={feedbackCn.success}
+          className={`rounded-[1.45rem] border px-4 py-4 text-start shadow-sm ${
+            variant === "dark"
+              ? "border-emerald-400/30 bg-emerald-400/10 text-white"
+              : "border-emerald-200 bg-emerald-50 text-emerald-950"
+          }`}
           role="status"
         >
-          {state.successMessage}
-        </p>
+          <p className="text-base font-black">הפנייה התקבלה בהצלחה</p>
+          <p
+            className={`mt-2 text-sm leading-relaxed ${
+              variant === "dark" ? "text-white/82" : "text-emerald-900/80"
+            }`}
+          >
+            {state.successMessage}
+          </p>
+          <div className="mt-4 flex flex-wrap gap-2">
+            <Link
+              href="/gallery"
+              data-track-event="cta_click"
+              data-track-placement="contact_form_success"
+              data-track-label="contact_form_success_gallery"
+              className={`inline-flex min-h-[40px] items-center justify-center rounded-xl px-4 py-2 text-sm font-semibold transition ${
+                variant === "dark"
+                  ? "bg-white/14 text-white hover:bg-white/20"
+                  : "bg-white text-emerald-800 shadow-sm hover:bg-emerald-100"
+              }`}
+            >
+              לצפייה בגלריה
+            </Link>
+            <Link
+              href="/services/print"
+              data-track-event="service_navigation_click"
+              data-track-placement="contact_form_success"
+              data-track-label="/services/print"
+              data-track-service="print"
+              className={`inline-flex min-h-[40px] items-center justify-center rounded-xl px-4 py-2 text-sm font-semibold transition ${
+                variant === "dark"
+                  ? "bg-white/10 text-white hover:bg-white/18"
+                  : "bg-white text-emerald-800 shadow-sm hover:bg-emerald-100"
+              }`}
+            >
+              חזרה לשירותים
+            </Link>
+          </div>
+        </div>
       )}
       {showFormError && (
         <p className={feedbackCn.error} role="alert">

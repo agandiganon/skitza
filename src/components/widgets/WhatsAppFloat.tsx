@@ -1,7 +1,6 @@
 "use client";
 
 import { WA_PHONE } from "@/lib/constants";
-import { pushToDataLayer } from "@/lib/analytics/datalayer";
 
 const MESSAGE =
   "שלום סקיצה אריזות, הגעתי מהאתר ואשמח לקבל הצעת מחיר לאריזות.";
@@ -11,16 +10,13 @@ export function WhatsAppFloat() {
   return (
     <a
       id="cta-whatsapp-float"
-      data-track="whatsapp-click"
+      data-track-event="whatsapp_click"
+      data-track-placement="floating_button"
+      data-track-label="desktop_whatsapp"
       href={WA_URL}
       target="_blank"
       rel="noopener noreferrer"
-      onClick={() =>
-        pushToDataLayer("whatsapp_click", {
-          placement: "floating_button",
-        })
-      }
-      className="fixed bottom-6 right-6 z-[68] hidden h-12 w-12 items-center justify-center rounded-full bg-[#25D366] text-white shadow-[0_18px_36px_-18px_rgba(37,211,102,0.56)] transition hover:scale-105 hover:shadow-[0_22px_42px_-16px_rgba(37,211,102,0.62)] focus:outline-none focus:ring-2 focus:ring-[#25D366] focus:ring-offset-2 sm:flex"
+      className="fixed bottom-6 right-6 z-[68] hidden h-12 w-12 items-center justify-center rounded-full bg-[#25D366] text-white shadow-[0_18px_36px_-18px_rgba(37,211,102,0.56)] transition hover:scale-105 hover:shadow-[0_22px_42px_-16px_rgba(37,211,102,0.62)] focus:outline-none focus:ring-2 focus:ring-[#25D366] focus:ring-offset-2 lg:flex"
       aria-label="שלח הודעה בוואטסאפ"
     >
       <svg

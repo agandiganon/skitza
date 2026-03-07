@@ -44,7 +44,7 @@ function VerticalMarqueeColumn({
   direction,
   initialOffsetRatio,
 }: VerticalMarqueeColumnProps) {
-  const loopItems = useMemo(() => [...images, ...images], [images]);
+  const loopItems = useMemo(() => (reduceMotion ? [...images] : [...images, ...images]), [images, reduceMotion]);
   const { containerRef, trackRef, bind } = useInteractiveMarquee({
     axis: "y",
     direction,
@@ -80,10 +80,10 @@ function VerticalMarqueeColumn({
                   src={image.src}
                   alt={isClone ? "" : image.alt}
                   fill
+                  unoptimized
                   draggable={false}
                   sizes="(max-width: 1279px) 0px, (max-width: 1536px) 220px, 250px"
                   className="object-contain p-1.5 transition-transform duration-500 ease-out group-hover:scale-[1.045]"
-                  quality={66}
                   loading="lazy"
                   decoding="async"
                 />
@@ -102,7 +102,7 @@ type HorizontalMarqueeRowProps = {
 };
 
 function HorizontalMarqueeRow({ images, reduceMotion }: HorizontalMarqueeRowProps) {
-  const mobileItems = useMemo(() => images, [images]);
+  const mobileItems = useMemo(() => [...images], [images]);
   const { containerRef, trackRef, bind } = useInteractiveMarquee({
     axis: "x",
     direction: 1,
@@ -133,10 +133,10 @@ function HorizontalMarqueeRow({ images, reduceMotion }: HorizontalMarqueeRowProp
                   src={image.src}
                   alt={image.alt}
                   fill
+                  unoptimized
                   draggable={false}
                   sizes="106px"
                   className="object-contain p-1 transition-transform duration-500 ease-out group-hover:scale-[1.05]"
-                  quality={62}
                   loading="lazy"
                   decoding="async"
                 />
@@ -144,29 +144,31 @@ function HorizontalMarqueeRow({ images, reduceMotion }: HorizontalMarqueeRowProp
             </article>
           ))}
         </div>
-        <div className="hero-mobile-marquee-group" data-clone="true" aria-hidden>
-          {mobileItems.map((image, index) => (
-            <article
-              key={`group-b-${image.src}-${index}`}
-              onDragStart={preventNativeDrag}
-              className="hero-marquee-card group relative h-[106px] w-[106px] shrink-0 overflow-hidden rounded-2xl border border-white/85 bg-white/85 p-1 shadow-[0_10px_22px_rgba(15,23,42,0.15)]"
-            >
-              <div className="relative h-full w-full overflow-hidden rounded-xl border border-blue-100/60 bg-slate-50/80">
-                <Image
-                  src={image.src}
-                  alt=""
-                  fill
-                  draggable={false}
-                  sizes="106px"
-                  className="object-contain p-1 transition-transform duration-500 ease-out group-hover:scale-[1.05]"
-                  quality={62}
-                  loading="lazy"
-                  decoding="async"
-                />
-              </div>
-            </article>
-          ))}
-        </div>
+        {!reduceMotion ? (
+          <div className="hero-mobile-marquee-group" data-clone="true" aria-hidden>
+            {mobileItems.map((image, index) => (
+              <article
+                key={`group-b-${image.src}-${index}`}
+                onDragStart={preventNativeDrag}
+                className="hero-marquee-card group relative h-[106px] w-[106px] shrink-0 overflow-hidden rounded-2xl border border-white/85 bg-white/85 p-1 shadow-[0_10px_22px_rgba(15,23,42,0.15)]"
+              >
+                <div className="relative h-full w-full overflow-hidden rounded-xl border border-blue-100/60 bg-slate-50/80">
+                  <Image
+                    src={image.src}
+                    alt=""
+                    fill
+                    unoptimized
+                    draggable={false}
+                    sizes="106px"
+                    className="object-contain p-1 transition-transform duration-500 ease-out group-hover:scale-[1.05]"
+                    loading="lazy"
+                    decoding="async"
+                  />
+                </div>
+              </article>
+            ))}
+          </div>
+        ) : null}
       </div>
     </div>
   );

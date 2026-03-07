@@ -1,6 +1,10 @@
 export type ProjectItem = {
   id: number;
-  imageSrc: string;
-  imageAlt: string;
   featuredHome: boolean;
+  imageAlt: string;
+  originalSrc: string;
+  heroSrc: string;
+  cardSrc: string;
+  thumbSrc: string;
+  assetVersion: string;
 };

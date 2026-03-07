@@ -26,10 +26,11 @@ type WindowWithIdleCallback = Window & {
 
 export function DeferredWidgets() {
   const [showCookieConsent, setShowCookieConsent] = useState(false);
-  const [showIdleWidgets, setShowIdleWidgets] = useState(false);
+  const [showAccessibilityWidget, setShowAccessibilityWidget] = useState(false);
+  const [showWhatsAppFloat, setShowWhatsAppFloat] = useState(false);
 
   useEffect(() => {
-    const timer = window.setTimeout(() => setShowCookieConsent(true), 700);
+    const timer = window.setTimeout(() => setShowCookieConsent(true), 420);
     return () => window.clearTimeout(timer);
   }, []);
 
@@ -44,7 +45,10 @@ export function DeferredWidgets() {
       }
 
       activated = true;
-      setShowIdleWidgets(true);
+      setShowAccessibilityWidget(true);
+      if (window.matchMedia("(min-width: 640px)").matches) {
+        setShowWhatsAppFloat(true);
+      }
     };
 
     const handleInteraction = () => activate();
@@ -85,8 +89,8 @@ export function DeferredWidgets() {
   return (
     <>
       {showCookieConsent ? <DeferredCookieConsent /> : null}
-      {showIdleWidgets ? <DeferredAccessibilityWidget /> : null}
-      {showIdleWidgets ? <DeferredWhatsAppFloat /> : null}
+      {showAccessibilityWidget ? <DeferredAccessibilityWidget /> : null}
+      {showWhatsAppFloat ? <DeferredWhatsAppFloat /> : null}
     </>
   );
 }

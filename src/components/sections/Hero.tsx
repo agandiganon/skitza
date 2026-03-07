@@ -118,12 +118,18 @@ function HeroCenterContent() {
         <div className="mt-4 flex items-center justify-center gap-2.5 sm:mt-5">
           <Link
             href="/gallery"
+            data-track-event="cta_click"
+            data-track-placement="hero"
+            data-track-label="hero_gallery"
             className="hero-button-readable inline-flex min-h-[42px] items-center justify-center rounded-xl border-2 border-primary/50 bg-transparent px-4 py-2 text-sm font-semibold text-primary shadow-sm transition hover:border-primary hover:bg-white/80 sm:min-h-[46px] sm:px-6 sm:text-base"
           >
             גלריה
           </Link>
           <Link
             href="/contact"
+            data-track-event="cta_click"
+            data-track-placement="hero"
+            data-track-label="hero_contact"
             className="hero-button-readable hero-cta-sweep inline-flex min-h-[42px] items-center justify-center gap-1 rounded-xl bg-primary px-4 py-2 text-sm font-semibold text-white shadow-[0_12px_26px_rgba(30,58,95,0.35)] transition hover:brightness-110 sm:min-h-[46px] sm:px-6 sm:text-base"
           >
             יצירת קשר

@@ -17,7 +17,7 @@ export function About() {
     <section
       id="about"
       aria-labelledby="home-about-heading"
-      className="bg-gradient-to-b from-blue-50 via-blue-50/70 to-blue-100/60 px-4 py-12 sm:py-14 lg:py-16"
+      className="cv-auto bg-gradient-to-b from-blue-50 via-blue-50/70 to-blue-100/60 px-4 py-12 sm:py-14 lg:py-16"
     >
       <div className="mx-auto max-w-5xl">
         <div className="rounded-[2rem] border border-blue-200/70 bg-white/85 p-6 shadow-[0_24px_70px_-45px_rgba(31,78,161,0.58)] backdrop-blur-sm sm:p-8 lg:p-10">
@@ -50,6 +50,9 @@ export function About() {
           <p className="mt-7 text-center">
             <Link
               href="/about"
+              data-track-event="cta_click"
+              data-track-placement="home_about"
+              data-track-label="home_about_more"
               className="inline-flex min-h-[44px] items-center justify-center rounded-xl border-2 border-primary px-7 py-2.5 font-semibold text-primary transition hover:bg-primary hover:text-primary-foreground focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2"
             >
               קרא עוד אודות המפעל

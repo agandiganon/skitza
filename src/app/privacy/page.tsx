@@ -44,7 +44,7 @@ export default function PrivacyPage() {
           <section>
             <h2 className="mb-2 text-xl font-bold text-primary">3. איזה מידע נאסף</h2>
             <ul className="list-inside list-disc space-y-1">
-              <li>פרטי יצירת קשר שנמסרים בטופס: שם, טלפון, דוא&quot;ל וסוג שירות.</li>
+              <li>פרטי יצירת קשר שנמסרים בטופס: שם, טלפון, דוא&quot;ל וסוג פנייה.</li>
               <li>נתונים טכניים בסיסיים: סוג דפדפן, כתובת IP, זמני גישה ודפי אתר שנצפו.</li>
               <li>נתוני מדידה ושיווק באמצעות Cookies וכלי אנליטיקה (כאשר מופעלים באתר).</li>
             </ul>

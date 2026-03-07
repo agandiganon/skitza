@@ -37,17 +37,21 @@ export function Services() {
     <section
       id="services"
       aria-labelledby="home-services-heading"
-      className="bg-white px-4 py-14 sm:py-16 lg:py-20"
+      className="cv-auto bg-white px-4 py-14 sm:py-16 lg:py-20"
     >
       <div className="mx-auto max-w-7xl">
+        <p className="mb-2 text-center text-sm font-black uppercase tracking-[0.24em] text-blue-700/75">
+          מה מקבלים אצלנו
+        </p>
         <h2
           id="home-services-heading"
           className="mb-5 text-center text-4xl font-black tracking-tight text-primary sm:text-5xl lg:text-[3.35rem]"
         >
           שירותי סקיצה
         </h2>
-        <p className="mx-auto mb-12 max-w-3xl text-center text-foreground/75 sm:mb-14">
-          מעטפת מלאה לעסק, מהרעיון ועד ייצור בפועל: ייעוץ, תכנון, הדמיה, דפוס וגימור.
+        <p className="mx-auto mb-12 max-w-3xl text-center text-[1rem] leading-relaxed text-foreground/75 sm:mb-14 sm:text-[1.06rem]">
+          מעטפת מלאה לעסק, משלב הרעיון ועד ייצור בפועל. כל שירות נבנה כך שיהיה אפשר להתחיל
+          מהר, להבין מה מקבלים ולהתקדם לתוצאה מסודרת.
         </p>
         <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-4 lg:gap-7">
           {services.map((item) => (

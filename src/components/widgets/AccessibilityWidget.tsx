@@ -383,7 +383,7 @@ export function AccessibilityWidget() {
   return (
     <div
       data-a11y-widget="true"
-      className="fixed bottom-[calc(var(--mobile-sticky-bar-height)+env(safe-area-inset-bottom)+1rem)] left-4 z-[70] sm:bottom-6 sm:left-6"
+      className="fixed bottom-[calc(var(--floating-stack-offset)+0.75rem)] left-4 z-[70] sm:bottom-6 sm:left-6"
     >
       {settings.largeCursor ? (
         <span ref={cursorRef} aria-hidden className="a11y-cursor-ring" />
@@ -396,7 +396,7 @@ export function AccessibilityWidget() {
         aria-expanded={open}
         aria-controls="accessibility-panel"
         onClick={() => setOpen((prev) => !prev)}
-        className="flex min-h-[52px] min-w-[52px] items-center justify-center rounded-full border border-blue-100 bg-primary text-white shadow-[0_16px_35px_-18px_rgba(15,37,64,0.5)] transition hover:scale-105 hover:shadow-[0_18px_38px_-16px_rgba(15,37,64,0.55)] focus:outline-none focus:ring-2 focus:ring-blue-300 focus:ring-offset-2"
+        className="flex min-h-[52px] min-w-[52px] items-center justify-center rounded-full border border-blue-100/80 bg-primary/95 text-white shadow-[0_16px_35px_-18px_rgba(15,37,64,0.5)] backdrop-blur-sm transition hover:scale-105 hover:shadow-[0_18px_38px_-16px_rgba(15,37,64,0.55)] focus:outline-none focus:ring-2 focus:ring-blue-300 focus:ring-offset-2"
       >
         <Accessibility className="h-6 w-6" aria-hidden />
       </button>

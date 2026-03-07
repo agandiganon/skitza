@@ -38,7 +38,7 @@ export function WhySkitza() {
   return (
     <section
       aria-labelledby="home-advantages-heading"
-      className="relative overflow-hidden bg-gradient-to-b from-blue-50 via-[#edf5ff] to-white px-4 py-14 sm:py-16 lg:py-20"
+      className="cv-auto relative overflow-hidden bg-gradient-to-b from-blue-50 via-[#edf5ff] to-white px-4 py-14 sm:py-16 lg:py-20"
     >
       <div className="pointer-events-none absolute inset-0" aria-hidden>
         <div className="absolute -right-28 top-8 h-64 w-64 rounded-full bg-blue-300/25 blur-3xl" />
@@ -103,6 +103,9 @@ export function WhySkitza() {
         <p className="mt-9 text-center">
           <Link
             href="/contact"
+            data-track-event="cta_click"
+            data-track-placement="home_advantages"
+            data-track-label="home_quote"
             className="inline-flex min-h-[50px] items-center justify-center gap-2 rounded-2xl bg-gradient-to-l from-accent-cyan via-blue-500 to-primary px-8 py-4 text-lg font-semibold text-white shadow-lg transition duration-300 hover:-translate-y-0.5 hover:shadow-xl focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2"
           >
             קבלת הצעת מחיר

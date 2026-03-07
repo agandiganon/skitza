@@ -21,7 +21,7 @@ export function StatsStrip() {
     <section
       id="stats"
       aria-labelledby="home-stats-heading"
-      className="stats-workshop-section px-4 py-10 sm:py-12 lg:py-14"
+      className="cv-auto stats-workshop-section px-4 py-10 sm:py-12 lg:py-14"
     >
       <div className="mx-auto max-w-7xl">
         <h2 id="home-stats-heading" className="sr-only">
