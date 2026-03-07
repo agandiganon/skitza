@@ -1,7 +1,6 @@
-"use client";
-
 import { Printer, Box, Palette, MessageCircle } from "lucide-react";
 import { ServiceCard } from "@/components/ui/ServiceCard";
+
 const services = [
   {
     title: "הפקות דפוס ואריזות",
@@ -51,13 +50,12 @@ export function Services() {
           מעטפת מלאה לעסק, מהרעיון ועד ייצור בפועל: ייעוץ, תכנון, הדמיה, דפוס וגימור.
         </p>
         <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-4 lg:gap-7">
-          {services.map((item, i) => (
+          {services.map((item) => (
             <ServiceCard
               key={item.title}
               title={item.title}
               description={item.description}
               icon={item.icon}
-              delay={i * 0.1}
               href={item.href}
             />
           ))}

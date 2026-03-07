@@ -60,7 +60,7 @@ export function CookieConsent() {
   return (
     <AnimatePresence>
       <motion.div
-        className="fixed bottom-0 left-0 right-0 z-[60] border-t border-primary/20 bg-white/95 px-4 py-4 shadow-[0_-4px_20px_rgba(0,0,0,0.08)] backdrop-blur-md sm:bottom-0 sm:px-6"
+        className="fixed inset-x-3 bottom-[calc(var(--mobile-sticky-bar-height)+env(safe-area-inset-bottom)+0.65rem)] z-[65] rounded-[1.6rem] border border-primary/12 bg-white/94 px-4 py-4 shadow-[0_20px_55px_-32px_rgba(15,23,42,0.36)] backdrop-blur-xl sm:inset-x-6 sm:bottom-5 sm:rounded-[1.7rem] sm:px-6"
         initial={{ y: 100, opacity: 0 }}
         animate={{ y: 0, opacity: 1 }}
         exit={{ y: 100, opacity: 0 }}

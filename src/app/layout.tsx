@@ -4,13 +4,13 @@ import { SpeedInsights } from "@vercel/speed-insights/next";
 import "./globals.css";
 import { Header } from "@/components/layout/Header";
 import { Footer } from "@/components/layout/Footer";
+import { DeferredWidgets } from "@/components/layout/DeferredWidgets";
 import { ScrollToTopOnRouteChange } from "@/components/layout/ScrollToTopOnRouteChange";
-import { WhatsAppFloat } from "@/components/widgets/WhatsAppFloat";
 import { MobileStickyBar } from "@/components/widgets/MobileStickyBar";
-import { CookieConsent } from "@/components/widgets/CookieConsent";
-import { AccessibilityWidget } from "@/components/widgets/AccessibilityWidget";
 import { GtmScripts } from "@/components/analytics/GtmScripts";
+import { JsonLd } from "@/components/seo/JsonLd";
 import { ADDRESS, PHONE_DISPLAY } from "@/lib/constants";
+import { buildLocalBusinessSchema } from "@/lib/seo/schema";
 
 const fallbackSiteUrl = "https://skitza-pack.co.il";
 const shouldLoadSpeedInsights =
@@ -64,24 +64,6 @@ export const metadata: Metadata = {
   },
 };
 
-const localBusinessJsonLd = {
-  "@context": "https://schema.org",
-  "@type": "LocalBusiness",
-  name: "סקיצה אריזות",
-  image: `${fallbackSiteUrl}/logo.png`,
-  url: fallbackSiteUrl,
-  telephone: PHONE_DISPLAY,
-  address: {
-    "@type": "PostalAddress",
-    streetAddress: ADDRESS,
-    addressLocality: "חולון",
-    addressCountry: "IL",
-  },
-  areaServed: "ישראל",
-  description:
-    "בית דפוס בחולון המתמחה בהדפסת אריזות ואריזות מותאמות אישית לעסקים.",
-};
-
 export default function RootLayout({
   children,
 }: Readonly<{
@@ -91,7 +73,7 @@ export default function RootLayout({
     <html lang="he" dir="rtl" suppressHydrationWarning>
       <head />
       <body
-        className={`${heebo.variable} font-sans antialiased pb-20 sm:pb-0`}
+        className={`${heebo.variable} font-sans antialiased`}
         suppressHydrationWarning
       >
         <a
@@ -101,18 +83,22 @@ export default function RootLayout({
           דלג לתוכן הראשי
         </a>
         <GtmScripts />
-        <script
-          type="application/ld+json"
-          dangerouslySetInnerHTML={{ __html: JSON.stringify(localBusinessJsonLd) }}
+        <JsonLd
+          data={buildLocalBusinessSchema({
+            name: "סקיצה אריזות",
+            image: "/logo.png",
+            telephone: PHONE_DISPLAY,
+            address: ADDRESS,
+            description:
+              "בית דפוס בחולון המתמחה בהדפסת אריזות ואריזות מותאמות אישית לעסקים.",
+          })}
         />
         <ScrollToTopOnRouteChange />
         <Header />
         <div id="site-content">{children}</div>
         <Footer />
-        <AccessibilityWidget />
-        <WhatsAppFloat />
         <MobileStickyBar />
-        <CookieConsent />
+        <DeferredWidgets />
         {shouldLoadSpeedInsights ? <SpeedInsights /> : null}
       </body>
     </html>

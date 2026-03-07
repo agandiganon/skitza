@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { ContactFormClient } from "@/components/ui/ContactFormClient";
+import { ContactForm } from "@/components/ui/ContactForm";
 import { MapPin, Phone, Mail } from "lucide-react";
 import {
   PHONE_DISPLAY,
@@ -123,7 +123,7 @@ export function Footer() {
         <div className="mt-12 border-t border-primary-foreground/10 pt-12 lg:mt-16 lg:pt-16">
           <h2 className="mb-6 text-xl font-bold">הכי מהיר זה להשאיר פרטים</h2>
           <div className="max-w-xl">
-            <ContactFormClient />
+            <ContactForm />
           </div>
         </div>
       </div>

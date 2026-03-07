@@ -16,6 +16,7 @@
   --accent-magenta: #d946ef;
   --accent-yellow: #eab308;
   --accent-pink: #ec4899;
+  --mobile-sticky-bar-height: 5.9rem;
 }
 
 @theme inline {
@@ -38,6 +39,7 @@
 
 html {
   scroll-behavior: smooth;
+  scroll-padding-top: 6rem;
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -52,6 +54,7 @@ body {
   background: var(--background);
   color: var(--foreground);
   font-family: var(--font-heebo), var(--font-heebo-fallback), system-ui, sans-serif;
+  padding-bottom: calc(var(--mobile-sticky-bar-height) + env(safe-area-inset-bottom));
 }
 
 body::before {
@@ -86,10 +89,10 @@ body::before {
   }
 }
 
-.route-transition-layer {
-  will-change: opacity, transform, filter;
-  backface-visibility: hidden;
-  transform: translateZ(0);
+@media (min-width: 640px) {
+  body {
+    padding-bottom: 0;
+  }
 }
 
 @keyframes heroCtaSweep {
@@ -107,6 +110,45 @@ body::before {
   100% {
     transform: translateX(180%);
     opacity: 0;
+  }
+}
+
+@keyframes heroLogoFloat {
+  0%,
+  100% {
+    transform: translate3d(0, 0, 0) scale(1);
+  }
+  50% {
+    transform: translate3d(0, -2.5px, 0) scale(1.004);
+  }
+}
+
+@keyframes heroLogoSweep {
+  0%,
+  18% {
+    transform: translateX(0%);
+    opacity: 0;
+  }
+  30% {
+    opacity: 0.2;
+  }
+  56% {
+    transform: translateX(390%);
+    opacity: 0;
+  }
+  100% {
+    transform: translateX(390%);
+    opacity: 0;
+  }
+}
+
+@keyframes heroLogoLinePulse {
+  0%,
+  100% {
+    opacity: 0.18;
+  }
+  50% {
+    opacity: 0.3;
   }
 }
 
@@ -157,6 +199,20 @@ body::before {
 .hero-marquee-card:hover {
   transform: translateY(-1px);
   box-shadow: 0 18px 36px rgba(15, 23, 42, 0.24);
+}
+
+.hero-logo-shell {
+  will-change: transform;
+  animation: heroLogoFloat 9.2s ease-in-out infinite;
+}
+
+.hero-logo-glint {
+  will-change: transform, opacity;
+  animation: heroLogoSweep 12s ease-in-out infinite 1.1s;
+}
+
+.hero-logo-line {
+  animation: heroLogoLinePulse 7.2s ease-in-out infinite;
 }
 
 .hero-cta-sweep {
@@ -807,6 +863,12 @@ html.a11y-large-cursor * {
 }
 
 @media (prefers-reduced-motion: reduce) {
+  .hero-logo-shell,
+  .hero-logo-glint,
+  .hero-logo-line {
+    animation: none !important;
+  }
+
   .hero-cardboard-path {
     animation: none !important;
     stroke-dashoffset: 0;

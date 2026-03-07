@@ -7,19 +7,51 @@ export const ADDRESS_MAP_URL =
 export const EMAIL = "info@skitza-pack.co.il";
 
 export const SERVICE_PAGES = [
-  { label: "הפקות דפוס ואריזות", href: "/services/print" },
-  { label: "הדמיות 3D", href: "/services/3d" },
-  { label: "תכנון ועיצוב מוצרי פרסום", href: "/services/promotional-design" },
-  { label: "תכנון אריזה למוצר קיים/חדש", href: "/services/consultancy" },
+  {
+    key: "print",
+    label: "הפקות דפוס ואריזות",
+    href: "/services/print",
+    contactValue: "הפקות דפוס ואריזות",
+  },
+  {
+    key: "3d",
+    label: "הדמיות 3D",
+    href: "/services/3d",
+    contactValue: "הדמיות 3D",
+  },
+  {
+    key: "promotional-design",
+    label: "תכנון ועיצוב מוצרי פרסום",
+    href: "/services/promotional-design",
+    contactValue: "תכנון ועיצוב מוצרי פרסום",
+  },
+  {
+    key: "consultancy",
+    label: "תכנון אריזה למוצר קיים/חדש",
+    href: "/services/consultancy",
+    contactValue: "תכנון אריזה למוצר קיים/חדש",
+  },
 ] as const;
 
-/** Options for contact form dropdown (footer-style from live site) */
 export const CONTACT_SERVICE_OPTIONS = [
-  "תכנון ועיצוב מוצר",
-  "הצעת מחיר למוצר קיים",
-  "הצעת מחיר למוצר חדש",
+  "הפקות דפוס ואריזות",
+  "הדמיות 3D",
+  "תכנון ועיצוב מוצרי פרסום",
+  "תכנון אריזה למוצר קיים/חדש",
   "אפשרות אחרת",
 ] as const;
+
+export type ServicePageKey = (typeof SERVICE_PAGES)[number]["key"];
+
+export function getContactServiceValueFromQuery(serviceKey: string | null | undefined) {
+  if (!serviceKey) {
+    return null;
+  }
+
+  const normalizedKey = serviceKey.trim().toLowerCase();
+  const match = SERVICE_PAGES.find((service) => service.key === normalizedKey);
+  return match?.contactValue ?? null;
+}
 
 /** Cookie consent bar (link text to privacy page) */
 export const COOKIE_CONSENT_TEXT =

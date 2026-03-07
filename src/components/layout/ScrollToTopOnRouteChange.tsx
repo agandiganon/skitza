@@ -28,13 +28,9 @@ export function ScrollToTopOnRouteChange() {
 
     const run = () => scrollToPageTop();
     const raf = window.requestAnimationFrame(run);
-    const t1 = window.setTimeout(run, 0);
-    const t2 = window.setTimeout(run, 120);
 
     return () => {
       window.cancelAnimationFrame(raf);
-      window.clearTimeout(t1);
-      window.clearTimeout(t2);
     };
   }, [pathname]);
 

@@ -1,23 +1,15 @@
 "use client";
 
-import { useState } from "react";
+import { useActionState, useEffect, useRef, useState } from "react";
+import type { FormEvent } from "react";
 
-import { CONTACT_SERVICE_OPTIONS } from "@/lib/constants";
+import { submitContactFormAction } from "@/app/actions/contact";
 import { pushToDataLayer } from "@/lib/analytics/datalayer";
-import type { ApiErrorResponse } from "@/types/api";
-import type { ContactPayload } from "@/types/contact";
+import { CONTACT_SERVICE_OPTIONS } from "@/lib/constants";
+import { CONTACT_FORM_INITIAL_STATE } from "@/types/contactForm";
+import type { ContactFormFieldErrors, ContactFormState } from "@/types/contactForm";
 
 const SERVICE_OPTIONS = [...CONTACT_SERVICE_OPTIONS];
-const CONTACT_API_URL = "/api/contact";
-
-async function postContactRequest(payload: ContactPayload, url: string) {
-  return fetch(url, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    credentials: "omit",
-    body: JSON.stringify(payload),
-  });
-}
 
 const inputClass = {
   dark:
@@ -42,81 +34,82 @@ const feedbackClass = {
   },
 };
 
-export function ContactForm({ variant = "dark" }: { variant?: "dark" | "light" }) {
+function hasFieldErrors(fieldErrors: ContactFormFieldErrors) {
+  return Object.values(fieldErrors).some(Boolean);
+}
+
+type ContactFormProps = {
+  variant?: "dark" | "light";
+  defaultService?: string;
+};
+
+export function ContactForm({ variant = "dark", defaultService }: ContactFormProps) {
   const inputCn = inputClass[variant];
   const errCn = errorClass[variant];
   const feedbackCn = feedbackClass[variant];
-  const [status, setStatus] = useState<"idle" | "sending" | "success" | "error">("idle");
-  const [errors, setErrors] = useState<Record<string, string>>({});
-  const clearErrors = () => setErrors({});
+  const [state, formAction, isPending] = useActionState(
+    submitContactFormAction,
+    CONTACT_FORM_INITIAL_STATE
+  );
+  const [clientFieldErrors, setClientFieldErrors] = useState<ContactFormFieldErrors>({});
+  const formRef = useRef<HTMLFormElement>(null);
+  const handledSuccessRef = useRef<ContactFormState | null>(null);
 
-  function validate(formData: FormData): Record<string, string> {
-    const err: Record<string, string> = {};
-    const name = (formData.get("name") as string)?.trim();
-    const phone = (formData.get("phone") as string)?.trim();
-    const email = (formData.get("email") as string)?.trim();
-    const service = formData.get("service") as string;
-
-    if (!name) err.name = "נא להזין שם מלא";
-    if (!phone) err.phone = "נא להזין מספר נייד";
-    else if (!/^[\d\s\-]+$/.test(phone)) err.phone = "נא להזין מספר תקין";
-    if (!email) err.email = "נא להזין דוא\"ל";
-    else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) err.email = "נא להזין דוא\"ל תקין";
-    if (!service) err.service = "נא לבחור סוג שירות";
-
-    return err;
-  }
-
-  async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
-    e.preventDefault();
-    const form = e.currentTarget;
-    const formData = new FormData(form);
-    const err = validate(formData);
-    setErrors(err);
-    if (Object.keys(err).length > 0) return;
-    clearErrors();
-
-    setStatus("sending");
-    pushToDataLayer("form_submit", { form_name: "contact" });
-
-    try {
-      const payload: ContactPayload = {
-        name: String(formData.get("name") ?? "").trim(),
-        phone: String(formData.get("phone") ?? "").trim(),
-        email: String(formData.get("email") ?? "").trim(),
-        service: String(formData.get("service") ?? "").trim(),
-      };
-
-      const res = await postContactRequest(payload, CONTACT_API_URL);
-
-      const data = (await res.json().catch(() => null)) as ApiErrorResponse | null;
-      if (!res.ok) {
-        const fallback =
-          res.status === 429 ? "יש עומס זמני. נא לנסות שוב בעוד רגע." : "שגיאת שרת";
-        setErrors({ form: data?.error || fallback });
-        setStatus("error");
-        return;
-      }
-
-      pushToDataLayer("form_submit_success", {
-        form_name: "contact",
-        service_type: payload.service,
-      });
-
-      setStatus("success");
-      form.reset();
-    } catch {
-      setStatus("error");
-      setErrors({ form: "אירעה שגיאה בשליחה. נא לנסות שוב בעוד רגע או להתקשר אלינו." });
+  useEffect(() => {
+    if (state.status !== "success" || handledSuccessRef.current === state) {
+      return;
     }
+
+    handledSuccessRef.current = state;
+    formRef.current?.reset();
+    pushToDataLayer("form_submit_success", {
+      form_name: "contact",
+      service_type: state.submittedService ?? undefined,
+    });
+  }, [state]);
+
+  function validate(formData: FormData): ContactFormFieldErrors {
+    const errors: ContactFormFieldErrors = {};
+    const name = String(formData.get("name") ?? "").trim();
+    const phone = String(formData.get("phone") ?? "").trim();
+    const email = String(formData.get("email") ?? "").trim();
+    const service = String(formData.get("service") ?? "").trim();
+
+    if (!name) errors.name = "נא להזין שם מלא";
+    if (!phone) errors.phone = "נא להזין מספר נייד";
+    else if (!/^[\d\s\-]+$/.test(phone)) errors.phone = "נא להזין מספר תקין";
+    if (!email) errors.email = "נא להזין דוא\"ל";
+    else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) errors.email = "נא להזין דוא\"ל תקין";
+    if (!service) errors.service = "נא לבחור סוג שירות";
+
+    return errors;
   }
+
+  function handleSubmit(event: FormEvent<HTMLFormElement>) {
+    const formData = new FormData(event.currentTarget);
+    const errors = validate(formData);
+
+    setClientFieldErrors(errors);
+
+    if (hasFieldErrors(errors)) {
+      event.preventDefault();
+      return;
+    }
+
+    pushToDataLayer("form_submit", { form_name: "contact" });
+  }
+
+  const activeFieldErrors = hasFieldErrors(clientFieldErrors) ? clientFieldErrors : state.fieldErrors;
+  const showSuccess = !isPending && state.status === "success";
+  const showFormError = !isPending && state.status === "error" && Boolean(state.formError);
 
   return (
     <form
+      ref={formRef}
+      action={formAction}
       onSubmit={handleSubmit}
       className="space-y-4"
       data-track="form-submit"
-      suppressHydrationWarning
     >
       <div>
         <label htmlFor="contact-name" className="mb-1 block text-sm font-medium">
@@ -128,14 +121,14 @@ export function ContactForm({ variant = "dark" }: { variant?: "dark" | "light" }
           type="text"
           autoComplete="name"
           required
-          aria-invalid={!!errors.name}
-          aria-describedby={errors.name ? "contact-name-error" : undefined}
+          aria-invalid={!!activeFieldErrors.name}
+          aria-describedby={activeFieldErrors.name ? "contact-name-error" : undefined}
           className={inputCn}
           placeholder="שם מלא"
         />
-        {errors.name && (
+        {activeFieldErrors.name && (
           <p id="contact-name-error" className={errCn} role="alert">
-            {errors.name}
+            {activeFieldErrors.name}
           </p>
         )}
       </div>
@@ -149,14 +142,14 @@ export function ContactForm({ variant = "dark" }: { variant?: "dark" | "light" }
           type="tel"
           autoComplete="tel"
           required
-          aria-invalid={!!errors.phone}
-          aria-describedby={errors.phone ? "contact-phone-error" : undefined}
+          aria-invalid={!!activeFieldErrors.phone}
+          aria-describedby={activeFieldErrors.phone ? "contact-phone-error" : undefined}
           className={inputCn}
           placeholder="054-0000000"
         />
-        {errors.phone && (
+        {activeFieldErrors.phone && (
           <p id="contact-phone-error" className={errCn} role="alert">
-            {errors.phone}
+            {activeFieldErrors.phone}
           </p>
         )}
       </div>
@@ -170,14 +163,14 @@ export function ContactForm({ variant = "dark" }: { variant?: "dark" | "light" }
           type="email"
           autoComplete="email"
           required
-          aria-invalid={!!errors.email}
-          aria-describedby={errors.email ? "contact-email-error" : undefined}
+          aria-invalid={!!activeFieldErrors.email}
+          aria-describedby={activeFieldErrors.email ? "contact-email-error" : undefined}
           className={inputCn}
           placeholder="example@email.com"
         />
-        {errors.email && (
+        {activeFieldErrors.email && (
           <p id="contact-email-error" className={errCn} role="alert">
-            {errors.email}
+            {activeFieldErrors.email}
           </p>
         )}
       </div>
@@ -189,20 +182,21 @@ export function ContactForm({ variant = "dark" }: { variant?: "dark" | "light" }
           id="contact-service"
           name="service"
           required
-          aria-invalid={!!errors.service}
-          aria-describedby={errors.service ? "contact-service-error" : undefined}
+          defaultValue={defaultService ?? ""}
+          aria-invalid={!!activeFieldErrors.service}
+          aria-describedby={activeFieldErrors.service ? "contact-service-error" : undefined}
           className={inputCn}
         >
           <option value="">בחר סוג שירות</option>
-          {SERVICE_OPTIONS.map((opt) => (
-            <option key={opt} value={opt}>
-              {opt}
+          {SERVICE_OPTIONS.map((option) => (
+            <option key={option} value={option}>
+              {option}
             </option>
           ))}
         </select>
-        {errors.service && (
+        {activeFieldErrors.service && (
           <p id="contact-service-error" className={errCn} role="alert">
-            {errors.service}
+            {activeFieldErrors.service}
           </p>
         )}
       </div>
@@ -210,24 +204,24 @@ export function ContactForm({ variant = "dark" }: { variant?: "dark" | "light" }
         id="cta-contact-submit"
         data-track="form-submit"
         type="submit"
-        disabled={status === "sending"}
+        disabled={isPending}
         className="w-full min-h-[44px] rounded-xl bg-gradient-to-l from-accent-cyan via-blue-500 to-primary px-6 py-3 font-medium text-white shadow-lg transition hover:opacity-95 disabled:opacity-70 focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-primary"
       >
-        {status === "sending" ? "שולח..." : "שלח פנייה"}
+        {isPending ? "שולח..." : "שלח פנייה"}
       </button>
-      {status === "success" && (
+      {showSuccess && (
         <p
           id="contact-form-success"
           data-track="form-submit-success"
           className={feedbackCn.success}
           role="status"
         >
-          הפנייה נשלחה בהצלחה. נחזור אליך בהקדם.
+          {state.successMessage}
         </p>
       )}
-      {status === "error" && (
+      {showFormError && (
         <p className={feedbackCn.error} role="alert">
-          {errors.form || "אירעה שגיאה. נא לנסות שוב או ליצור קשר בטלפון."}
+          {state.formError}
         </p>
       )}
     </form>

@@ -1,6 +1,8 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { AnimatedSection } from "@/components/ui/AnimatedSection";
+import { Breadcrumbs } from "@/components/navigation/Breadcrumbs";
+import { JsonLd } from "@/components/seo/JsonLd";
+import { buildBreadcrumbSchema } from "@/lib/seo/schema";
 
 export const metadata: Metadata = {
   title: "אודות המפעל",
@@ -36,9 +38,17 @@ const ABOUT_VISION_PARAGRAPHS = [
 
 export default function AboutPage() {
   return (
-    <main className="min-h-screen bg-gradient-to-b from-blue-50 via-white to-blue-50 px-4 pt-8 pb-16 sm:pt-10 sm:pb-20">
-      <div className="mx-auto max-w-5xl">
-        <AnimatedSection>
+    <>
+      <JsonLd
+        data={buildBreadcrumbSchema([
+          { label: "דף הבית", href: "/" },
+          { label: "אודות", href: "/about" },
+        ])}
+      />
+      <main className="min-h-screen bg-gradient-to-b from-blue-50 via-white to-blue-50 px-4 pt-8 pb-16 sm:pt-10 sm:pb-20">
+        <div className="mx-auto max-w-5xl">
+          <Breadcrumbs items={[{ label: "דף הבית", href: "/" }, { label: "אודות" }]} />
+
           <section className="rounded-[2rem] border border-blue-100 bg-white/85 p-6 shadow-[0_24px_70px_-40px_rgba(31,78,161,0.45)] ring-1 ring-blue-50 sm:p-8">
             <p className="mb-2 text-center text-sm font-semibold tracking-wide text-blue-700">אודות</p>
             <h1 className="mb-8 text-center text-4xl font-black leading-tight tracking-tight text-primary sm:text-5xl">
@@ -103,8 +113,8 @@ export default function AboutPage() {
               </Link>
             </p>
           </section>
-        </AnimatedSection>
-      </div>
-    </main>
+        </div>
+      </main>
+    </>
   );
 }

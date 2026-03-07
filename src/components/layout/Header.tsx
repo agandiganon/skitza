@@ -17,6 +17,7 @@ const mainNavItems = [
 
 export function Header() {
   const pathname = usePathname();
+  const isServicesRoute = pathname?.startsWith("/services/") ?? false;
   const [mobileOpen, setMobileOpen] = useState(false);
   const [servicesOpen, setServicesOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
@@ -108,7 +109,9 @@ export function Header() {
             <button
               type="button"
               onClick={() => setServicesOpen((o) => !o)}
-              className="flex min-h-[44px] shrink-0 items-center gap-1 px-3 py-2.5 text-base font-semibold text-foreground transition hover:text-blue-600 sm:px-4"
+              className={`flex min-h-[44px] shrink-0 items-center gap-1 rounded-xl px-3 py-2.5 text-base font-semibold transition sm:px-4 ${
+                isServicesRoute ? "bg-blue-50 text-blue-700" : "text-foreground hover:text-blue-600"
+              }`}
               aria-expanded={servicesOpen}
               aria-haspopup="true"
               aria-label="שירותים"
@@ -128,7 +131,9 @@ export function Header() {
                   key={href}
                   href={href}
                   role="menuitem"
-                  className="block px-4 py-2.5 text-sm font-medium text-foreground transition hover:bg-blue-50 hover:text-blue-700"
+                  className={`block px-4 py-2.5 text-sm font-medium transition hover:bg-blue-50 hover:text-blue-700 ${
+                    pathname === href ? "bg-blue-50 text-blue-700" : "text-foreground"
+                  }`}
                   onClick={() => setServicesOpen(false)}
                 >
                   {label}
@@ -192,7 +197,12 @@ export function Header() {
                 <Link
                   key={href}
                   href={href}
-                  className="min-h-[44px] py-2.5 pr-4 text-base text-foreground/90 hover:text-primary"
+                  aria-current={pathname === href ? "page" : undefined}
+                  className={`min-h-[44px] rounded-xl py-2.5 pr-4 text-base transition ${
+                    pathname === href
+                      ? "bg-primary/6 px-4 font-semibold text-primary"
+                      : "text-foreground/90 hover:text-primary"
+                  }`}
                   onClick={() => setMobileOpen(false)}
                 >
                   {label}

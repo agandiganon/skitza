@@ -20,7 +20,7 @@ export function WhatsAppFloat() {
           placement: "floating_button",
         })
       }
-      className="fixed bottom-6 right-6 z-50 hidden h-12 w-12 items-center justify-center rounded-full bg-[#25D366] text-white shadow-lg transition hover:scale-105 hover:shadow-xl focus:outline-none focus:ring-2 focus:ring-[#25D366] focus:ring-offset-2 sm:flex"
+      className="fixed bottom-6 right-6 z-[68] hidden h-12 w-12 items-center justify-center rounded-full bg-[#25D366] text-white shadow-[0_18px_36px_-18px_rgba(37,211,102,0.56)] transition hover:scale-105 hover:shadow-[0_22px_42px_-16px_rgba(37,211,102,0.62)] focus:outline-none focus:ring-2 focus:ring-[#25D366] focus:ring-offset-2 sm:flex"
       aria-label="שלח הודעה בוואטסאפ"
     >
       <svg

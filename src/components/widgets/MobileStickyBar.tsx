@@ -8,13 +8,13 @@ const WA_URL = `https://wa.me/${WA_PHONE}?text=${encodeURIComponent(WA_MESSAGE)}
 
 export function MobileStickyBar() {
   return (
-    <div className="fixed bottom-0 left-0 right-0 z-40 flex gap-2 border-t border-primary/20 bg-white/95 p-3 shadow-[0_-4px_20px_rgba(0,0,0,0.08)] backdrop-blur-md sm:hidden">
+    <div className="fixed inset-x-0 bottom-0 z-[55] flex gap-2 border-t border-primary/12 bg-white/92 px-3 pb-[calc(env(safe-area-inset-bottom)+0.7rem)] pt-3 shadow-[0_-14px_30px_-22px_rgba(15,23,42,0.42)] backdrop-blur-xl sm:hidden">
       <a
         id="cta-call-mobile"
         data-track="phone-call"
         href={`tel:${PHONE_TEL}`}
         onClick={() => pushToDataLayer("click_to_call", { placement: "mobile_sticky_bar" })}
-        className="flex min-h-[48px] flex-1 items-center justify-center gap-2 rounded-xl bg-primary px-4 py-3 font-semibold text-primary-foreground shadow-lg transition active:opacity-90"
+        className="flex min-h-[50px] flex-1 items-center justify-center gap-2 rounded-2xl bg-primary px-4 py-3 font-semibold text-primary-foreground shadow-lg transition active:opacity-90"
         aria-label="התקשר עכשיו"
       >
         <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden>
@@ -33,7 +33,7 @@ export function MobileStickyBar() {
             placement: "mobile_sticky_bar",
           })
         }
-        className="flex min-h-[48px] flex-1 items-center justify-center gap-2 rounded-xl bg-[#25D366] px-4 py-3 font-semibold text-white shadow-lg transition active:opacity-90"
+        className="flex min-h-[50px] flex-1 items-center justify-center gap-2 rounded-2xl bg-[#25D366] px-4 py-3 font-semibold text-white shadow-lg transition active:opacity-90"
         aria-label="שלח הודעה בוואטסאפ"
       >
         <svg viewBox="0 0 24 24" className="h-5 w-5" fill="currentColor" aria-hidden>
