@@ -149,9 +149,7 @@ export function getContactServiceValueFromQuery(serviceKey: string | null | unde
 
 /** Cookie consent bar (link text to privacy page) */
 export const COOKIE_CONSENT_TEXT =
-  'אנו משתמשים בקבצי קוקיז וטכנולוגיות ניטור כדי לאפשר לאתר לפעול, להבין אילו דפים עובדים טוב יותר ולשפר את חוויית המשתמש. למידע נוסף ראו ';
+  'האתר משתמש בקבצי קוקיז וטכנולוגיות ניטור לצורך תפעול, מדידה ושיפור חוויית המשתמש. למידע נוסף ראו ';
 export const COOKIE_CONSENT_LINK_LABEL = "מדיניות פרטיות";
-export const COOKIE_CONSENT_ACCEPT_BUTTON = "אשר הכל";
-export const COOKIE_CONSENT_ESSENTIAL_BUTTON = "רק חיוניים";
-export const COOKIE_CONSENT_DETAILS_BUTTON = "פירוט";
+export const COOKIE_CONSENT_ACCEPT_BUTTON = "הבנתי";
 export const COOKIE_CONSENT_STORAGE_KEY = "skitza-cookie-consent";

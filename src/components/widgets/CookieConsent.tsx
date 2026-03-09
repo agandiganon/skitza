@@ -1,13 +1,11 @@
 "use client";
 
-import { useState, useSyncExternalStore } from "react";
+import { useSyncExternalStore } from "react";
 import Link from "next/link";
 import {
   COOKIE_CONSENT_TEXT,
   COOKIE_CONSENT_LINK_LABEL,
   COOKIE_CONSENT_ACCEPT_BUTTON,
-  COOKIE_CONSENT_DETAILS_BUTTON,
-  COOKIE_CONSENT_ESSENTIAL_BUTTON,
 } from "@/lib/constants";
 import {
   getCookieConsentClientSnapshot,
@@ -17,15 +15,14 @@ import {
 } from "@/lib/consent";
 
 export function CookieConsent() {
-  const [detailsOpen, setDetailsOpen] = useState(false);
   const consentChoice = useSyncExternalStore(
     subscribeToCookieConsent,
     getCookieConsentClientSnapshot,
     getCookieConsentServerSnapshot
   );
 
-  function handleChoice(choice: "accepted" | "essential") {
-    setCookieConsentChoice(choice);
+  function handleDismiss() {
+    setCookieConsentChoice("dismissed");
   }
 
   if (consentChoice) return null;
@@ -46,38 +43,14 @@ export function CookieConsent() {
             </Link>
             .
           </p>
-          {detailsOpen ? (
-            <div className="mt-3 rounded-2xl border border-blue-100 bg-blue-50/70 px-4 py-3 text-sm leading-relaxed text-foreground/72">
-              <p>קבצים חיוניים מפעילים את האתר והטופס.</p>
-              <p className="mt-1">מדידה שיווקית ואנליטית נטענת רק אם תאשרו הכל.</p>
-              <p className="mt-1">
-                מדידת ביצועים תפעולית של מהירות ויציבות האתר יכולה לפעול גם בפרודקשן כדי
-                לעזור לנו לנטר בעיות עומס וחוויית שימוש.
-              </p>
-            </div>
-          ) : null}
         </div>
-        <div className="flex w-full shrink-0 flex-col gap-2 sm:w-auto sm:min-w-[260px]">
+        <div className="flex w-full shrink-0 flex-col gap-2 sm:w-auto sm:min-w-[180px]">
           <button
             type="button"
-            onClick={() => handleChoice("accepted")}
+            onClick={handleDismiss}
             className="min-h-[44px] rounded-xl bg-primary px-6 py-2.5 text-sm font-medium text-primary-foreground transition hover:opacity-90 focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2"
           >
             {COOKIE_CONSENT_ACCEPT_BUTTON}
-          </button>
-          <button
-            type="button"
-            onClick={() => handleChoice("essential")}
-            className="min-h-[44px] rounded-xl border border-blue-200 bg-white px-6 py-2.5 text-sm font-medium text-primary transition hover:bg-blue-50 focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2"
-          >
-            {COOKIE_CONSENT_ESSENTIAL_BUTTON}
-          </button>
-          <button
-            type="button"
-            onClick={() => setDetailsOpen((current) => !current)}
-            className="min-h-[40px] text-sm font-medium text-primary underline underline-offset-4 transition hover:no-underline"
-          >
-            {COOKIE_CONSENT_DETAILS_BUTTON}
           </button>
         </div>
       </div>

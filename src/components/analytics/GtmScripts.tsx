@@ -1,13 +1,6 @@
 "use client";
 
-import { useSyncExternalStore } from "react";
 import Script from "next/script";
-import {
-  getCookieConsentClientSnapshot,
-  getCookieConsentServerSnapshot,
-  hasAnalyticsConsent,
-  subscribeToCookieConsent,
-} from "@/lib/consent";
 
 function getValidGtmId(): string | null {
   const gtmId = process.env.NEXT_PUBLIC_GTM_ID?.trim();
@@ -20,13 +13,8 @@ function getValidGtmId(): string | null {
 
 export function GtmScripts() {
   const gtmId = getValidGtmId();
-  const consentChoice = useSyncExternalStore(
-    subscribeToCookieConsent,
-    getCookieConsentClientSnapshot,
-    getCookieConsentServerSnapshot
-  );
 
-  if (!gtmId || !hasAnalyticsConsent(consentChoice)) return null;
+  if (!gtmId) return null;
 
   return (
     <Script id="gtm-base" strategy="afterInteractive">

@@ -1,14 +1,10 @@
 import { COOKIE_CONSENT_STORAGE_KEY } from "@/lib/constants";
 
-export type CookieConsentChoice = "accepted" | "essential";
+export type CookieConsentChoice = "dismissed";
 
 function normalizeStoredConsent(value: string | null): CookieConsentChoice | null {
-  if (value === "true" || value === "accepted") {
-    return "accepted";
-  }
-
-  if (value === "essential") {
-    return "essential";
+  if (value === "true" || value === "accepted" || value === "dismissed") {
+    return "dismissed";
   }
 
   return null;
@@ -55,8 +51,4 @@ export function setCookieConsentChoice(choice: CookieConsentChoice) {
   } catch {
     // ignore
   }
-}
-
-export function hasAnalyticsConsent(choice: CookieConsentChoice | null) {
-  return choice === "accepted";
 }
