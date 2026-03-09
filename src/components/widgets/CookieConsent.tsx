@@ -49,7 +49,11 @@ export function CookieConsent() {
           {detailsOpen ? (
             <div className="mt-3 rounded-2xl border border-blue-100 bg-blue-50/70 px-4 py-3 text-sm leading-relaxed text-foreground/72">
               <p>קבצים חיוניים מפעילים את האתר והטופס.</p>
-              <p className="mt-1">מדידה ושיווק נטענים רק אם תאשרו הכל.</p>
+              <p className="mt-1">מדידה שיווקית ואנליטית נטענת רק אם תאשרו הכל.</p>
+              <p className="mt-1">
+                מדידת ביצועים תפעולית של מהירות ויציבות האתר יכולה לפעול גם בפרודקשן כדי
+                לעזור לנו לנטר בעיות עומס וחוויית שימוש.
+              </p>
             </div>
           ) : null}
         </div>

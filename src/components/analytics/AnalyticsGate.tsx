@@ -21,13 +21,13 @@ export function AnalyticsGate({ enableSpeedInsights = false }: AnalyticsGateProp
     getCookieConsentServerSnapshot
   );
 
-  if (process.env.NODE_ENV !== "production" || !hasAnalyticsConsent(consentChoice)) {
+  if (process.env.NODE_ENV !== "production") {
     return null;
   }
 
   return (
     <>
-      <Analytics />
+      {hasAnalyticsConsent(consentChoice) ? <Analytics /> : null}
       {enableSpeedInsights ? <SpeedInsights /> : null}
     </>
   );
