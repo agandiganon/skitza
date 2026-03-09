@@ -1,73 +1,52 @@
-import type { NextConfig } from "next";
+import type { NextConfig } from 'next';
 import {
   PHASE_DEVELOPMENT_SERVER,
   PHASE_PRODUCTION_BUILD,
   PHASE_PRODUCTION_SERVER,
-} from "next/constants";
+} from 'next/constants';
 
 const createNextConfig = (phase: string): NextConfig => {
   const isDev = phase === PHASE_DEVELOPMENT_SERVER;
   const isProductionPhase =
     phase === PHASE_PRODUCTION_BUILD || phase === PHASE_PRODUCTION_SERVER;
 
-  const connectSrcOrigins = [
-    "'self'",
-    "https://www.googletagmanager.com",
-    "https://www.google-analytics.com",
-  ].filter(Boolean);
-
-  const contentSecurityPolicy = [
-    "default-src 'self'",
-    "script-src 'self' 'unsafe-inline' https://www.googletagmanager.com",
-    "style-src 'self' 'unsafe-inline'",
-    "img-src 'self' data: blob: https://www.googletagmanager.com https://www.google-analytics.com",
-    "font-src 'self' data:",
-    `connect-src ${connectSrcOrigins.join(" ")}`,
-    "frame-src https://www.googletagmanager.com https://www.openstreetmap.org",
-    "object-src 'none'",
-    "base-uri 'self'",
-    "frame-ancestors 'self'",
-    "form-action 'self'",
-    isProductionPhase ? "upgrade-insecure-requests" : "",
-  ]
-    .filter(Boolean)
-    .join("; ");
-
   const securityHeaders = [
-    { key: "X-Content-Type-Options", value: "nosniff" },
-    { key: "X-Frame-Options", value: "SAMEORIGIN" },
-    { key: "Referrer-Policy", value: "strict-origin-when-cross-origin" },
-    { key: "Permissions-Policy", value: "camera=(), microphone=(), geolocation=()" },
+    { key: 'X-Content-Type-Options', value: 'nosniff' },
+    { key: 'X-Frame-Options', value: 'DENY' },
+    { key: 'Referrer-Policy', value: 'strict-origin-when-cross-origin' },
+    {
+      key: 'Permissions-Policy',
+      value: 'camera=(), microphone=(), geolocation=()',
+    },
     ...(isProductionPhase
       ? [
           {
-            key: "Strict-Transport-Security",
-            value: "max-age=31536000; includeSubDomains; preload",
+            key: 'Strict-Transport-Security',
+            value: 'max-age=31536000; includeSubDomains; preload',
           },
         ]
       : []),
-    { key: "Content-Security-Policy", value: contentSecurityPolicy },
   ];
 
   const imageCacheHeaders = [
     {
-      key: "Cache-Control",
-      value: "public, max-age=604800, stale-while-revalidate=86400",
+      key: 'Cache-Control',
+      value: 'public, max-age=604800, stale-while-revalidate=86400',
     },
   ];
 
   const immutableImageCacheHeaders = [
     {
-      key: "Cache-Control",
-      value: "public, max-age=31536000, immutable",
+      key: 'Cache-Control',
+      value: 'public, max-age=31536000, immutable',
     },
   ];
 
   const staticMediaSources = [
-    "/company-logos/:path*",
-    "/logo.png",
-    "/tab-icon.png",
-    "/vidmp4/:path*",
+    '/company-logos/:path*',
+    '/logo.png',
+    '/tab-icon.png',
+    '/vidmp4/:path*',
   ];
 
   return {
@@ -79,11 +58,15 @@ const createNextConfig = (phase: string): NextConfig => {
 
       return [
         {
-          source: "/pictures-derived/:path*",
+          source: '/api/:path*',
+          headers: [{ key: 'X-Robots-Tag', value: 'noindex, nofollow' }],
+        },
+        {
+          source: '/pictures-derived/:path*',
           headers: immutableImageCacheHeaders,
         },
         {
-          source: "/pictures/:path*",
+          source: '/pictures/:path*',
           headers: immutableImageCacheHeaders,
         },
         ...staticMediaSources.map((source) => ({
@@ -91,17 +74,24 @@ const createNextConfig = (phase: string): NextConfig => {
           headers: imageCacheHeaders,
         })),
         {
-          source: "/(.*)",
+          source: '/(.*)',
           headers: securityHeaders,
         },
       ];
     },
     images: {
-      formats: ["image/avif", "image/webp"],
+      formats: ['image/avif', 'image/webp'],
       qualities: [62, 66, 72, 75, 82],
       minimumCacheTTL: 60 * 60 * 24 * 7,
+      localPatterns: [
+        { pathname: '/pictures-derived/**' },
+        { pathname: '/pictures/**' },
+        { pathname: '/company-logos/**' },
+        { pathname: '/logo.png' },
+        { pathname: '/tab-icon.png' },
+      ],
       remotePatterns: [
-        { protocol: "https", hostname: "picsum.photos", pathname: "/**" },
+        { protocol: 'https', hostname: 'picsum.photos', pathname: '/**' },
       ],
     },
   };

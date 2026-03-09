@@ -3,6 +3,7 @@
 Production-ready Next.js website for **Skitza Packaging**.
 
 ## Stack
+
 - Next.js 16 (App Router)
 - React 19 + TypeScript
 - Tailwind CSS 4
@@ -41,6 +42,7 @@ npm run clean      # remove build/test artifacts
 ```
 
 ## Environment Variables
+
 Copy `.env.example` to `.env.local` and set:
 
 - `NEXT_PUBLIC_SITE_URL`
@@ -50,6 +52,7 @@ Copy `.env.example` to `.env.local` and set:
 - `RESEND_TO_EMAIL`
 
 ## Contact API
+
 The site uses a single Next.js route handler:
 
 - `POST /api/contact`
@@ -74,16 +77,19 @@ Responses:
 ## Deployment (Vercel + Cloudflare)
 
 ### Vercel
+
 - Framework: Next.js
 - Root directory: `.`
 - Build command: `npm run build`
 - Output: default Next.js
 
 ### Cloudflare
+
 - Manage DNS for your domain in Cloudflare.
 - Point domain/subdomain to Vercel target (CNAME/A as instructed by Vercel).
 - Keep SSL mode Full/Strict and standard caching/WAF enabled.
 
 ## Notes
+
 - `archive/backend-legacy` is kept for reference only and is not part of runtime.
 - Main branch should include only the active frontend app at root.

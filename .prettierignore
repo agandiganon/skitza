@@ -1,0 +1,10 @@
+.git
+.next
+.next-dev
+.next-prod
+next-env.d.ts
+node_modules
+archive
+output
+public/pictures-derived
+package-lock.json

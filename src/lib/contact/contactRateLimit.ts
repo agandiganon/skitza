@@ -19,7 +19,7 @@ type ContactRateLimitResult =
       retryAfterMs: number;
     };
 
-const CONTACT_RATE_LIMIT_STORE_KEY = "__skitza_contact_rate_limit__";
+const CONTACT_RATE_LIMIT_STORE_KEY = '__skitza_contact_rate_limit__';
 
 function getStore() {
   const globalScope = globalThis as typeof globalThis & {
@@ -27,7 +27,10 @@ function getStore() {
   };
 
   if (!globalScope[CONTACT_RATE_LIMIT_STORE_KEY]) {
-    globalScope[CONTACT_RATE_LIMIT_STORE_KEY] = new Map<string, RateLimitEntry>();
+    globalScope[CONTACT_RATE_LIMIT_STORE_KEY] = new Map<
+      string,
+      RateLimitEntry
+    >();
   }
 
   return globalScope[CONTACT_RATE_LIMIT_STORE_KEY]!;
@@ -40,7 +43,9 @@ function normalizeKeyPart(value: string | null | undefined) {
 function readEntry(key: string, windowMs: number, limit: number, now: number) {
   const store = getStore();
   const existing = store.get(key);
-  const hits = (existing?.hits ?? []).filter((timestamp) => now - timestamp < windowMs);
+  const hits = (existing?.hits ?? []).filter(
+    (timestamp) => now - timestamp < windowMs,
+  );
   const entry: RateLimitEntry = { hits, windowMs, limit };
   store.set(key, entry);
   return entry;

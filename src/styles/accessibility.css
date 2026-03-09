@@ -1,0 +1,216 @@
+/* Accessibility widget runtime classes */
+html.a11y-text-scale-120 {
+  font-size: 120%;
+}
+
+html.a11y-text-scale-140 {
+  font-size: 140%;
+}
+
+html.a11y-high-contrast,
+html.a11y-high-contrast body {
+  background: #000 !important;
+  color: #ffea61 !important;
+  background-image: none !important;
+}
+
+html.a11y-high-contrast
+  :where(
+    main,
+    section,
+    article,
+    header,
+    footer,
+    nav,
+    aside,
+    div,
+    p,
+    span,
+    li,
+    h1,
+    h2,
+    h3,
+    h4,
+    h5,
+    h6,
+    label,
+    strong,
+    small,
+    ul,
+    ol,
+    form,
+    fieldset,
+    input,
+    select,
+    textarea,
+    button,
+    a
+  ) {
+  background-color: #000 !important;
+  background-image: none !important;
+  color: #ffea61 !important;
+  border-color: rgba(255, 234, 97, 0.55) !important;
+  box-shadow: none !important;
+  text-shadow: none !important;
+}
+
+html.a11y-high-contrast :where(input, select, textarea) {
+  caret-color: #ffea61 !important;
+}
+
+html.a11y-high-contrast :where(a, button) {
+  color: #95edff !important;
+  border-color: rgba(149, 237, 255, 0.7) !important;
+}
+
+html.a11y-high-contrast body::before,
+html.a11y-high-contrast .stats-workshop::before,
+html.a11y-high-contrast .stats-workshop__frame::before,
+html.a11y-high-contrast .stats-workshop__frame::after,
+html.a11y-high-contrast .hero-cardboard-sketch,
+html.a11y-high-contrast .hero-cta-sweep::before {
+  display: none !important;
+}
+
+html.a11y-grayscale:not(.a11y-invert) {
+  filter: grayscale(100%);
+}
+
+html.a11y-invert:not(.a11y-grayscale) {
+  filter: invert(100%);
+}
+
+html.a11y-grayscale.a11y-invert {
+  filter: grayscale(100%) invert(100%);
+}
+
+html.a11y-readable-font,
+html.a11y-readable-font * {
+  font-family: Arial, 'Helvetica Neue', system-ui, sans-serif !important;
+  letter-spacing: 0.01em;
+}
+
+html.a11y-highlight-links a {
+  color: #003bcb !important;
+  font-weight: 700 !important;
+  text-decoration-line: underline !important;
+  text-decoration-thickness: 3px !important;
+  text-underline-offset: 0.22em !important;
+  background: #fff59d !important;
+  border-radius: 0.2rem;
+  padding-inline: 0.14rem;
+}
+
+html.a11y-highlight-headings :where(h1, h2, h3, h4, h5, h6) {
+  color: #0a2540 !important;
+  text-decoration: underline !important;
+  text-decoration-thickness: 3px !important;
+  text-decoration-color: #22d3ee !important;
+  text-underline-offset: 0.18em !important;
+  background: rgba(255, 250, 204, 0.7) !important;
+  box-shadow: 0 0 0 2px rgba(245, 158, 11, 0.25) inset !important;
+  border-radius: 0.35rem;
+  padding-inline: 0.2rem;
+}
+
+html.a11y-text-spacing
+  :where(
+    p,
+    li,
+    blockquote,
+    figcaption,
+    small,
+    label,
+    a,
+    button,
+    input,
+    textarea,
+    h1,
+    h2,
+    h3,
+    h4,
+    h5,
+    h6
+  ) {
+  line-height: 1.8 !important;
+  letter-spacing: 0.02em !important;
+  word-spacing: 0.14em !important;
+}
+
+html.a11y-hide-images :where(img, picture, video, canvas, svg, iframe) {
+  visibility: hidden !important;
+}
+
+html.a11y-hide-images [data-a11y-widget='true'] :where(img, svg) {
+  visibility: visible !important;
+}
+
+.a11y-cursor-ring {
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: 9999;
+  width: 52px;
+  height: 52px;
+  border-radius: 999px;
+  border: 2px solid #0f172a;
+  box-shadow:
+    0 0 0 2px rgba(255, 255, 255, 0.9) inset,
+    0 10px 18px rgba(15, 23, 42, 0.2);
+  pointer-events: none;
+  opacity: 0;
+  transform: translate3d(-120px, -120px, 0);
+  transition:
+    opacity 100ms ease,
+    width 120ms ease,
+    height 120ms ease;
+}
+
+.a11y-cursor-ring::before {
+  content: '';
+  position: absolute;
+  inset: 13px;
+  border-radius: 999px;
+  border: 2px solid rgba(14, 165, 233, 0.85);
+}
+
+.a11y-cursor-ring--active {
+  width: 47px;
+  height: 47px;
+}
+
+@media (pointer: coarse) {
+  .a11y-cursor-ring {
+    display: none !important;
+  }
+}
+
+@media (pointer: fine) {
+  html.a11y-large-cursor,
+  html.a11y-large-cursor * {
+    cursor: crosshair !important;
+  }
+
+  html.a11y-large-cursor
+    :where(
+      a,
+      button,
+      [role='button'],
+      input,
+      select,
+      textarea,
+      label,
+      summary
+    ) {
+    cursor: pointer !important;
+  }
+}
+
+html.a11y-large-cursor img {
+  -webkit-user-drag: none !important;
+  user-drag: none !important;
+}
+
+html.a11y-large-cursor * {
+  -webkit-user-drag: none !important;
+}

@@ -1,93 +1,103 @@
-export const PHONE_DISPLAY = "054-4282449";
-export const PHONE_TEL = "0544282449";
-export const WA_PHONE = "972544282449";
+export const PHONE_DISPLAY = '054-4282449';
+export const PHONE_TEL = '0544282449';
+export const WA_PHONE = '972544282449';
 export const WHATSAPP_MESSAGE_CONTACT =
-  "שלום סקיצה אריזות, הגעתי מהאתר ואשמח לדבר על תכנון, עיצוב או הצעת מחיר.";
+  'שלום סקיצה אריזות, הגעתי מהאתר ואשמח לדבר על תכנון, עיצוב או הצעת מחיר.';
 export const WHATSAPP_CONTACT_URL = `https://wa.me/${WA_PHONE}?text=${encodeURIComponent(WHATSAPP_MESSAGE_CONTACT)}`;
-export const ADDRESS = "המעיין 4, חולון";
+export const ADDRESS = 'המעיין 4, חולון';
 export const ADDRESS_MAP_URL =
-  "https://www.google.com/maps/search/?api=1&query=%D7%94%D7%9E%D7%A2%D7%99%D7%99%D7%9F+4+%D7%97%D7%95%D7%9C%D7%95%D7%9F";
-export const EMAIL = "info@skitza-pack.co.il";
+  'https://www.google.com/maps/search/?api=1&query=%D7%94%D7%9E%D7%A2%D7%99%D7%99%D7%9F+4+%D7%97%D7%95%D7%9C%D7%95%D7%9F';
+export const EMAIL = 'info@skitza-pack.co.il';
+export const BUSINESS_PRICE_RANGE = '$$';
+export const BUSINESS_OPENING_HOURS = ['Su-Th 09:00-17:00'] as const;
 
 export const CONTACT_SERVICE_CHOICES = [
   {
-    key: "product-design",
-    label: "תכנון ועיצוב מוצר",
+    key: 'product-design',
+    label: 'תכנון ועיצוב מוצר',
   },
   {
-    key: "existing-product-quote",
-    label: "הצעת מחיר למוצר קיים",
+    key: 'existing-product-quote',
+    label: 'הצעת מחיר למוצר קיים',
   },
   {
-    key: "new-product-quote",
-    label: "הצעת מחיר למוצר חדש",
+    key: 'new-product-quote',
+    label: 'הצעת מחיר למוצר חדש',
   },
   {
-    key: "other",
-    label: "אפשרות אחרת",
+    key: 'other',
+    label: 'אפשרות אחרת',
   },
 ] as const;
 
-export type ContactServiceKey = (typeof CONTACT_SERVICE_CHOICES)[number]["key"];
-export type ContactServiceLabel = (typeof CONTACT_SERVICE_CHOICES)[number]["label"];
+export type ContactServiceKey = (typeof CONTACT_SERVICE_CHOICES)[number]['key'];
+export type ContactServiceLabel =
+  (typeof CONTACT_SERVICE_CHOICES)[number]['label'];
 
 export const SERVICE_PAGES = [
   {
-    key: "print",
-    label: "הפקות דפוס ואריזות",
-    href: "/services/print",
-    contactServiceKey: "existing-product-quote",
+    key: 'print',
+    label: 'הפקות דפוס ואריזות',
+    href: '/services/print',
+    contactServiceKey: 'existing-product-quote',
   },
   {
-    key: "3d",
-    label: "הדמיות 3D",
-    href: "/services/3d",
-    contactServiceKey: "new-product-quote",
+    key: '3d',
+    label: 'הדמיות 3D',
+    href: '/services/3d',
+    contactServiceKey: 'new-product-quote',
   },
   {
-    key: "promotional-design",
-    label: "תכנון ועיצוב מוצרי פרסום",
-    href: "/services/promotional-design",
-    contactServiceKey: "product-design",
+    key: 'promotional-design',
+    label: 'תכנון ועיצוב מוצרי פרסום',
+    href: '/services/promotional-design',
+    contactServiceKey: 'product-design',
   },
   {
-    key: "consultancy",
-    label: "תכנון אריזה למוצר קיים/חדש",
-    href: "/services/consultancy",
-    contactServiceKey: "new-product-quote",
+    key: 'consultancy',
+    label: 'תכנון אריזה למוצר קיים/חדש',
+    href: '/services/consultancy',
+    contactServiceKey: 'new-product-quote',
   },
 ] as const;
 
 export const CONTACT_SERVICE_OPTIONS = CONTACT_SERVICE_CHOICES.map(
-  (choice) => choice.label
+  (choice) => choice.label,
 ) as readonly ContactServiceLabel[];
 
-export type ServicePageKey = (typeof SERVICE_PAGES)[number]["key"];
+export type ServicePageKey = (typeof SERVICE_PAGES)[number]['key'];
 
 const CONTACT_SERVICE_ALIASES: Record<ContactServiceKey, readonly string[]> = {
-  "product-design": ["design", "product-design", "product-design-request", "תכנון ועיצוב מוצר"],
-  "existing-product-quote": [
-    "existing",
-    "existing-product",
-    "existing-product-quote",
-    "quote-existing-product",
-    "מוצר קיים",
+  'product-design': [
+    'design',
+    'product-design',
+    'product-design-request',
+    'תכנון ועיצוב מוצר',
   ],
-  "new-product-quote": [
-    "new",
-    "new-product",
-    "new-product-quote",
-    "quote-new-product",
-    "מוצר חדש",
+  'existing-product-quote': [
+    'existing',
+    'existing-product',
+    'existing-product-quote',
+    'quote-existing-product',
+    'מוצר קיים',
   ],
-  other: ["other", "אפשרות אחרת"],
+  'new-product-quote': [
+    'new',
+    'new-product',
+    'new-product-quote',
+    'quote-new-product',
+    'מוצר חדש',
+  ],
+  other: ['other', 'אפשרות אחרת'],
 };
 
 function normalizeLookupValue(value: string) {
   return value.trim().toLowerCase();
 }
 
-export function getContactServiceChoiceByKey(key: ContactServiceKey | null | undefined) {
+export function getContactServiceChoiceByKey(
+  key: ContactServiceKey | null | undefined,
+) {
   if (!key) {
     return null;
   }
@@ -96,7 +106,7 @@ export function getContactServiceChoiceByKey(key: ContactServiceKey | null | und
 }
 
 export function getContactServiceLabelByKey(
-  key: ContactServiceKey | null | undefined
+  key: ContactServiceKey | null | undefined,
 ): ContactServiceLabel | null {
   return getContactServiceChoiceByKey(key)?.label ?? null;
 }
@@ -105,15 +115,26 @@ export function getContactServiceHref(key: ContactServiceKey) {
   return `/contact?service=${key}#contact-form`;
 }
 
-export function getContactServiceKeyForServicePage(servicePageKey: ServicePageKey): ContactServiceKey {
-  return SERVICE_PAGES.find((service) => service.key === servicePageKey)?.contactServiceKey ?? "other";
+export function getContactServiceKeyForServicePage(
+  servicePageKey: ServicePageKey,
+): ContactServiceKey {
+  return (
+    SERVICE_PAGES.find((service) => service.key === servicePageKey)
+      ?.contactServiceKey ?? 'other'
+  );
 }
 
-export function getContactServiceHrefForServicePage(servicePageKey: ServicePageKey) {
-  return getContactServiceHref(getContactServiceKeyForServicePage(servicePageKey));
+export function getContactServiceHrefForServicePage(
+  servicePageKey: ServicePageKey,
+) {
+  return getContactServiceHref(
+    getContactServiceKeyForServicePage(servicePageKey),
+  );
 }
 
-export function getContactServiceKeyFromQuery(serviceKey: string | null | undefined) {
+export function getContactServiceKeyFromQuery(
+  serviceKey: string | null | undefined,
+) {
   if (!serviceKey) {
     return null;
   }
@@ -143,13 +164,15 @@ export function getContactServiceKeyFromQuery(serviceKey: string | null | undefi
   return servicePage?.contactServiceKey ?? null;
 }
 
-export function getContactServiceValueFromQuery(serviceKey: string | null | undefined) {
+export function getContactServiceValueFromQuery(
+  serviceKey: string | null | undefined,
+) {
   return getContactServiceLabelByKey(getContactServiceKeyFromQuery(serviceKey));
 }
 
 /** Cookie consent bar (link text to privacy page) */
 export const COOKIE_CONSENT_TEXT =
   'האתר משתמש בקבצי קוקיז וטכנולוגיות ניטור לצורך תפעול, מדידה ושיפור חוויית המשתמש. למידע נוסף ראו ';
-export const COOKIE_CONSENT_LINK_LABEL = "מדיניות פרטיות";
-export const COOKIE_CONSENT_ACCEPT_BUTTON = "הבנתי";
-export const COOKIE_CONSENT_STORAGE_KEY = "skitza-cookie-consent";
+export const COOKIE_CONSENT_LINK_LABEL = 'מדיניות פרטיות';
+export const COOKIE_CONSENT_ACCEPT_BUTTON = 'הבנתי';
+export const COOKIE_CONSENT_STORAGE_KEY = 'skitza-cookie-consent';

@@ -1,31 +1,31 @@
-import type { ContactPayload, ContactSubmissionContext } from "@/types/contact";
-import { WHATSAPP_CONTACT_URL } from "@/lib/constants";
-import { getResendClient } from "./resend";
+import type { ContactPayload, ContactSubmissionContext } from '@/types/contact';
+import { WHATSAPP_CONTACT_URL } from '@/lib/constants';
+import { getResendClient } from './resend';
 
 function sanitizeText(value: string): string {
-  return value.replace(/[\r\n<>]/g, " ").trim();
+  return value.replace(/[\r\n<>]/g, ' ').trim();
 }
 
 function escapeHtml(value: string): string {
   return value
-    .replace(/&/g, "&amp;")
-    .replace(/</g, "&lt;")
-    .replace(/>/g, "&gt;")
-    .replace(/"/g, "&quot;")
-    .replace(/'/g, "&#39;");
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#39;');
 }
 
 function formatSubmittedAt(date: Date): string {
-  return new Intl.DateTimeFormat("he-IL", {
-    dateStyle: "full",
-    timeStyle: "short",
-    timeZone: "Asia/Jerusalem",
+  return new Intl.DateTimeFormat('he-IL', {
+    dateStyle: 'full',
+    timeStyle: 'short',
+    timeZone: 'Asia/Jerusalem',
   }).format(date);
 }
 
 function buildMetaRow(label: string, value: string | undefined) {
   if (!value) {
-    return "";
+    return '';
   }
 
   return `
@@ -39,33 +39,33 @@ function buildMetaRow(label: string, value: string | undefined) {
 function buildLeadEmailHtml(
   payload: ContactPayload,
   submittedAt: string,
-  context: ContactSubmissionContext
+  context: ContactSubmissionContext,
 ): string {
   const name = escapeHtml(payload.name);
   const phone = escapeHtml(payload.phone);
   const email = escapeHtml(payload.email);
   const service = escapeHtml(payload.service);
   const timestamp = escapeHtml(submittedAt);
-  const telHref = `tel:${payload.phone.replace(/[^\d+]/g, "")}`;
+  const telHref = `tel:${payload.phone.replace(/[^\d+]/g, '')}`;
   const mailHref = `mailto:${payload.email}`;
   const whatsappHref = WHATSAPP_CONTACT_URL;
 
   const metaRows = [
-    buildMetaRow("עמוד מקור", payload.sourcePage),
-    buildMetaRow("רפרר", payload.referrer),
-    buildMetaRow("UTM Source", payload.utmSource),
-    buildMetaRow("UTM Medium", payload.utmMedium),
-    buildMetaRow("UTM Campaign", payload.utmCampaign),
-    buildMetaRow("IP", context.ipAddress ?? undefined),
-    buildMetaRow("User Agent", context.userAgent ?? undefined),
-    buildMetaRow("נשלח דרך", context.submittedVia ?? undefined),
+    buildMetaRow('עמוד מקור', payload.sourcePage),
+    buildMetaRow('רפרר', payload.referrer),
+    buildMetaRow('UTM Source', payload.utmSource),
+    buildMetaRow('UTM Medium', payload.utmMedium),
+    buildMetaRow('UTM Campaign', payload.utmCampaign),
+    buildMetaRow('IP', context.ipAddress ?? undefined),
+    buildMetaRow('User Agent', context.userAgent ?? undefined),
+    buildMetaRow('נשלח דרך', context.submittedVia ?? undefined),
   ]
     .filter(Boolean)
-    .join("");
+    .join('');
 
   return `
   <!doctype html>
-  <html lang="he" dir="rtl">
+  <html lang="he-IL" dir="rtl">
     <head>
       <meta charset="UTF-8" />
       <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -129,7 +129,7 @@ function buildLeadEmailHtml(
                     </tr>
                     ${metaRows}
                   </table>`
-                      : ""
+                      : ''
                   }
                 </td>
               </tr>
@@ -147,16 +147,28 @@ function buildLeadEmailHtml(
   `;
 }
 
+function shouldUseLocalEmailFallback() {
+  return process.env.VERCEL !== '1';
+}
+
 export async function sendLeadEmail(
   payload: ContactPayload,
-  context: ContactSubmissionContext = {}
+  context: ContactSubmissionContext = {},
 ): Promise<void> {
-  const resend = getResendClient();
+  const allowLocalFallback = shouldUseLocalEmailFallback();
   const from = process.env.RESEND_FROM_EMAIL?.trim();
-  const recipient = process.env.RESEND_TO_EMAIL?.trim() || "adi181800030@gmail.com";
+  const recipient =
+    process.env.RESEND_TO_EMAIL?.trim() || 'adi181800030@gmail.com';
 
   if (!from) {
-    throw new Error("RESEND_FROM_EMAIL is not configured");
+    if (allowLocalFallback) {
+      console.warn(
+        '[contact] skipping email delivery locally because RESEND_FROM_EMAIL is missing',
+      );
+      return;
+    }
+
+    throw new Error('RESEND_FROM_EMAIL is not configured');
   }
 
   const safePayload: ContactPayload = {
@@ -164,16 +176,31 @@ export async function sendLeadEmail(
     phone: sanitizeText(payload.phone),
     email: sanitizeText(payload.email).toLowerCase(),
     service: sanitizeText(payload.service),
-    sourcePage: sanitizeText(payload.sourcePage ?? "") || undefined,
-    referrer: sanitizeText(payload.referrer ?? "") || undefined,
-    utmSource: sanitizeText(payload.utmSource ?? "") || undefined,
-    utmMedium: sanitizeText(payload.utmMedium ?? "") || undefined,
-    utmCampaign: sanitizeText(payload.utmCampaign ?? "") || undefined,
+    sourcePage: sanitizeText(payload.sourcePage ?? '') || undefined,
+    referrer: sanitizeText(payload.referrer ?? '') || undefined,
+    utmSource: sanitizeText(payload.utmSource ?? '') || undefined,
+    utmMedium: sanitizeText(payload.utmMedium ?? '') || undefined,
+    utmCampaign: sanitizeText(payload.utmCampaign ?? '') || undefined,
   };
 
   const submittedAtDate = new Date();
   const submittedAt = formatSubmittedAt(submittedAtDate);
   const html = buildLeadEmailHtml(safePayload, submittedAt, context);
+  let resend;
+
+  try {
+    resend = getResendClient();
+  } catch (error) {
+    if (allowLocalFallback) {
+      console.warn(
+        '[contact] skipping email delivery locally because Resend is not configured',
+        error,
+      );
+      return;
+    }
+
+    throw error;
+  }
 
   const { error } = await resend.emails.send({
     from,
@@ -181,8 +208,8 @@ export async function sendLeadEmail(
     subject: `פנייה חדשה מהאתר - ${safePayload.service} - ${safePayload.name}`,
     replyTo: safePayload.email,
     text: [
-      "ליד חדש התקבל מאתר סקיצה אריזות",
-      "",
+      'ליד חדש התקבל מאתר סקיצה אריזות',
+      '',
       `שם: ${safePayload.name}`,
       `טלפון: ${safePayload.phone}`,
       `דוא\"ל: ${safePayload.email}`,
@@ -191,7 +218,9 @@ export async function sendLeadEmail(
       safePayload.referrer ? `רפרר: ${safePayload.referrer}` : null,
       safePayload.utmSource ? `UTM Source: ${safePayload.utmSource}` : null,
       safePayload.utmMedium ? `UTM Medium: ${safePayload.utmMedium}` : null,
-      safePayload.utmCampaign ? `UTM Campaign: ${safePayload.utmCampaign}` : null,
+      safePayload.utmCampaign
+        ? `UTM Campaign: ${safePayload.utmCampaign}`
+        : null,
       context.ipAddress ? `IP: ${context.ipAddress}` : null,
       context.userAgent ? `User Agent: ${context.userAgent}` : null,
       context.submittedVia ? `נשלח דרך: ${context.submittedVia}` : null,
@@ -199,11 +228,19 @@ export async function sendLeadEmail(
       `זמן: ${submittedAt}`,
     ]
       .filter(Boolean)
-      .join("\n"),
+      .join('\n'),
     html,
   });
 
   if (error) {
-    throw new Error(error.message || "Failed sending email via Resend");
+    if (allowLocalFallback) {
+      console.warn(
+        '[contact] simulated successful local delivery after Resend error',
+        error,
+      );
+      return;
+    }
+
+    throw new Error(error.message || 'Failed sending email via Resend');
   }
 }

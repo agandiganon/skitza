@@ -1,5 +1,5 @@
-import Link from "next/link";
-import { type LucideIcon } from "lucide-react";
+import Link from 'next/link';
+import { type LucideIcon } from 'lucide-react';
 
 interface ServiceCardProps {
   title: string;
@@ -8,17 +8,24 @@ interface ServiceCardProps {
   href?: string;
 }
 
-export function ServiceCard({ title, description, icon: Icon, href }: ServiceCardProps) {
+export function ServiceCard({
+  title,
+  description,
+  icon: Icon,
+  href,
+}: ServiceCardProps) {
   const content = (
     <div className="group relative h-full rounded-[1.7rem] border border-blue-100 bg-white/92 p-6 shadow-[0_26px_54px_-36px_rgba(15,23,42,0.44)] transition duration-300 hover:-translate-y-1 hover:border-blue-200 hover:shadow-[0_32px_62px_-34px_rgba(30,64,175,0.28)] sm:p-8">
-      <div className="absolute inset-0 rounded-[1.7rem] bg-gradient-to-br from-accent-cyan/12 via-blue-100/18 to-primary/8 opacity-0 transition-opacity duration-300 group-hover:opacity-100" />
+      <div className="from-accent-cyan/12 to-primary/8 absolute inset-0 rounded-[1.7rem] bg-gradient-to-br via-blue-100/18 opacity-0 transition-opacity duration-300 group-hover:opacity-100" />
       <div className="relative">
-        <div className="mb-4 inline-flex rounded-2xl bg-gradient-to-l from-accent-cyan to-blue-600 p-3 text-white shadow-md ring-4 ring-blue-50/80">
+        <div className="from-accent-cyan mb-4 inline-flex rounded-2xl bg-gradient-to-l to-blue-600 p-3 text-white shadow-md ring-4 ring-blue-50/80">
           <Icon className="h-6 w-6 sm:h-7 sm:w-7" aria-hidden />
         </div>
-        <h3 className="mb-2 text-xl font-bold text-primary sm:text-2xl">{title}</h3>
-        <p className="leading-relaxed text-foreground/80">{description}</p>
-        <span className="mt-5 inline-flex items-center text-sm font-semibold text-blue-700 transition group-hover:text-primary">
+        <h3 className="text-primary mb-2 text-xl font-bold sm:text-2xl">
+          {title}
+        </h3>
+        <p className="text-foreground/80 leading-relaxed">{description}</p>
+        <span className="group-hover:text-primary mt-5 inline-flex items-center text-sm font-semibold text-blue-700 transition">
           לפרטים על השירות
         </span>
       </div>
@@ -31,7 +38,7 @@ export function ServiceCard({ title, description, icon: Icon, href }: ServiceCar
       data-track-event="service_navigation_click"
       data-track-placement="home_services"
       data-track-label={href}
-      className="block h-full rounded-[1.7rem] focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2"
+      className="focus:ring-primary block h-full rounded-[1.7rem] focus:ring-2 focus:ring-offset-2 focus:outline-none"
     >
       {content}
     </Link>

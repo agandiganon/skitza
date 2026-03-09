@@ -1,7 +1,7 @@
-import Image from "next/image";
-import Link from "next/link";
-import { ArrowUpLeft } from "lucide-react";
-import { HeroMarquees } from "@/components/sections/HeroMarquees";
+import Image from 'next/image';
+import Link from 'next/link';
+import { ArrowUpLeft } from 'lucide-react';
+import { HeroMarquees } from '@/components/sections/HeroMarquees';
 
 type HeroGalleryImage = {
   src: string;
@@ -16,22 +16,18 @@ export function Hero({ images }: HeroProps) {
   return (
     <section
       id="home"
-      className="relative overflow-hidden px-3 pb-10 pt-0 sm:px-4 sm:pb-14 sm:pt-1 lg:pb-16 lg:pt-2"
+      className="relative overflow-hidden px-3 pt-0 pb-10 sm:px-4 sm:pt-1 sm:pb-14 lg:pt-2 lg:pb-16"
     >
       <div
         className="absolute inset-0 bg-gradient-to-b from-blue-200/80 via-blue-100 to-blue-50"
         aria-hidden
       />
       <div
-        className="absolute inset-0 bg-gradient-to-l from-accent-cyan/10 via-blue-200/20 to-blue-100/10"
+        className="from-accent-cyan/10 absolute inset-0 bg-gradient-to-l via-blue-200/20 to-blue-100/10"
         aria-hidden
       />
       <div
-        className="absolute inset-0 opacity-[0.03]"
-        style={{
-          backgroundImage:
-            "url(\"data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cpath fill='%231d4ed8' d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/svg%3E\")",
-        }}
+        className="hero-grid-overlay absolute inset-0 opacity-[0.03]"
         aria-hidden
       />
 
@@ -46,7 +42,7 @@ export function Hero({ images }: HeroProps) {
 
 function HeroCenterContent() {
   return (
-    <div className="relative flex w-full flex-col items-center -mt-4 lg:-mt-12">
+    <div className="relative -mt-4 flex w-full flex-col items-center lg:-mt-12">
       <div className="hero-logo-shell relative -mb-2 overflow-hidden sm:-mb-3 lg:-mb-5">
         <Image
           src="/logo.png"
@@ -64,7 +60,7 @@ function HeroCenterContent() {
           aria-hidden
         />
         <div
-          className="hero-logo-line pointer-events-none absolute left-1/2 top-[calc(100%+5px)] h-px w-[68%] -translate-x-1/2 bg-gradient-to-r from-transparent via-primary/35 to-transparent"
+          className="hero-logo-line via-primary/35 pointer-events-none absolute top-[calc(100%+5px)] left-1/2 h-px w-[68%] -translate-x-1/2 bg-gradient-to-r from-transparent to-transparent"
           aria-hidden
         />
       </div>
@@ -102,17 +98,21 @@ function HeroCenterContent() {
               d="M206 112l221 40M206 112v72M317 170v72M96 130l110 54M463 98l-146 72"
             />
           </svg>
-          <span className="hero-heading-line hero-heading-line--top">בית דפוס</span>
+          <span className="hero-heading-line hero-heading-line--top">
+            בית דפוס
+          </span>
           <span className="hero-heading-line hero-heading-line--tape tape-highlight">
             לאריזות קרטון
           </span>
-          <span className="hero-heading-line hero-heading-line--bottom">ממותגות לעסקים</span>
+          <span className="hero-heading-line hero-heading-line--bottom">
+            ממותגות לעסקים
+          </span>
         </h1>
         <p className="mt-2 text-[13px] font-semibold tracking-[0.01em] text-[#3E5771] sm:text-base lg:text-[22px]">
           הדפסה בכל כמות ובזמני אספקה מהירים
         </p>
         <div
-          className="mx-auto mt-3 h-1 w-28 rounded-full bg-gradient-to-l from-accent-cyan via-blue-500 to-primary sm:w-40"
+          className="from-accent-cyan to-primary mx-auto mt-3 h-1 w-28 rounded-full bg-gradient-to-l via-blue-500 sm:w-40"
           aria-hidden
         />
         <div className="mt-4 flex items-center justify-center gap-2.5 sm:mt-5">
@@ -121,7 +121,7 @@ function HeroCenterContent() {
             data-track-event="cta_click"
             data-track-placement="hero"
             data-track-label="hero_gallery"
-            className="hero-button-readable inline-flex min-h-[42px] items-center justify-center rounded-xl border-2 border-primary/50 bg-transparent px-4 py-2 text-sm font-semibold text-primary shadow-sm transition hover:border-primary hover:bg-white/80 sm:min-h-[46px] sm:px-6 sm:text-base"
+            className="hero-button-readable border-primary/50 text-primary hover:border-primary inline-flex min-h-[42px] items-center justify-center rounded-xl border-2 bg-transparent px-4 py-2 text-sm font-semibold shadow-sm transition hover:bg-white/80 sm:min-h-[46px] sm:px-6 sm:text-base"
           >
             גלריה
           </Link>
@@ -130,7 +130,7 @@ function HeroCenterContent() {
             data-track-event="cta_click"
             data-track-placement="hero"
             data-track-label="hero_contact"
-            className="hero-button-readable hero-cta-sweep inline-flex min-h-[42px] items-center justify-center gap-1 rounded-xl bg-primary px-4 py-2 text-sm font-semibold text-white shadow-[0_12px_26px_rgba(30,58,95,0.35)] transition hover:brightness-110 sm:min-h-[46px] sm:px-6 sm:text-base"
+            className="hero-button-readable hero-cta-sweep bg-primary inline-flex min-h-[42px] items-center justify-center gap-1 rounded-xl px-4 py-2 text-sm font-semibold text-white shadow-[0_12px_26px_rgba(30,58,95,0.35)] transition hover:brightness-110 sm:min-h-[46px] sm:px-6 sm:text-base"
           >
             יצירת קשר
             <ArrowUpLeft className="h-4 w-4" aria-hidden />

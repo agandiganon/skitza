@@ -1,18 +1,18 @@
 const STATS_ITEMS = [
   {
-    value: "+500,000",
-    label: "אריזות שיוצרו עד כה",
-    variant: "ribbon",
+    value: '+500,000',
+    label: 'אריזות שיוצרו עד כה',
+    variant: 'ribbon',
   },
   {
-    value: "+1,000",
-    label: "לקוחות מרוצים",
-    variant: "spotlight",
+    value: '+1,000',
+    label: 'לקוחות מרוצים',
+    variant: 'spotlight',
   },
   {
-    value: "30",
-    label: "שנות ניסיון בתעשייה",
-    variant: "frame",
+    value: '30',
+    label: 'שנות ניסיון בתעשייה',
+    variant: 'frame',
   },
 ] as const;
 
@@ -37,7 +37,7 @@ export function StatsStrip() {
                   className={`stats-module stats-module--${item.variant} px-4 py-5 sm:px-6 sm:py-6 lg:px-8`}
                 >
                   <div className="stats-module__content">
-                    <p className="stats-module__value text-[clamp(2.3rem,4.8vw,5.2rem)] font-black leading-none tracking-tight">
+                    <p className="stats-module__value text-[clamp(2.3rem,4.8vw,5.2rem)] leading-none font-black tracking-tight">
                       {item.value}
                     </p>
                     <p className="stats-module__label mt-2 text-[0.98rem] leading-snug sm:mt-3 sm:text-[1.22rem]">

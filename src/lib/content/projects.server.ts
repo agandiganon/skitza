@@ -1,10 +1,10 @@
-import fs from "node:fs";
-import path from "node:path";
-import type { ProjectItem } from "./projects";
+import fs from 'node:fs';
+import path from 'node:path';
+import type { ProjectItem } from './projects';
 
-const PICTURES_DIR = path.join(process.cwd(), "public", "pictures");
+const PICTURES_DIR = path.join(process.cwd(), 'public', 'pictures');
 const FILE_PATTERN = /^(\d+)(fav)?\.(webp|png|jpg|jpeg)$/i;
-const SOURCE_EXTENSION_PRIORITY = ["png", "jpg", "jpeg", "webp"] as const;
+const SOURCE_EXTENSION_PRIORITY = ['png', 'jpg', 'jpeg', 'webp'] as const;
 
 type SupportedExtension = (typeof SOURCE_EXTENSION_PRIORITY)[number];
 
@@ -34,7 +34,7 @@ export function getProjects() {
   const records = new Map<number, ProjectRecord>();
 
   for (const entry of entries) {
-    if (!entry.isFile() || entry.name === ".DS_Store") {
+    if (!entry.isFile() || entry.name === '.DS_Store') {
       continue;
     }
 
@@ -57,7 +57,8 @@ export function getProjects() {
 
     const shouldPreferFeatured = featuredHome && !existing.featuredHome;
     const shouldPreferExtension =
-      getExtensionPriority(extension) < getExtensionPriority(existing.extension);
+      getExtensionPriority(extension) <
+      getExtensionPriority(existing.extension);
     const shouldReplace = shouldPreferFeatured || shouldPreferExtension;
 
     records.set(id, {
@@ -75,14 +76,28 @@ export function getProjects() {
       id: project.id,
       featuredHome: project.featuredHome,
       imageAlt: `פרויקט אריזה מספר ${project.id}`,
-      originalSrc: buildAssetUrl(`/pictures/${project.basename}.${project.extension}`, project.assetVersion),
-      heroSrc: buildAssetUrl(`/pictures-derived/hero/${project.basename}.webp`, project.assetVersion),
-      cardSrc: buildAssetUrl(`/pictures-derived/card/${project.basename}.webp`, project.assetVersion),
-      thumbSrc: buildAssetUrl(`/pictures-derived/thumb/${project.basename}.webp`, project.assetVersion),
+      originalSrc: buildAssetUrl(
+        `/pictures/${project.basename}.${project.extension}`,
+        project.assetVersion,
+      ),
+      heroSrc: buildAssetUrl(
+        `/pictures-derived/hero/${project.basename}.webp`,
+        project.assetVersion,
+      ),
+      cardSrc: buildAssetUrl(
+        `/pictures-derived/card/${project.basename}.webp`,
+        project.assetVersion,
+      ),
+      thumbSrc: buildAssetUrl(
+        `/pictures-derived/thumb/${project.basename}.webp`,
+        project.assetVersion,
+      ),
       assetVersion: project.assetVersion,
     }));
 
-  const featuredProjects = allProjects.filter((project) => project.featuredHome);
+  const featuredProjects = allProjects.filter(
+    (project) => project.featuredHome,
+  );
 
   return {
     allProjects,

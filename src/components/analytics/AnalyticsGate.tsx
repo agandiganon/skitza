@@ -1,14 +1,16 @@
-"use client";
+'use client';
 
-import { Analytics } from "@vercel/analytics/next";
-import { SpeedInsights } from "@vercel/speed-insights/next";
+import { Analytics } from '@vercel/analytics/next';
+import { SpeedInsights } from '@vercel/speed-insights/next';
 
 type AnalyticsGateProps = {
   enableSpeedInsights?: boolean;
 };
 
-export function AnalyticsGate({ enableSpeedInsights = false }: AnalyticsGateProps) {
-  if (process.env.NODE_ENV !== "production") {
+export function AnalyticsGate({
+  enableSpeedInsights = false,
+}: AnalyticsGateProps) {
+  if (process.env.NODE_ENV !== 'production' || process.env.VERCEL !== '1') {
     return null;
   }
 

@@ -1,26 +1,35 @@
-"use client";
+'use client';
 
-import dynamic from "next/dynamic";
-import { useEffect, useState } from "react";
+import dynamic from 'next/dynamic';
+import { useEffect, useState } from 'react';
 
 const DeferredCookieConsent = dynamic(
-  () => import("@/components/widgets/CookieConsent").then((module) => module.CookieConsent),
-  { ssr: false }
+  () =>
+    import('@/components/widgets/CookieConsent').then(
+      (module) => module.CookieConsent,
+    ),
+  { ssr: false },
 );
 const DeferredAccessibilityWidget = dynamic(
   () =>
-    import("@/components/widgets/AccessibilityWidget").then(
-      (module) => module.AccessibilityWidget
+    import('@/components/widgets/AccessibilityWidget').then(
+      (module) => module.AccessibilityWidget,
     ),
-  { ssr: false }
+  { ssr: false },
 );
 const DeferredWhatsAppFloat = dynamic(
-  () => import("@/components/widgets/WhatsAppFloat").then((module) => module.WhatsAppFloat),
-  { ssr: false }
+  () =>
+    import('@/components/widgets/WhatsAppFloat').then(
+      (module) => module.WhatsAppFloat,
+    ),
+  { ssr: false },
 );
 
 type WindowWithIdleCallback = Window & {
-  requestIdleCallback?: (callback: () => void, options?: { timeout: number }) => number;
+  requestIdleCallback?: (
+    callback: () => void,
+    options?: { timeout: number },
+  ) => number;
   cancelIdleCallback?: (handle: number) => void;
 };
 
@@ -46,23 +55,25 @@ export function DeferredWidgets() {
 
       activated = true;
       setShowAccessibilityWidget(true);
-      if (window.matchMedia("(min-width: 640px)").matches) {
+      if (window.matchMedia('(min-width: 640px)').matches) {
         setShowWhatsAppFloat(true);
       }
     };
 
     const handleInteraction = () => activate();
     const cleanupEvents = () => {
-      window.removeEventListener("pointerdown", handleInteraction);
-      window.removeEventListener("keydown", handleInteraction);
-      window.removeEventListener("scroll", handleInteraction);
-      window.removeEventListener("touchstart", handleInteraction);
+      window.removeEventListener('pointerdown', handleInteraction);
+      window.removeEventListener('keydown', handleInteraction);
+      window.removeEventListener('scroll', handleInteraction);
+      window.removeEventListener('touchstart', handleInteraction);
     };
 
-    window.addEventListener("pointerdown", handleInteraction, { passive: true });
-    window.addEventListener("keydown", handleInteraction);
-    window.addEventListener("scroll", handleInteraction, { passive: true });
-    window.addEventListener("touchstart", handleInteraction, { passive: true });
+    window.addEventListener('pointerdown', handleInteraction, {
+      passive: true,
+    });
+    window.addEventListener('keydown', handleInteraction);
+    window.addEventListener('scroll', handleInteraction, { passive: true });
+    window.addEventListener('touchstart', handleInteraction, { passive: true });
 
     fallbackTimer = window.setTimeout(() => {
       cleanupEvents();
@@ -71,10 +82,13 @@ export function DeferredWidgets() {
 
     const idleWindow = window as WindowWithIdleCallback;
     if (idleWindow.requestIdleCallback) {
-      idleHandle = idleWindow.requestIdleCallback(() => {
-        cleanupEvents();
-        activate();
-      }, { timeout: 1800 });
+      idleHandle = idleWindow.requestIdleCallback(
+        () => {
+          cleanupEvents();
+          activate();
+        },
+        { timeout: 1800 },
+      );
     }
 
     return () => {

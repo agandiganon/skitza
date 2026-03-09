@@ -1,24 +1,24 @@
-"use client";
+'use client';
 
-import { useSyncExternalStore } from "react";
+import { useSyncExternalStore } from 'react';
 
-const MEDIA_QUERY = "(prefers-reduced-motion: reduce)";
+const MEDIA_QUERY = '(prefers-reduced-motion: reduce)';
 
 function subscribe(onStoreChange: () => void) {
-  if (typeof window === "undefined") {
+  if (typeof window === 'undefined') {
     return () => {};
   }
 
   const mediaQuery = window.matchMedia(MEDIA_QUERY);
-  mediaQuery.addEventListener("change", onStoreChange);
+  mediaQuery.addEventListener('change', onStoreChange);
 
   return () => {
-    mediaQuery.removeEventListener("change", onStoreChange);
+    mediaQuery.removeEventListener('change', onStoreChange);
   };
 }
 
 function getSnapshot() {
-  if (typeof window === "undefined") {
+  if (typeof window === 'undefined') {
     return false;
   }
 

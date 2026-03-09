@@ -1,7 +1,7 @@
-import { useCallback, useEffect, useRef } from "react";
-import type { PointerEvent as ReactPointerEvent, RefObject } from "react";
+import { useCallback, useEffect, useRef } from 'react';
+import type { PointerEvent as ReactPointerEvent, RefObject } from 'react';
 
-type MarqueeAxis = "x" | "y";
+type MarqueeAxis = 'x' | 'y';
 type MarqueeDirection = 1 | -1;
 
 type UseInteractiveMarqueeOptions = {
@@ -54,7 +54,11 @@ export function useInteractiveMarquee({
 
   const normalizePosition = useCallback((value: number): number => {
     const loopLength = loopLengthRef.current;
-    if (!Number.isFinite(loopLength) || loopLength <= 0 || !Number.isFinite(value)) {
+    if (
+      !Number.isFinite(loopLength) ||
+      loopLength <= 0 ||
+      !Number.isFinite(value)
+    ) {
       return 0;
     }
 
@@ -77,7 +81,7 @@ export function useInteractiveMarquee({
 
     const position = positionRef.current;
     track.style.transform =
-      axis === "x"
+      axis === 'x'
         ? `translate3d(${position}px, 0px, 0px)`
         : `translate3d(0px, ${position}px, 0px)`;
   }, [axis]);
@@ -90,12 +94,12 @@ export function useInteractiveMarquee({
 
     const firstGroup = track.firstElementChild as HTMLElement | null;
     let nextLoopLength =
-      axis === "x" && firstGroup
+      axis === 'x' && firstGroup
         ? firstGroup.getBoundingClientRect().width
-        : (axis === "x" ? track.scrollWidth : track.scrollHeight) / 2;
+        : (axis === 'x' ? track.scrollWidth : track.scrollHeight) / 2;
 
     if (!Number.isFinite(nextLoopLength) || nextLoopLength <= 0) {
-      const fullLength = axis === "x" ? track.scrollWidth : track.scrollHeight;
+      const fullLength = axis === 'x' ? track.scrollWidth : track.scrollHeight;
       nextLoopLength = fullLength / 2;
     }
 
@@ -124,7 +128,7 @@ export function useInteractiveMarquee({
       pointerIdRef.current = null;
       resumeAtRef.current = performance.now() + pauseAfterInteractionMs;
     },
-    [pauseAfterInteractionMs]
+    [pauseAfterInteractionMs],
   );
 
   const onPointerDown = useCallback(
@@ -133,7 +137,7 @@ export function useInteractiveMarquee({
         return;
       }
 
-      if (event.pointerType === "mouse" && event.button !== 0) {
+      if (event.pointerType === 'mouse' && event.button !== 0) {
         return;
       }
 
@@ -143,9 +147,9 @@ export function useInteractiveMarquee({
 
       draggingRef.current = true;
       pointerIdRef.current = event.pointerId;
-      pointerPositionRef.current = axis === "x" ? event.clientX : event.clientY;
+      pointerPositionRef.current = axis === 'x' ? event.clientX : event.clientY;
     },
-    [axis, measureLoop]
+    [axis, measureLoop],
   );
 
   const onPointerMove = useCallback(
@@ -155,7 +159,7 @@ export function useInteractiveMarquee({
       }
 
       event.preventDefault();
-      const currentPosition = axis === "x" ? event.clientX : event.clientY;
+      const currentPosition = axis === 'x' ? event.clientX : event.clientY;
       const delta = currentPosition - pointerPositionRef.current;
       pointerPositionRef.current = currentPosition;
       if (delta === 0) {
@@ -165,7 +169,7 @@ export function useInteractiveMarquee({
       positionRef.current = normalizePosition(positionRef.current + delta);
       applyTransform();
     },
-    [applyTransform, axis, normalizePosition]
+    [applyTransform, axis, normalizePosition],
   );
 
   const onPointerUp = useCallback(
@@ -175,7 +179,7 @@ export function useInteractiveMarquee({
       }
       endDrag(event);
     },
-    [endDrag]
+    [endDrag],
   );
 
   const onPointerCancel = useCallback(
@@ -185,30 +189,39 @@ export function useInteractiveMarquee({
       }
       endDrag(event);
     },
-    [endDrag]
+    [endDrag],
   );
 
-  const onPointerEnter = useCallback((event: ReactPointerEvent<HTMLDivElement>) => {
-    if (event.pointerType === "mouse") {
-      hoverPausedRef.current = true;
-    }
-  }, []);
+  const onPointerEnter = useCallback(
+    (event: ReactPointerEvent<HTMLDivElement>) => {
+      if (event.pointerType === 'mouse') {
+        hoverPausedRef.current = true;
+      }
+    },
+    [],
+  );
 
-  const onPointerLeave = useCallback((event: ReactPointerEvent<HTMLDivElement>) => {
-    if (event.pointerType === "mouse") {
-      hoverPausedRef.current = false;
-    }
-  }, []);
+  const onPointerLeave = useCallback(
+    (event: ReactPointerEvent<HTMLDivElement>) => {
+      if (event.pointerType === 'mouse') {
+        hoverPausedRef.current = false;
+      }
+    },
+    [],
+  );
 
-  const onLostPointerCapture = useCallback((event: ReactPointerEvent<HTMLDivElement>) => {
-    if (!draggingRef.current || pointerIdRef.current !== event.pointerId) {
-      return;
-    }
+  const onLostPointerCapture = useCallback(
+    (event: ReactPointerEvent<HTMLDivElement>) => {
+      if (!draggingRef.current || pointerIdRef.current !== event.pointerId) {
+        return;
+      }
 
-    draggingRef.current = false;
-    pointerIdRef.current = null;
-    resumeAtRef.current = performance.now() + pauseAfterInteractionMs;
-  }, [pauseAfterInteractionMs]);
+      draggingRef.current = false;
+      pointerIdRef.current = null;
+      resumeAtRef.current = performance.now() + pauseAfterInteractionMs;
+    },
+    [pauseAfterInteractionMs],
+  );
 
   useEffect(() => {
     measureLoop();
@@ -225,11 +238,11 @@ export function useInteractiveMarquee({
 
     observer.observe(track);
     observer.observe(container);
-    window.addEventListener("resize", measureLoop, { passive: true });
+    window.addEventListener('resize', measureLoop, { passive: true });
 
     return () => {
       observer.disconnect();
-      window.removeEventListener("resize", measureLoop);
+      window.removeEventListener('resize', measureLoop);
     };
   }, [measureLoop]);
 
@@ -257,7 +270,7 @@ export function useInteractiveMarquee({
 
       if (!shouldPause && loopLengthRef.current > 0) {
         positionRef.current = normalizePosition(
-          positionRef.current + direction * speedPxPerSec * deltaSeconds
+          positionRef.current + direction * speedPxPerSec * deltaSeconds,
         );
         applyTransform();
       }
@@ -274,7 +287,14 @@ export function useInteractiveMarquee({
       rafRef.current = null;
       lastTickRef.current = null;
     };
-  }, [applyTransform, direction, enabled, normalizePosition, speedPxPerSec, startDelayMs]);
+  }, [
+    applyTransform,
+    direction,
+    enabled,
+    normalizePosition,
+    speedPxPerSec,
+    startDelayMs,
+  ]);
 
   return {
     containerRef,

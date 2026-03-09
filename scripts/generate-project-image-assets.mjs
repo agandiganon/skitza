@@ -1,28 +1,28 @@
 #!/usr/bin/env node
 
-import fs from "node:fs/promises";
-import path from "node:path";
-import sharp from "sharp";
+import fs from 'node:fs/promises';
+import path from 'node:path';
+import sharp from 'sharp';
 
 const ROOT_DIR = process.cwd();
-const SOURCE_DIR = path.join(ROOT_DIR, "public", "pictures");
-const DERIVED_ROOT_DIR = path.join(ROOT_DIR, "public", "pictures-derived");
+const SOURCE_DIR = path.join(ROOT_DIR, 'public', 'pictures');
+const DERIVED_ROOT_DIR = path.join(ROOT_DIR, 'public', 'pictures-derived');
 const SOURCE_PATTERN = /^(\d+)(fav)?\.(png|jpg|jpeg|webp)$/i;
-const SOURCE_EXTENSIONS = new Set([".png", ".jpg", ".jpeg", ".webp"]);
+const SOURCE_EXTENSIONS = new Set(['.png', '.jpg', '.jpeg', '.webp']);
 
 const VARIANTS = [
   {
-    key: "hero",
+    key: 'hero',
     size: 384,
     quality: 70,
   },
   {
-    key: "card",
+    key: 'card',
     size: 768,
     quality: 80,
   },
   {
-    key: "thumb",
+    key: 'thumb',
     size: 160,
     quality: 60,
   },
@@ -42,7 +42,7 @@ async function listSourceEntries() {
       continue;
     }
 
-    if (entry.name === ".DS_Store") {
+    if (entry.name === '.DS_Store') {
       await fs.unlink(path.join(SOURCE_DIR, entry.name));
       continue;
     }
@@ -59,7 +59,9 @@ async function listSourceEntries() {
     validEntries.push(entry.name);
   }
 
-  validEntries.sort((left, right) => left.localeCompare(right, "en", { numeric: true }));
+  validEntries.sort((left, right) =>
+    left.localeCompare(right, 'en', { numeric: true }),
+  );
 
   return {
     validEntries,
@@ -82,7 +84,7 @@ async function cleanStaleDerivedFiles(validBaseNames) {
       const extension = path.extname(entry.name).toLowerCase();
       const basename = path.basename(entry.name, extension);
 
-      if (extension !== ".webp" || !validBaseNames.has(basename)) {
+      if (extension !== '.webp' || !validBaseNames.has(basename)) {
         await fs.unlink(path.join(variantDirectory, entry.name));
       }
     }
@@ -94,7 +96,7 @@ async function generateVariant(sourcePath, outputPath, size, quality) {
     .resize({
       width: size,
       height: size,
-      fit: "contain",
+      fit: 'contain',
       background: { r: 0, g: 0, b: 0, alpha: 0 },
       withoutEnlargement: true,
     })
@@ -107,7 +109,11 @@ async function generateVariant(sourcePath, outputPath, size, quality) {
 
 async function main() {
   const { validEntries, ignoredEntries } = await listSourceEntries();
-  const validBaseNames = new Set(validEntries.map((entryName) => path.basename(entryName, path.extname(entryName))));
+  const validBaseNames = new Set(
+    validEntries.map((entryName) =>
+      path.basename(entryName, path.extname(entryName)),
+    ),
+  );
   const lowResolutionEntries = [];
   let generatedFilesCount = 0;
 
@@ -129,28 +135,35 @@ async function main() {
       const variantDirectory = path.join(DERIVED_ROOT_DIR, variant.key);
       const outputPath = path.join(variantDirectory, `${basename}.webp`);
 
-      await generateVariant(sourcePath, outputPath, variant.size, variant.quality);
+      await generateVariant(
+        sourcePath,
+        outputPath,
+        variant.size,
+        variant.quality,
+      );
       generatedFilesCount += 1;
     }
   }
 
   console.log(`[project-images] scanned ${validEntries.length} source images`);
-  console.log(`[project-images] generated ${generatedFilesCount} derived assets`);
+  console.log(
+    `[project-images] generated ${generatedFilesCount} derived assets`,
+  );
 
   if (ignoredEntries.length > 0) {
     console.warn(
-      `[project-images] ignored ${ignoredEntries.length} files: ${ignoredEntries.join(", ")}`
+      `[project-images] ignored ${ignoredEntries.length} files: ${ignoredEntries.join(', ')}`,
     );
   }
 
   if (lowResolutionEntries.length > 0) {
     console.warn(
-      `[project-images] lower-resolution source images detected: ${lowResolutionEntries.join(", ")}`
+      `[project-images] lower-resolution source images detected: ${lowResolutionEntries.join(', ')}`,
     );
   }
 }
 
 main().catch((error) => {
-  console.error("[project-images] failed", error);
+  console.error('[project-images] failed', error);
   process.exitCode = 1;
 });

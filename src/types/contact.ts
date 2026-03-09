@@ -13,5 +13,5 @@ export interface ContactPayload {
 export interface ContactSubmissionContext {
   ipAddress?: string | null;
   userAgent?: string | null;
-  submittedVia?: "form_action" | "api_contact";
+  submittedVia?: 'form_action' | 'api_contact';
 }

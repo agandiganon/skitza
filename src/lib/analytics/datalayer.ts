@@ -8,8 +8,11 @@ declare global {
   }
 }
 
-export function pushToDataLayer(eventName: string, payload: DataLayerPayload = {}): void {
-  if (typeof window === "undefined") return;
+export function pushToDataLayer(
+  eventName: string,
+  payload: DataLayerPayload = {},
+): void {
+  if (typeof window === 'undefined') return;
 
   window.dataLayer = window.dataLayer || [];
   window.dataLayer.push({

@@ -1,4 +1,4 @@
-import type { FaqItem } from "@/types/faq";
+import type { FaqItem } from '@/types/faq';
 
 type FaqSectionProps = {
   title?: string;
@@ -9,11 +9,11 @@ type FaqSectionProps = {
 };
 
 export function FaqSection({
-  title = "שאלות נפוצות",
+  title = 'שאלות נפוצות',
   intro,
   items,
-  id = "faq",
-  className = "",
+  id = 'faq',
+  className = '',
 }: FaqSectionProps) {
   if (items.length === 0) {
     return null;
@@ -28,12 +28,12 @@ export function FaqSection({
       <div className="mx-auto max-w-4xl">
         <h2
           id={`${id}-heading`}
-          className="text-3xl font-black tracking-tight text-primary sm:text-4xl"
+          className="text-primary text-3xl font-black tracking-tight sm:text-4xl"
         >
           {title}
         </h2>
         {intro ? (
-          <p className="mt-3 max-w-3xl text-base leading-relaxed text-foreground/75 sm:text-lg">
+          <p className="text-foreground/75 mt-3 max-w-3xl text-base leading-relaxed sm:text-lg">
             {intro}
           </p>
         ) : null}
@@ -44,7 +44,7 @@ export function FaqSection({
               key={item.question}
               className="group rounded-[1.35rem] border border-blue-100 bg-blue-50/55 px-5 py-4 transition hover:border-blue-200 hover:bg-white"
             >
-              <summary className="cursor-pointer list-none rounded-xl text-lg font-bold text-primary marker:hidden focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2">
+              <summary className="text-primary focus-visible:ring-primary cursor-pointer list-none rounded-xl text-lg font-bold marker:hidden focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:outline-none">
                 <span className="flex items-start justify-between gap-4">
                   <span>{item.question}</span>
                   <span
@@ -55,7 +55,7 @@ export function FaqSection({
                   </span>
                 </span>
               </summary>
-              <p className="mt-4 border-t border-blue-100 pt-4 leading-relaxed text-foreground/80">
+              <p className="text-foreground/80 mt-4 border-t border-blue-100 pt-4 leading-relaxed">
                 {item.answer}
               </p>
             </details>

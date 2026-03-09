@@ -1,6 +1,4 @@
-type JsonLdValue =
-  | Record<string, unknown>
-  | readonly Record<string, unknown>[];
+type JsonLdValue = Record<string, unknown> | readonly Record<string, unknown>[];
 
 type JsonLdProps = {
   data: JsonLdValue;

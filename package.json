@@ -4,6 +4,7 @@
   "private": true,
   "scripts": {
     "project-images:build": "node scripts/generate-project-image-assets.mjs",
+    "prepare": "husky",
     "predev": "npm run project-images:build",
     "prebuild": "npm run project-images:build",
     "prestart": "npm run project-images:build",
@@ -12,10 +13,12 @@
     "build": "next build",
     "start": "next start",
     "lint": "eslint . --ignore-pattern archive/**",
-    "typecheck": "rm -f tsconfig.tsbuildinfo && next typegen && tsc --noEmit -p tsconfig.json",
+    "format": "prettier . --write",
+    "format:check": "prettier . --check",
+    "typecheck": "mkdir -p .next/types && rm -f \".next/types/routes.d 2.ts\" \".next/types/validator 2.ts\" \".next/types/cache-life 2.d.ts\" tsconfig.tsbuildinfo && npx next typegen && node -e \"const fs=require('fs');fs.mkdirSync('.next/types',{recursive:true});fs.writeFileSync('.next/types/cache-life.d.ts','');\" && npx tsc --noEmit -p tsconfig.json",
     "convert:gallery-images": "node scripts/convert-gallery-images.mjs",
     "smoke": "bash scripts/smoke-check.sh",
-    "clean": "rm -rf .next .next-dev .next-prod .playwright-cli .smoke-frontend.log"
+    "clean": "node -e \"const fs=require('node:fs');['.next','.next-dev','.next-prod','.playwright-cli','.smoke-frontend.log'].forEach((target)=>fs.rmSync(target,{recursive:true,force:true,maxRetries:10,retryDelay:100}))\""
   },
   "dependencies": {
     "@vercel/analytics": "^1.6.1",
@@ -34,8 +37,19 @@
     "@types/react-dom": "^19",
     "eslint": "^9",
     "eslint-config-next": "16.1.6",
+    "eslint-config-prettier": "^10.1.8",
+    "husky": "^9.1.7",
+    "lint-staged": "^16.3.2",
+    "prettier": "^3.8.1",
+    "prettier-plugin-tailwindcss": "^0.7.2",
     "sharp": "^0.34.5",
     "tailwindcss": "^4",
+    "tsc-files": "^1.1.4",
     "typescript": "^5"
+  },
+  "lint-staged": {
+    "*.{js,jsx,ts,tsx,css,md,json,mjs}": "prettier --write",
+    "*.{js,jsx,ts,tsx,mjs}": "eslint --fix",
+    "*.{ts,tsx}": "tsc-files --noEmit --pretty false"
   }
 }

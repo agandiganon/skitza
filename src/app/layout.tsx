@@ -1,26 +1,30 @@
-import type { Metadata } from "next";
-import { Heebo } from "next/font/google";
-import "./globals.css";
-import { Header } from "@/components/layout/Header";
-import { Footer } from "@/components/layout/Footer";
-import { DeferredWidgets } from "@/components/layout/DeferredWidgets";
-import { ScrollToTopOnRouteChange } from "@/components/layout/ScrollToTopOnRouteChange";
-import { MobileStickyBar } from "@/components/widgets/MobileStickyBar";
-import { GtmScripts } from "@/components/analytics/GtmScripts";
-import { AnalyticsGate } from "@/components/analytics/AnalyticsGate";
-import { InteractionTracker } from "@/components/analytics/InteractionTracker";
-import { JsonLd } from "@/components/seo/JsonLd";
-import { ADDRESS, PHONE_DISPLAY } from "@/lib/constants";
-import { buildLocalBusinessSchema, buildWebsiteSchema } from "@/lib/seo/schema";
+import type { Metadata } from 'next';
+import { Suspense } from 'react';
+import { Heebo } from 'next/font/google';
+import './globals.css';
+import { Header } from '@/components/layout/Header';
+import { Footer } from '@/components/layout/Footer';
+import { DeferredWidgets } from '@/components/layout/DeferredWidgets';
+import { ScrollToTopOnRouteChange } from '@/components/layout/ScrollToTopOnRouteChange';
+import { MobileStickyBar } from '@/components/widgets/MobileStickyBar';
+import {
+  GtmBodyFallback,
+  GtmHeadScript,
+} from '@/components/analytics/GtmScripts';
+import { AnalyticsGate } from '@/components/analytics/AnalyticsGate';
+import { InteractionTracker } from '@/components/analytics/InteractionTracker';
+import { JsonLd } from '@/components/seo/JsonLd';
+import { ADDRESS, PHONE_DISPLAY } from '@/lib/constants';
+import { buildLocalBusinessSchema, buildWebsiteSchema } from '@/lib/seo/schema';
 
-const fallbackSiteUrl = "https://skitza-pack.co.il";
+const fallbackSiteUrl = 'https://skitza-pack.co.il';
 const shouldLoadSpeedInsights =
-  process.env.NODE_ENV === "production" && process.env.VERCEL === "1";
+  process.env.NODE_ENV === 'production' && process.env.VERCEL === '1';
 const heebo = Heebo({
-  subsets: ["hebrew", "latin"],
-  weight: ["400", "500", "600", "700", "800", "900"],
-  display: "swap",
-  variable: "--font-heebo",
+  subsets: ['hebrew', 'latin'],
+  weight: ['400', '500', '600', '700', '800', '900'],
+  display: 'swap',
+  variable: '--font-heebo',
 });
 
 function getMetadataBase() {
@@ -35,48 +39,53 @@ function getMetadataBase() {
 export const metadata: Metadata = {
   metadataBase: getMetadataBase(),
   title: {
-    default: "סקיצה אריזות | בית דפוס לאריזות בחולון",
-    template: "%s | סקיצה אריזות",
+    default: 'סקיצה אריזות | בית דפוס לאריזות בחולון',
+    template: '%s | סקיצה אריזות',
   },
   description:
-    "בית דפוס בחולון המתמחה בהדפסת אריזות, אריזות מותאמות אישית ופתרונות מיתוג לעסקים.",
+    'בית דפוס בחולון המתמחה בהדפסת אריזות, אריזות מותאמות אישית ופתרונות מיתוג לעסקים.',
   keywords: [
-    "בית דפוס בחולון",
-    "הדפסת אריזות",
-    "אריזות מותאמות אישית",
-    "בית דפוס לאריזות",
-    "סקיצה אריזות",
+    'בית דפוס בחולון',
+    'הדפסת אריזות',
+    'אריזות מותאמות אישית',
+    'בית דפוס לאריזות',
+    'סקיצה אריזות',
   ],
   icons: {
-    icon: { url: "/tab-icon.png", type: "image/png" },
-    apple: { url: "/tab-icon.png", type: "image/png" },
+    icon: { url: '/favicon.ico', type: 'image/x-icon' },
+    shortcut: { url: '/favicon.ico', type: 'image/x-icon' },
+    apple: { url: '/apple-icon.png', type: 'image/png', sizes: '180x180' },
   },
+  manifest: '/manifest.webmanifest',
   openGraph: {
-    title: "סקיצה אריזות | בית דפוס לאריזות בחולון",
+    title: 'סקיצה אריזות | בית דפוס לאריזות בחולון',
     description:
-      "בית דפוס בחולון המתמחה בהדפסת אריזות, אריזות מותאמות אישית ופתרונות מיתוג לעסקים.",
-    type: "website",
-    siteName: "סקיצה אריזות",
-    url: "/",
-    locale: "he_IL",
+      'בית דפוס בחולון המתמחה בהדפסת אריזות, אריזות מותאמות אישית ופתרונות מיתוג לעסקים.',
+    type: 'website',
+    siteName: 'סקיצה אריזות',
+    url: '/',
+    locale: 'he_IL',
     images: [
       {
-        url: "/opengraph-image",
+        url: '/opengraph-image',
         width: 1200,
         height: 630,
-        alt: "סקיצה אריזות - בית דפוס לאריזות בחולון",
+        alt: 'סקיצה אריזות - בית דפוס לאריזות בחולון',
       },
     ],
   },
   alternates: {
-    canonical: "/",
+    canonical: '/',
+    languages: {
+      'he-IL': '/',
+    },
   },
   twitter: {
-    card: "summary_large_image",
-    title: "סקיצה אריזות | בית דפוס לאריזות בחולון",
+    card: 'summary_large_image',
+    title: 'סקיצה אריזות | בית דפוס לאריזות בחולון',
     description:
-      "בית דפוס בחולון המתמחה בהדפסת אריזות, אריזות מותאמות אישית ופתרונות מיתוג לעסקים.",
-    images: ["/opengraph-image"],
+      'בית דפוס בחולון המתמחה בהדפסת אריזות, אריזות מותאמות אישית ופתרונות מיתוג לעסקים.',
+    images: ['/opengraph-image'],
   },
 };
 
@@ -86,28 +95,30 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="he" dir="rtl" suppressHydrationWarning>
-      <head />
+    <html lang="he-IL" dir="rtl" suppressHydrationWarning>
+      <head>
+        <GtmHeadScript />
+      </head>
       <body
         className={`${heebo.variable} font-sans antialiased`}
         suppressHydrationWarning
       >
         <a
           href="#site-content"
-          className="sr-only fixed right-4 top-4 z-[200] rounded-full bg-primary px-4 py-2 text-sm font-semibold text-primary-foreground shadow-lg focus:not-sr-only focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-primary"
+          className="bg-primary text-primary-foreground focus:ring-offset-primary sr-only fixed top-4 right-4 z-[200] rounded-full px-4 py-2 text-sm font-semibold shadow-lg focus:not-sr-only focus:ring-2 focus:ring-white focus:ring-offset-2 focus:outline-none"
         >
           דלג לתוכן הראשי
         </a>
-        <GtmScripts />
+        <GtmBodyFallback />
         <JsonLd
           data={[
             buildLocalBusinessSchema({
-              name: "סקיצה אריזות",
-              image: "/opengraph-image",
+              name: 'סקיצה אריזות',
+              image: '/opengraph-image',
               telephone: PHONE_DISPLAY,
               address: ADDRESS,
               description:
-                "בית דפוס בחולון המתמחה בהדפסת אריזות ואריזות מותאמות אישית לעסקים.",
+                'בית דפוס בחולון המתמחה בהדפסת אריזות ואריזות מותאמות אישית לעסקים.',
             }),
             buildWebsiteSchema(),
           ]}
@@ -118,8 +129,12 @@ export default function RootLayout({
         <div id="site-content">{children}</div>
         <Footer />
         <MobileStickyBar />
-        <DeferredWidgets />
-        <AnalyticsGate enableSpeedInsights={shouldLoadSpeedInsights} />
+        <Suspense fallback={null}>
+          <DeferredWidgets />
+        </Suspense>
+        <Suspense fallback={null}>
+          <AnalyticsGate enableSpeedInsights={shouldLoadSpeedInsights} />
+        </Suspense>
       </body>
     </html>
   );

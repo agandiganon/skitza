@@ -1,7 +1,7 @@
-"use client";
+'use client';
 
-import { useEffect } from "react";
-import { pushToDataLayer } from "@/lib/analytics/datalayer";
+import { useEffect } from 'react';
+import { pushToDataLayer } from '@/lib/analytics/datalayer';
 
 type TrackableElement = HTMLElement & {
   dataset: DOMStringMap & {
@@ -16,20 +16,23 @@ export function InteractionTracker() {
   useEffect(() => {
     const handleClick = (event: MouseEvent) => {
       const target = event.target as HTMLElement | null;
-      const trackable = target?.closest<TrackableElement>("[data-track-event]");
+      const trackable = target?.closest<TrackableElement>('[data-track-event]');
 
       if (!trackable) {
         return;
       }
 
-      const { trackEvent, trackPlacement, trackLabel, trackService } = trackable.dataset;
+      const { trackEvent, trackPlacement, trackLabel, trackService } =
+        trackable.dataset;
 
       if (!trackEvent) {
         return;
       }
 
       const href =
-        trackable instanceof HTMLAnchorElement ? trackable.href : trackable.getAttribute("href");
+        trackable instanceof HTMLAnchorElement
+          ? trackable.href
+          : trackable.getAttribute('href');
 
       pushToDataLayer(trackEvent, {
         placement: trackPlacement,
@@ -40,10 +43,10 @@ export function InteractionTracker() {
       });
     };
 
-    document.addEventListener("click", handleClick);
+    document.addEventListener('click', handleClick);
 
     return () => {
-      document.removeEventListener("click", handleClick);
+      document.removeEventListener('click', handleClick);
     };
   }, []);
 

@@ -1,12 +1,12 @@
 #!/usr/bin/env node
 
-import fs from "node:fs/promises";
-import path from "node:path";
-import sharp from "sharp";
+import fs from 'node:fs/promises';
+import path from 'node:path';
+import sharp from 'sharp';
 
 const ROOT_DIR = process.cwd();
-const PICTURES_DIR = path.join(ROOT_DIR, "public", "pictures");
-const SUPPORTED_SOURCE_EXTENSIONS = new Set([".png", ".jpg", ".jpeg"]);
+const PICTURES_DIR = path.join(ROOT_DIR, 'public', 'pictures');
+const SUPPORTED_SOURCE_EXTENSIONS = new Set(['.png', '.jpg', '.jpeg']);
 const QUALITY = 82;
 
 async function main() {
@@ -17,7 +17,7 @@ async function main() {
       continue;
     }
 
-    if (entry.name === ".DS_Store") {
+    if (entry.name === '.DS_Store') {
       await fs.unlink(path.join(PICTURES_DIR, entry.name));
       continue;
     }
@@ -38,6 +38,6 @@ async function main() {
 }
 
 main().catch((error) => {
-  console.error("[convert-gallery-images] failed", error);
+  console.error('[convert-gallery-images] failed', error);
   process.exitCode = 1;
 });

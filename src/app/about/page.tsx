@@ -1,40 +1,51 @@
-import type { Metadata } from "next";
-import Link from "next/link";
-import { Breadcrumbs } from "@/components/navigation/Breadcrumbs";
-import { JsonLd } from "@/components/seo/JsonLd";
-import { SERVICE_PAGES } from "@/lib/constants";
-import { buildBreadcrumbSchema } from "@/lib/seo/schema";
+import type { Metadata } from 'next';
+import Link from 'next/link';
+import { Breadcrumbs } from '@/components/navigation/Breadcrumbs';
+import { JsonLd } from '@/components/seo/JsonLd';
+import { SERVICE_PAGES } from '@/lib/constants';
+import { buildBreadcrumbSchema } from '@/lib/seo/schema';
 
 export const metadata: Metadata = {
-  title: "אודות המפעל",
+  title: 'אודות המפעל',
   description:
-    "אודות סקיצה אריזות - בית דפוס בחולון המתמחה בהדפסת אריזות ואריזות מותאמות אישית לעסקים.",
-  keywords: ["בית דפוס בחולון", "הדפסת אריזות", "בית דפוס לאריזות"],
+    'אודות סקיצה אריזות - בית דפוס בחולון המתמחה בהדפסת אריזות ואריזות מותאמות אישית לעסקים.',
+  keywords: ['בית דפוס בחולון', 'הדפסת אריזות', 'בית דפוס לאריזות'],
   alternates: {
-    canonical: "/about",
+    canonical: '/about',
+    languages: {
+      'he-IL': '/about',
+    },
   },
   openGraph: {
-    title: "אודות סקיצה אריזות",
+    title: 'אודות סקיצה אריזות',
     description:
-      "ניסיון מקצועי בתכנון, עיצוב וייצור אריזות ממותגות לעסקים מחולון לכל הארץ.",
-    url: "/about",
-    locale: "he_IL",
-    type: "website",
+      'ניסיון מקצועי בתכנון, עיצוב וייצור אריזות ממותגות לעסקים מחולון לכל הארץ.',
+    url: '/about',
+    locale: 'he_IL',
+    type: 'website',
+    images: [
+      {
+        url: '/opengraph-image',
+        width: 1200,
+        height: 630,
+        alt: 'סקיצה אריזות - בית דפוס לאריזות בחולון',
+      },
+    ],
   },
 };
 
 const ABOUT_FACTORY_PARAGRAPHS = [
-  "במפעל הדפוס שלנו אנו מציעים שירותי ייעוץ מהשורה הראשונה לאריזה ותכנון מארזים. צוות המומחים שלנו יעבוד איתך בשיתוף פעולה הדוק כדי להבין את הדרישות שלך, לספק פתרונות חדשניים ולהבטיח ביצוע מוצלח של הפרויקטים שלך.",
-  "אנו מתמחים בטיפול בפרויקטים מורכבים, לרבות עיצוב וייצור אריזות. בין אם אתם צריכים אריזות מותאמות אישית, קופסאות, תוויות או כל פתרון אריזה אחר, אנו מבטיחים רמת גימור מושלמת העומדת בסטנדרטים הגבוהים ביותר שלכם.",
-  "כדי להשיג איכות יוצאת דופן, אנו משתמשים רק בחומרי הגלם הטובים ביותר הקיימים בשוק. תהליך המקור שלנו מבטיח שהחומרים המשמשים באריזה שלך הם עמידים, ידידותיים לסביבה ומושכים חזותית. אנו מבינים את החשיבות של שימוש בחומרים בני קיימא, ואנו שואפים למזער את ההשפעה הסביבתית שלנו.",
-  "יתר על כן, מפעל הדפוס שלנו מצויד בטכנולוגיה מתקדמת. אנו עובדים עם מכונות הדפסה חדישות, ציוד גימור ומערכות בקרת איכות כדי לספק תוצאות יוצאות דופן. הטכנאים והמפעילים המיומנים שלנו מאומנים היטב בשימוש בכלים מתקדמים אלה כדי לייעל את היעילות ולהשיג תוצאות ייצור מעולות.",
-  "לסיכום, מפעל הדפוס שלנו מציע שירותי ייעוץ, תכנון מומחה של אריזות וקרטונים, ביצוע פרויקטים מורכבים, רמת גימור מושלמת, מיטב חומרי הגלם וטכנולוגיה חדישה. עם המחויבות שלנו למצוינות, אנו מבטיחים שצורכי האריזה שלך ייענו בתקני האיכות הגבוהים ביותר.",
+  'במפעל הדפוס שלנו אנו מציעים שירותי ייעוץ מהשורה הראשונה לאריזה ותכנון מארזים. צוות המומחים שלנו יעבוד איתך בשיתוף פעולה הדוק כדי להבין את הדרישות שלך, לספק פתרונות חדשניים ולהבטיח ביצוע מוצלח של הפרויקטים שלך.',
+  'אנו מתמחים בטיפול בפרויקטים מורכבים, לרבות עיצוב וייצור אריזות. בין אם אתם צריכים אריזות מותאמות אישית, קופסאות, תוויות או כל פתרון אריזה אחר, אנו מבטיחים רמת גימור מושלמת העומדת בסטנדרטים הגבוהים ביותר שלכם.',
+  'כדי להשיג איכות יוצאת דופן, אנו משתמשים רק בחומרי הגלם הטובים ביותר הקיימים בשוק. תהליך המקור שלנו מבטיח שהחומרים המשמשים באריזה שלך הם עמידים, ידידותיים לסביבה ומושכים חזותית. אנו מבינים את החשיבות של שימוש בחומרים בני קיימא, ואנו שואפים למזער את ההשפעה הסביבתית שלנו.',
+  'יתר על כן, מפעל הדפוס שלנו מצויד בטכנולוגיה מתקדמת. אנו עובדים עם מכונות הדפסה חדישות, ציוד גימור ומערכות בקרת איכות כדי לספק תוצאות יוצאות דופן. הטכנאים והמפעילים המיומנים שלנו מאומנים היטב בשימוש בכלים מתקדמים אלה כדי לייעל את היעילות ולהשיג תוצאות ייצור מעולות.',
+  'לסיכום, מפעל הדפוס שלנו מציע שירותי ייעוץ, תכנון מומחה של אריזות וקרטונים, ביצוע פרויקטים מורכבים, רמת גימור מושלמת, מיטב חומרי הגלם וטכנולוגיה חדישה. עם המחויבות שלנו למצוינות, אנו מבטיחים שצורכי האריזה שלך ייענו בתקני האיכות הגבוהים ביותר.',
 ];
 
 const ABOUT_VISION_PARAGRAPHS = [
-  "במפעל הדפוס שלנו, אנו נותנים עדיפות לאיכות ללא פשרות. אנו מבינים שהאריזה שלך צריכה לייצג את המותג שלך ולספק חווית לקוח חיובית. לכן, אנו מבטיחים שכל פרויקט יבוצע תוך הקפדה על הפרטים הקטנים ביותר. יש לנו מומחיות בעבודה עם כל סוגי הנייר, הקרטון והקרטון הגלי. בין אם אתם זקוקים לפתרון אריזה יציב או עיצוב עדין יותר, יש לנו את החומרים שיתאימו לדרישות שלכם.",
-  "הצוות שלנו יסייע לכם בבחירת החומרים הטובים ביותר המתאימים לחזון שלכם. כדי להחיות את עיצובי האריזה שלך, אנו משתמשים בפלוטר מתקדם לחיתוך דגמים. טכנולוגיה זו מאפשרת לנו לחתוך ולעצב במדויק את החומרים בהתאם למפרט שלך. בנוסף, אנו מציעים הדמיה חיה המבוססת על קובץ הלקוחות בצורה מכוונת, ומספקת לך הזדמנות ייחודית לראות את עיצוב האריזה שלך מתעורר לחיים לפני תחילת הייצור. מפעל הדפוס שלנו מצויד היטב לטיפול בפרויקטים מורכבים, לרבות הקמה ואריזה.",
-  "יש לנו את המומחיות והמשאבים להתמודד עם עיצובים מורכבים, צורות ייחודיות ואפקטים מיוחדים להדפסה. הצוות שלנו עובד בחריצות כדי להבטיח שהפרויקט שלך יתבצע ללא רבב מתחילתו ועד סופו. בכל הנוגע למוצר הסופי, אנו מבטיחים רמת גימור מושלמת. בעלי המלאכה המיומנים שלנו שמים לב לכל פרט, ומבטיחים שהאריזה שלך תיראה ללא רבב. אנו מבינים את החשיבות של יצירת רושם חיובי, ואנו שואפים לספק איכות יוצאת דופן בכל פרויקט שאנו מבצעים, כמובן בלוחות זמנים הכי טובים.",
+  'במפעל הדפוס שלנו, אנו נותנים עדיפות לאיכות ללא פשרות. אנו מבינים שהאריזה שלך צריכה לייצג את המותג שלך ולספק חווית לקוח חיובית. לכן, אנו מבטיחים שכל פרויקט יבוצע תוך הקפדה על הפרטים הקטנים ביותר. יש לנו מומחיות בעבודה עם כל סוגי הנייר, הקרטון והקרטון הגלי. בין אם אתם זקוקים לפתרון אריזה יציב או עיצוב עדין יותר, יש לנו את החומרים שיתאימו לדרישות שלכם.',
+  'הצוות שלנו יסייע לכם בבחירת החומרים הטובים ביותר המתאימים לחזון שלכם. כדי להחיות את עיצובי האריזה שלך, אנו משתמשים בפלוטר מתקדם לחיתוך דגמים. טכנולוגיה זו מאפשרת לנו לחתוך ולעצב במדויק את החומרים בהתאם למפרט שלך. בנוסף, אנו מציעים הדמיה חיה המבוססת על קובץ הלקוחות בצורה מכוונת, ומספקת לך הזדמנות ייחודית לראות את עיצוב האריזה שלך מתעורר לחיים לפני תחילת הייצור. מפעל הדפוס שלנו מצויד היטב לטיפול בפרויקטים מורכבים, לרבות הקמה ואריזה.',
+  'יש לנו את המומחיות והמשאבים להתמודד עם עיצובים מורכבים, צורות ייחודיות ואפקטים מיוחדים להדפסה. הצוות שלנו עובד בחריצות כדי להבטיח שהפרויקט שלך יתבצע ללא רבב מתחילתו ועד סופו. בכל הנוגע למוצר הסופי, אנו מבטיחים רמת גימור מושלמת. בעלי המלאכה המיומנים שלנו שמים לב לכל פרט, ומבטיחים שהאריזה שלך תיראה ללא רבב. אנו מבינים את החשיבות של יצירת רושם חיובי, ואנו שואפים לספק איכות יוצאת דופן בכל פרויקט שאנו מבצעים, כמובן בלוחות זמנים הכי טובים.',
 ];
 
 export default function AboutPage() {
@@ -42,25 +53,32 @@ export default function AboutPage() {
     <>
       <JsonLd
         data={buildBreadcrumbSchema([
-          { label: "דף הבית", href: "/" },
-          { label: "אודות", href: "/about" },
+          { label: 'דף הבית', href: '/' },
+          { label: 'אודות', href: '/about' },
         ])}
       />
       <main className="min-h-screen bg-gradient-to-b from-blue-50 via-white to-blue-50 px-4 pt-8 pb-16 sm:pt-10 sm:pb-20">
         <div className="mx-auto max-w-5xl">
-          <Breadcrumbs items={[{ label: "דף הבית", href: "/" }, { label: "אודות" }]} />
+          <Breadcrumbs
+            items={[{ label: 'דף הבית', href: '/' }, { label: 'אודות' }]}
+          />
 
           <section className="cv-auto rounded-[2rem] border border-blue-100 bg-white/85 p-6 shadow-[0_24px_70px_-40px_rgba(31,78,161,0.45)] ring-1 ring-blue-50 sm:p-8">
-            <p className="mb-2 text-center text-sm font-semibold tracking-wide text-blue-700">אודות</p>
-            <h1 className="mb-8 text-center text-4xl font-black leading-tight tracking-tight text-primary sm:text-5xl">
+            <p className="mb-2 text-center text-sm font-semibold tracking-wide text-blue-700">
+              אודות
+            </p>
+            <h1 className="text-primary mb-8 text-center text-4xl leading-tight font-black tracking-tight sm:text-5xl">
               אודות סקיצה אריזות
             </h1>
 
             <section aria-labelledby="about-factory-heading">
-              <h2 id="about-factory-heading" className="mb-4 text-2xl font-extrabold text-primary sm:text-3xl">
+              <h2
+                id="about-factory-heading"
+                className="text-primary mb-4 text-2xl font-extrabold sm:text-3xl"
+              >
                 אודות המפעל
               </h2>
-              <div className="space-y-4 text-lg leading-relaxed text-foreground/90">
+              <div className="text-foreground/90 space-y-4 text-lg leading-relaxed">
                 {ABOUT_FACTORY_PARAGRAPHS.map((para, i) => (
                   <p key={i}>{para}</p>
                 ))}
@@ -68,10 +86,13 @@ export default function AboutPage() {
             </section>
 
             <section className="mt-10" aria-labelledby="about-vision-heading">
-              <h2 id="about-vision-heading" className="mb-4 text-2xl font-extrabold text-primary sm:text-3xl">
+              <h2
+                id="about-vision-heading"
+                className="text-primary mb-4 text-2xl font-extrabold sm:text-3xl"
+              >
                 החזון שלנו
               </h2>
-              <div className="space-y-4 text-lg leading-relaxed text-foreground/90">
+              <div className="text-foreground/90 space-y-4 text-lg leading-relaxed">
                 {ABOUT_VISION_PARAGRAPHS.map((para, i) => (
                   <p key={i}>{para}</p>
                 ))}
@@ -105,13 +126,19 @@ export default function AboutPage() {
               </div>
             </section>
 
-            <section className="mt-10 rounded-[1.8rem] border border-blue-100 bg-blue-50/55 p-5" aria-labelledby="about-services-heading">
-              <h2 id="about-services-heading" className="text-2xl font-extrabold text-primary sm:text-3xl">
+            <section
+              className="mt-10 rounded-[1.8rem] border border-blue-100 bg-blue-50/55 p-5"
+              aria-labelledby="about-services-heading"
+            >
+              <h2
+                id="about-services-heading"
+                className="text-primary text-2xl font-extrabold sm:text-3xl"
+              >
                 שירותים שממשיכים את התהליך
               </h2>
-              <p className="mt-3 max-w-3xl text-base leading-relaxed text-foreground/78">
-                אם אתם כבר יודעים לאיזה כיוון הפרויקט מתקדם, אפשר לעבור מכאן ישירות לשירות
-                הרלוונטי או להשאיר פרטים להמשך תיאום.
+              <p className="text-foreground/78 mt-3 max-w-3xl text-base leading-relaxed">
+                אם אתם כבר יודעים לאיזה כיוון הפרויקט מתקדם, אפשר לעבור מכאן
+                ישירות לשירות הרלוונטי או להשאיר פרטים להמשך תיאום.
               </p>
               <div className="mt-5 flex flex-wrap gap-3">
                 {SERVICE_PAGES.map((service) => (
@@ -122,7 +149,7 @@ export default function AboutPage() {
                     data-track-placement="about_page"
                     data-track-label={service.href}
                     data-track-service={service.key}
-                    className="rounded-full border border-blue-200 bg-white px-4 py-2 text-sm font-semibold text-primary transition hover:border-blue-300 hover:bg-blue-50"
+                    className="text-primary rounded-full border border-blue-200 bg-white px-4 py-2 text-sm font-semibold transition hover:border-blue-300 hover:bg-blue-50"
                   >
                     {service.label}
                   </Link>
@@ -136,7 +163,7 @@ export default function AboutPage() {
                 data-track-event="cta_click"
                 data-track-placement="about_page"
                 data-track-label="about_contact"
-                className="inline-flex min-h-[46px] items-center justify-center rounded-xl bg-gradient-to-l from-accent-cyan via-blue-500 to-primary px-7 py-3 text-base font-semibold text-white shadow-lg transition hover:opacity-95 focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2"
+                className="from-accent-cyan to-primary focus:ring-primary inline-flex min-h-[46px] items-center justify-center rounded-xl bg-gradient-to-l via-blue-500 px-7 py-3 text-base font-semibold text-white shadow-lg transition hover:opacity-95 focus:ring-2 focus:ring-offset-2 focus:outline-none"
               >
                 צור קשר
               </Link>
@@ -145,7 +172,7 @@ export default function AboutPage() {
                 data-track-event="cta_click"
                 data-track-placement="about_page"
                 data-track-label="about_gallery"
-                className="inline-flex min-h-[46px] items-center justify-center rounded-xl border border-blue-200 bg-white px-7 py-3 text-base font-semibold text-primary shadow-sm transition hover:border-blue-300 hover:bg-blue-50 focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2"
+                className="text-primary focus:ring-primary inline-flex min-h-[46px] items-center justify-center rounded-xl border border-blue-200 bg-white px-7 py-3 text-base font-semibold shadow-sm transition hover:border-blue-300 hover:bg-blue-50 focus:ring-2 focus:ring-offset-2 focus:outline-none"
               >
                 מעבר לגלריה
               </Link>

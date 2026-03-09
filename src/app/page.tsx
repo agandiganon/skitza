@@ -1,38 +1,49 @@
-import type { Metadata } from "next";
-import { FaqSection } from "@/components/content/FaqSection";
-import { JsonLd } from "@/components/seo/JsonLd";
-import { Hero } from "@/components/sections/Hero";
-import { About } from "@/components/sections/About";
-import { Services } from "@/components/sections/Services";
-import { Portfolio } from "@/components/sections/Portfolio";
-import { WhySkitza } from "@/components/sections/WhySkitza";
-import { StatsStrip } from "@/components/sections/StatsStrip";
-import { ClientLogosSection } from "@/components/sections/ClientLogosSection";
-import { LeadCta } from "@/components/sections/LeadCta";
-import { HOME_FAQ_ITEMS } from "@/lib/content/servicePages";
-import { getProjects } from "@/lib/content/projects.server";
-import { buildFaqSchema } from "@/lib/seo/schema";
+import type { Metadata } from 'next';
+import { FaqSection } from '@/components/content/FaqSection';
+import { JsonLd } from '@/components/seo/JsonLd';
+import { Hero } from '@/components/sections/Hero';
+import { About } from '@/components/sections/About';
+import { Services } from '@/components/sections/Services';
+import { Portfolio } from '@/components/sections/Portfolio';
+import { WhySkitza } from '@/components/sections/WhySkitza';
+import { StatsStrip } from '@/components/sections/StatsStrip';
+import { ClientLogosSection } from '@/components/sections/ClientLogosSection';
+import { LeadCta } from '@/components/sections/LeadCta';
+import { HOME_FAQ_ITEMS } from '@/lib/content/servicePages';
+import { getProjects } from '@/lib/content/projects.server';
+import { buildFaqSchema } from '@/lib/seo/schema';
 
 export const metadata: Metadata = {
-  title: "בית דפוס לאריזות בחולון",
+  title: 'בית דפוס לאריזות בחולון',
   description:
-    "בית דפוס בחולון להדפסת אריזות ואריזות מותאמות אישית לעסקים, עם תכנון, עיצוב וייצור מלא במקום אחד.",
+    'בית דפוס בחולון להדפסת אריזות ואריזות מותאמות אישית לעסקים, עם תכנון, עיצוב וייצור מלא במקום אחד.',
   keywords: [
-    "בית דפוס בחולון",
-    "הדפסת אריזות",
-    "אריזות מותאמות אישית",
-    "בית דפוס לאריזות",
+    'בית דפוס בחולון',
+    'הדפסת אריזות',
+    'אריזות מותאמות אישית',
+    'בית דפוס לאריזות',
   ],
   alternates: {
-    canonical: "/",
+    canonical: '/',
+    languages: {
+      'he-IL': '/',
+    },
   },
   openGraph: {
-    title: "סקיצה אריזות | בית דפוס לאריזות בחולון",
+    title: 'סקיצה אריזות | בית דפוס לאריזות בחולון',
     description:
-      "הדפסת אריזות, תכנון אריזות ופתרונות מיתוג לעסקים מחולון לכל הארץ.",
-    url: "/",
-    locale: "he_IL",
-    type: "website",
+      'הדפסת אריזות, תכנון אריזות ופתרונות מיתוג לעסקים מחולון לכל הארץ.',
+    url: '/',
+    locale: 'he_IL',
+    type: 'website',
+    images: [
+      {
+        url: '/opengraph-image',
+        width: 1200,
+        height: 630,
+        alt: 'סקיצה אריזות - בית דפוס לאריזות בחולון',
+      },
+    ],
   },
 };
 
@@ -44,7 +55,10 @@ export default function Home() {
       <JsonLd data={buildFaqSchema(HOME_FAQ_ITEMS)} />
       <main>
         <Hero
-          images={allProjects.map((project) => ({ src: project.heroSrc, alt: project.imageAlt }))}
+          images={allProjects.map((project) => ({
+            src: project.heroSrc,
+            alt: project.imageAlt,
+          }))}
         />
         <About />
         <ClientLogosSection />

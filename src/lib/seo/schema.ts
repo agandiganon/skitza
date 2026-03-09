@@ -1,7 +1,8 @@
-import type { BreadcrumbItem } from "@/components/navigation/Breadcrumbs";
-import type { FaqItem } from "@/types/faq";
+import type { BreadcrumbItem } from '@/components/navigation/Breadcrumbs';
+import { BUSINESS_OPENING_HOURS, BUSINESS_PRICE_RANGE } from '@/lib/constants';
+import type { FaqItem } from '@/types/faq';
 
-const FALLBACK_SITE_URL = "https://skitza-pack.co.il";
+const FALLBACK_SITE_URL = 'https://skitza-pack.co.il';
 
 function getSiteUrl() {
   const rawUrl = process.env.NEXT_PUBLIC_SITE_URL?.trim() || FALLBACK_SITE_URL;
@@ -31,55 +32,57 @@ export function buildLocalBusinessSchema({
   description: string;
 }) {
   return {
-    "@context": "https://schema.org",
-    "@type": "LocalBusiness",
+    '@context': 'https://schema.org',
+    '@type': 'LocalBusiness',
     name,
     image: getAbsoluteUrl(image),
-    url: getAbsoluteUrl("/"),
+    url: getAbsoluteUrl('/'),
     telephone,
+    priceRange: BUSINESS_PRICE_RANGE,
+    openingHours: [...BUSINESS_OPENING_HOURS],
     address: {
-      "@type": "PostalAddress",
+      '@type': 'PostalAddress',
       streetAddress: address,
-      addressLocality: "חולון",
-      addressCountry: "IL",
+      addressLocality: 'חולון',
+      addressCountry: 'IL',
     },
-    areaServed: "ישראל",
+    areaServed: 'ישראל',
     description,
   };
 }
 
 export function buildWebsiteSchema() {
   return {
-    "@context": "https://schema.org",
-    "@type": "WebSite",
-    name: "סקיצה אריזות",
-    url: getAbsoluteUrl("/"),
-    inLanguage: "he-IL",
+    '@context': 'https://schema.org',
+    '@type': 'WebSite',
+    name: 'סקיצה אריזות',
+    url: getAbsoluteUrl('/'),
+    inLanguage: 'he-IL',
   };
 }
 
 export function buildBreadcrumbSchema(items: readonly BreadcrumbItem[]) {
   return {
-    "@context": "https://schema.org",
-    "@type": "BreadcrumbList",
+    '@context': 'https://schema.org',
+    '@type': 'BreadcrumbList',
     itemListElement: items.map((item, index) => ({
-      "@type": "ListItem",
+      '@type': 'ListItem',
       position: index + 1,
       name: item.label,
-      item: getAbsoluteUrl(item.href ?? "/"),
+      item: getAbsoluteUrl(item.href ?? '/'),
     })),
   };
 }
 
 export function buildFaqSchema(items: readonly FaqItem[]) {
   return {
-    "@context": "https://schema.org",
-    "@type": "FAQPage",
+    '@context': 'https://schema.org',
+    '@type': 'FAQPage',
     mainEntity: items.map((item) => ({
-      "@type": "Question",
+      '@type': 'Question',
       name: item.question,
       acceptedAnswer: {
-        "@type": "Answer",
+        '@type': 'Answer',
         text: item.answer,
       },
     })),
@@ -96,17 +99,17 @@ export function buildServiceSchema({
   path: string;
 }) {
   return {
-    "@context": "https://schema.org",
-    "@type": "Service",
+    '@context': 'https://schema.org',
+    '@type': 'Service',
     name,
     serviceType: name,
     description,
-    areaServed: "ישראל",
+    areaServed: 'ישראל',
     url: getAbsoluteUrl(path),
     provider: {
-      "@type": "LocalBusiness",
-      name: "סקיצה אריזות",
-      url: getAbsoluteUrl("/"),
+      '@type': 'LocalBusiness',
+      name: 'סקיצה אריזות',
+      url: getAbsoluteUrl('/'),
     },
   };
 }
@@ -117,15 +120,15 @@ export function buildContactPageSchema({
   description: string;
 }) {
   return {
-    "@context": "https://schema.org",
-    "@type": "ContactPage",
-    name: "צור קשר - סקיצה אריזות",
+    '@context': 'https://schema.org',
+    '@type': 'ContactPage',
+    name: 'צור קשר - סקיצה אריזות',
     description,
-    url: getAbsoluteUrl("/contact"),
+    url: getAbsoluteUrl('/contact'),
     mainEntity: {
-      "@type": "LocalBusiness",
-      name: "סקיצה אריזות",
-      url: getAbsoluteUrl("/"),
+      '@type': 'LocalBusiness',
+      name: 'סקיצה אריזות',
+      url: getAbsoluteUrl('/'),
     },
   };
 }

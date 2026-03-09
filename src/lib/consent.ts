@@ -1,17 +1,19 @@
-import { COOKIE_CONSENT_STORAGE_KEY } from "@/lib/constants";
+import { COOKIE_CONSENT_STORAGE_KEY } from '@/lib/constants';
 
-export type CookieConsentChoice = "dismissed";
+export type CookieConsentChoice = 'dismissed';
 
-function normalizeStoredConsent(value: string | null): CookieConsentChoice | null {
-  if (value === "true" || value === "accepted" || value === "dismissed") {
-    return "dismissed";
+function normalizeStoredConsent(
+  value: string | null,
+): CookieConsentChoice | null {
+  if (value === 'true' || value === 'accepted' || value === 'dismissed') {
+    return 'dismissed';
   }
 
   return null;
 }
 
 export function subscribeToCookieConsent(callback: () => void) {
-  if (typeof window === "undefined") {
+  if (typeof window === 'undefined') {
     return () => {};
   }
 
@@ -19,18 +21,20 @@ export function subscribeToCookieConsent(callback: () => void) {
     callback();
   };
 
-  window.addEventListener("storage", handleChange);
-  window.addEventListener("cookie-consent-sync", handleChange);
+  window.addEventListener('storage', handleChange);
+  window.addEventListener('cookie-consent-sync', handleChange);
 
   return () => {
-    window.removeEventListener("storage", handleChange);
-    window.removeEventListener("cookie-consent-sync", handleChange);
+    window.removeEventListener('storage', handleChange);
+    window.removeEventListener('cookie-consent-sync', handleChange);
   };
 }
 
 export function getCookieConsentClientSnapshot() {
   try {
-    return normalizeStoredConsent(localStorage.getItem(COOKIE_CONSENT_STORAGE_KEY));
+    return normalizeStoredConsent(
+      localStorage.getItem(COOKIE_CONSENT_STORAGE_KEY),
+    );
   } catch {
     return null;
   }
@@ -41,13 +45,13 @@ export function getCookieConsentServerSnapshot() {
 }
 
 export function setCookieConsentChoice(choice: CookieConsentChoice) {
-  if (typeof window === "undefined") {
+  if (typeof window === 'undefined') {
     return;
   }
 
   try {
     localStorage.setItem(COOKIE_CONSENT_STORAGE_KEY, choice);
-    window.dispatchEvent(new Event("cookie-consent-sync"));
+    window.dispatchEvent(new Event('cookie-consent-sync'));
   } catch {
     // ignore
   }
