@@ -1,7 +1,5 @@
 import type { Metadata } from "next";
 import { Heebo } from "next/font/google";
-import { Analytics } from "@vercel/analytics/next";
-import { SpeedInsights } from "@vercel/speed-insights/next";
 import "./globals.css";
 import { Header } from "@/components/layout/Header";
 import { Footer } from "@/components/layout/Footer";
@@ -9,6 +7,7 @@ import { DeferredWidgets } from "@/components/layout/DeferredWidgets";
 import { ScrollToTopOnRouteChange } from "@/components/layout/ScrollToTopOnRouteChange";
 import { MobileStickyBar } from "@/components/widgets/MobileStickyBar";
 import { GtmScripts } from "@/components/analytics/GtmScripts";
+import { AnalyticsGate } from "@/components/analytics/AnalyticsGate";
 import { InteractionTracker } from "@/components/analytics/InteractionTracker";
 import { JsonLd } from "@/components/seo/JsonLd";
 import { ADDRESS, PHONE_DISPLAY } from "@/lib/constants";
@@ -62,10 +61,10 @@ export const metadata: Metadata = {
     locale: "he_IL",
     images: [
       {
-        url: "/logo.png",
-        width: 1536,
-        height: 1024,
-        alt: "סקיצה אריזות",
+        url: "/opengraph-image",
+        width: 1200,
+        height: 630,
+        alt: "סקיצה אריזות - בית דפוס לאריזות בחולון",
       },
     ],
   },
@@ -77,7 +76,7 @@ export const metadata: Metadata = {
     title: "סקיצה אריזות | בית דפוס לאריזות בחולון",
     description:
       "בית דפוס בחולון המתמחה בהדפסת אריזות, אריזות מותאמות אישית ופתרונות מיתוג לעסקים.",
-    images: ["/logo.png"],
+    images: ["/opengraph-image"],
   },
 };
 
@@ -104,7 +103,7 @@ export default function RootLayout({
           data={[
             buildLocalBusinessSchema({
               name: "סקיצה אריזות",
-              image: "/logo.png",
+              image: "/opengraph-image",
               telephone: PHONE_DISPLAY,
               address: ADDRESS,
               description:
@@ -120,8 +119,7 @@ export default function RootLayout({
         <Footer />
         <MobileStickyBar />
         <DeferredWidgets />
-        <Analytics />
-        {shouldLoadSpeedInsights ? <SpeedInsights /> : null}
+        <AnalyticsGate enableSpeedInsights={shouldLoadSpeedInsights} />
       </body>
     </html>
   );

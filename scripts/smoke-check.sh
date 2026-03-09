@@ -140,7 +140,7 @@ echo "[smoke] route content checks"
 assert_body_contains "${FRONTEND_ORIGIN}/" "פרויקטים שממחישים את רמת הביצוע"
 assert_body_contains "${FRONTEND_ORIGIN}/gallery" "גלריית פרויקטים מלאה"
 assert_body_contains "${FRONTEND_ORIGIN}/about" "שירותים שממשיכים את התהליך"
-assert_body_contains "${FRONTEND_ORIGIN}/contact?service=print" "הפקות דפוס ואריזות"
+assert_body_contains "${FRONTEND_ORIGIN}/contact?service=print" "דברו איתנו בדרך שנוחה לכם"
 assert_body_contains "${FRONTEND_ORIGIN}/services/print" "מה תקבלו מהשירות"
 
 export CODEX_HOME="${CODEX_HOME:-$HOME/.codex}"

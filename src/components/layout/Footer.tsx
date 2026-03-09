@@ -11,11 +11,9 @@ import {
 
 const quickLinks = [
   { label: "דף הבית", href: "/" },
-  { label: "אודות", href: "/about" },
   { label: "גלריה", href: "/gallery" },
   { label: "צור קשר", href: "/contact" },
   { label: "מדיניות פרטיות", href: "/privacy" },
-  { label: "הצהרת נגישות", href: "/accessibility" },
 ] as const;
 
 export function Footer() {
@@ -31,9 +29,9 @@ export function Footer() {
               <div>
                 <h2
                   id="footer-brand-heading"
-                  className="text-3xl font-black tracking-tight text-primary sm:text-[2.4rem]"
+                  className="text-3xl font-black tracking-tight text-primary sm:text-[2.2rem]"
                 >
-                  בית דפוס לאריזות שמחזיק את כל הפרויקט במקום אחד
+                  בית דפוס לאריזות שמרכז את העבודה במקום אחד
                 </h2>
                 <p className="mt-4 max-w-2xl text-base leading-relaxed text-foreground/78 sm:text-lg">
                   תכנון, עיצוב, הדמיה והפקה לעסקים שצריכים אריזות ופתרונות דפוס ברמת גימור
@@ -41,7 +39,7 @@ export function Footer() {
                 </p>
               </div>
 
-              <div className="grid gap-3 sm:grid-cols-2">
+              <div className="flex flex-wrap gap-3">
                 <Link
                   href="/contact"
                   data-track-event="cta_click"
@@ -57,7 +55,7 @@ export function Footer() {
                   data-track-event="cta_click"
                   data-track-placement="footer_secondary"
                   data-track-label="footer_gallery"
-                  className="inline-flex min-h-[48px] items-center justify-center rounded-2xl border border-blue-200 bg-blue-50/70 px-6 py-3.5 text-base font-semibold text-primary transition hover:border-blue-300 hover:bg-white focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2"
+                  className="inline-flex min-h-[44px] items-center justify-center rounded-2xl px-1 py-3 text-sm font-semibold text-primary underline underline-offset-4 transition hover:no-underline focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2"
                 >
                   צפו בעבודות
                 </Link>
@@ -142,7 +140,7 @@ export function Footer() {
                 className="rounded-[1.6rem] border border-blue-100 bg-white/88 p-5 shadow-[0_16px_40px_-32px_rgba(15,23,42,0.32)]"
               >
                 <h2 id="footer-links-heading" className="text-lg font-black text-primary">
-                  קישורים מהירים
+                  קישורים שימושיים
                 </h2>
                 <ul className="mt-4 space-y-2.5">
                   {quickLinks.map(({ label, href }) => (

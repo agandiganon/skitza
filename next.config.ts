@@ -64,7 +64,6 @@ const createNextConfig = (phase: string): NextConfig => {
   ];
 
   const staticMediaSources = [
-    "/pictures/:path*",
     "/company-logos/:path*",
     "/logo.png",
     "/tab-icon.png",
@@ -81,6 +80,10 @@ const createNextConfig = (phase: string): NextConfig => {
       return [
         {
           source: "/pictures-derived/:path*",
+          headers: immutableImageCacheHeaders,
+        },
+        {
+          source: "/pictures/:path*",
           headers: immutableImageCacheHeaders,
         },
         ...staticMediaSources.map((source) => ({

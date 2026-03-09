@@ -2,11 +2,14 @@
 
 import { useActionState, useEffect, useRef, useState } from "react";
 import type { ChangeEvent, FormEvent } from "react";
-import Link from "next/link";
 
 import { submitContactFormAction } from "@/app/actions/contact";
 import { pushToDataLayer } from "@/lib/analytics/datalayer";
-import { CONTACT_SERVICE_OPTIONS } from "@/lib/constants";
+import {
+  CONTACT_SERVICE_OPTIONS,
+  PHONE_TEL,
+  WHATSAPP_CONTACT_URL,
+} from "@/lib/constants";
 import { CONTACT_FORM_INITIAL_STATE } from "@/types/contactForm";
 import type { ContactFormFieldErrors, ContactFormState } from "@/types/contactForm";
 
@@ -44,6 +47,28 @@ type ContactFormProps = {
   defaultService?: string;
 };
 
+function getInitialTrackingMeta() {
+  if (typeof window === "undefined") {
+    return {
+      sourcePage: "",
+      referrer: "",
+      utmSource: "",
+      utmMedium: "",
+      utmCampaign: "",
+    };
+  }
+
+  const currentUrl = new URL(window.location.href);
+
+  return {
+    sourcePage: `${currentUrl.pathname}${currentUrl.search}`,
+    referrer: document.referrer || "",
+    utmSource: currentUrl.searchParams.get("utm_source") ?? "",
+    utmMedium: currentUrl.searchParams.get("utm_medium") ?? "",
+    utmCampaign: currentUrl.searchParams.get("utm_campaign") ?? "",
+  };
+}
+
 export function ContactForm({ variant = "dark", defaultService }: ContactFormProps) {
   const inputCn = inputClass[variant];
   const errCn = errorClass[variant];
@@ -53,6 +78,7 @@ export function ContactForm({ variant = "dark", defaultService }: ContactFormPro
     CONTACT_FORM_INITIAL_STATE
   );
   const [clientFieldErrors, setClientFieldErrors] = useState<ContactFormFieldErrors>({});
+  const [trackingMeta] = useState(getInitialTrackingMeta);
   const formRef = useRef<HTMLFormElement>(null);
   const handledSuccessRef = useRef<ContactFormState | null>(null);
 
@@ -66,8 +92,21 @@ export function ContactForm({ variant = "dark", defaultService }: ContactFormPro
     pushToDataLayer("form_submit_success", {
       form_name: "contact",
       service_type: state.submittedService ?? undefined,
+      page_path: trackingMeta.sourcePage || undefined,
     });
-  }, [state]);
+  }, [state, trackingMeta.sourcePage]);
+
+  useEffect(() => {
+    if (state.status !== "error" || hasFieldErrors(clientFieldErrors) || !state.formError) {
+      return;
+    }
+
+    pushToDataLayer("form_submit_error", {
+      form_name: "contact",
+      error_type: "server",
+      page_path: trackingMeta.sourcePage || undefined,
+    });
+  }, [clientFieldErrors, state.formError, state.status, trackingMeta.sourcePage]);
 
   function validate(formData: FormData): ContactFormFieldErrors {
     const errors: ContactFormFieldErrors = {};
@@ -94,10 +133,20 @@ export function ContactForm({ variant = "dark", defaultService }: ContactFormPro
 
     if (hasFieldErrors(errors)) {
       event.preventDefault();
+      pushToDataLayer("form_submit_error", {
+        form_name: "contact",
+        error_type: "client_validation",
+        service_type: String(formData.get("service") ?? "").trim() || undefined,
+        page_path: trackingMeta.sourcePage || undefined,
+      });
       return;
     }
 
-    pushToDataLayer("form_submit", { form_name: "contact" });
+    pushToDataLayer("form_submit", {
+      form_name: "contact",
+      service_type: String(formData.get("service") ?? "").trim() || undefined,
+      page_path: trackingMeta.sourcePage || undefined,
+    });
   }
 
   function handleServiceChange(event: ChangeEvent<HTMLSelectElement>) {
@@ -111,6 +160,7 @@ export function ContactForm({ variant = "dark", defaultService }: ContactFormPro
     pushToDataLayer("contact_service_select", {
       form_name: "contact",
       service_type: value,
+      page_path: trackingMeta.sourcePage || undefined,
     });
   }
 
@@ -130,95 +180,103 @@ export function ContactForm({ variant = "dark", defaultService }: ContactFormPro
       onSubmit={handleSubmit}
       className="space-y-4"
     >
-      <div>
-        <label htmlFor="contact-name" className="mb-1 block text-sm font-medium">
-          שם מלא
-        </label>
-        <input
-          id="contact-name"
-          name="name"
-          type="text"
-          autoComplete="name"
-          required
-          aria-invalid={!!activeFieldErrors.name}
-          aria-describedby={activeFieldErrors.name ? "contact-name-error" : undefined}
-          className={inputCn}
-          placeholder="שם מלא"
-        />
-        {activeFieldErrors.name && (
-          <p id="contact-name-error" className={errCn} role="alert">
-            {activeFieldErrors.name}
-          </p>
-        )}
-      </div>
-      <div>
-        <label htmlFor="contact-phone" className="mb-1 block text-sm font-medium">
-          נייד
-        </label>
-        <input
-          id="contact-phone"
-          name="phone"
-          type="tel"
-          autoComplete="tel"
-          required
-          aria-invalid={!!activeFieldErrors.phone}
-          aria-describedby={activeFieldErrors.phone ? "contact-phone-error" : undefined}
-          className={inputCn}
-          placeholder="054-0000000"
-        />
-        {activeFieldErrors.phone && (
-          <p id="contact-phone-error" className={errCn} role="alert">
-            {activeFieldErrors.phone}
-          </p>
-        )}
-      </div>
-      <div>
-        <label htmlFor="contact-email" className="mb-1 block text-sm font-medium">
-          דוא&quot;ל
-        </label>
-        <input
-          id="contact-email"
-          name="email"
-          type="email"
-          autoComplete="email"
-          required
-          aria-invalid={!!activeFieldErrors.email}
-          aria-describedby={activeFieldErrors.email ? "contact-email-error" : undefined}
-          className={inputCn}
-          placeholder="example@email.com"
-        />
-        {activeFieldErrors.email && (
-          <p id="contact-email-error" className={errCn} role="alert">
-            {activeFieldErrors.email}
-          </p>
-        )}
-      </div>
-      <div>
-        <label htmlFor="contact-service" className="mb-1 block text-sm font-medium">
-          סוג פנייה
-        </label>
-        <select
-          id="contact-service"
-          name="service"
-          required
-          defaultValue={defaultService ?? ""}
-          onChange={handleServiceChange}
-          aria-invalid={!!activeFieldErrors.service}
-          aria-describedby={activeFieldErrors.service ? "contact-service-error" : undefined}
-          className={inputCn}
-        >
-          <option value="">בחר סוג פנייה</option>
-          {SERVICE_OPTIONS.map((option) => (
-            <option key={option} value={option}>
-              {option}
-            </option>
-          ))}
-        </select>
-        {activeFieldErrors.service && (
-          <p id="contact-service-error" className={errCn} role="alert">
-            {activeFieldErrors.service}
-          </p>
-        )}
+      <input type="hidden" name="website" value="" readOnly tabIndex={-1} autoComplete="off" />
+      <input type="hidden" name="sourcePage" value={trackingMeta.sourcePage} readOnly />
+      <input type="hidden" name="referrer" value={trackingMeta.referrer} readOnly />
+      <input type="hidden" name="utmSource" value={trackingMeta.utmSource} readOnly />
+      <input type="hidden" name="utmMedium" value={trackingMeta.utmMedium} readOnly />
+      <input type="hidden" name="utmCampaign" value={trackingMeta.utmCampaign} readOnly />
+      <div className="grid gap-4 sm:grid-cols-2">
+        <div>
+          <label htmlFor="contact-name" className="mb-1 block text-sm font-medium">
+            שם מלא
+          </label>
+          <input
+            id="contact-name"
+            name="name"
+            type="text"
+            autoComplete="name"
+            required
+            aria-invalid={!!activeFieldErrors.name}
+            aria-describedby={activeFieldErrors.name ? "contact-name-error" : undefined}
+            className={inputCn}
+            placeholder="שם מלא"
+          />
+          {activeFieldErrors.name && (
+            <p id="contact-name-error" className={errCn} role="alert">
+              {activeFieldErrors.name}
+            </p>
+          )}
+        </div>
+        <div>
+          <label htmlFor="contact-phone" className="mb-1 block text-sm font-medium">
+            טלפון
+          </label>
+          <input
+            id="contact-phone"
+            name="phone"
+            type="tel"
+            autoComplete="tel"
+            required
+            aria-invalid={!!activeFieldErrors.phone}
+            aria-describedby={activeFieldErrors.phone ? "contact-phone-error" : undefined}
+            className={inputCn}
+            placeholder="054-0000000"
+          />
+          {activeFieldErrors.phone && (
+            <p id="contact-phone-error" className={errCn} role="alert">
+              {activeFieldErrors.phone}
+            </p>
+          )}
+        </div>
+        <div>
+          <label htmlFor="contact-email" className="mb-1 block text-sm font-medium">
+            דוא&quot;ל
+          </label>
+          <input
+            id="contact-email"
+            name="email"
+            type="email"
+            autoComplete="email"
+            required
+            aria-invalid={!!activeFieldErrors.email}
+            aria-describedby={activeFieldErrors.email ? "contact-email-error" : undefined}
+            className={inputCn}
+            placeholder="example@email.com"
+          />
+          {activeFieldErrors.email && (
+            <p id="contact-email-error" className={errCn} role="alert">
+              {activeFieldErrors.email}
+            </p>
+          )}
+        </div>
+        <div>
+          <label htmlFor="contact-service" className="mb-1 block text-sm font-medium">
+            סוג פנייה
+          </label>
+          <select
+            id="contact-service"
+            name="service"
+            required
+            defaultValue={defaultService ?? ""}
+            onChange={handleServiceChange}
+            aria-invalid={!!activeFieldErrors.service}
+            aria-describedby={activeFieldErrors.service ? "contact-service-error" : undefined}
+            className={inputCn}
+          >
+            <option value="">בחר סוג פנייה</option>
+            {SERVICE_OPTIONS.map((option) => (
+              <option key={option} value={option}>
+                {option}
+              </option>
+            ))}
+          </select>
+          {activeFieldErrors.service && (
+            <p id="contact-service-error" className={errCn} role="alert">
+              {activeFieldErrors.service}
+            </p>
+          )}
+        </div>
       </div>
       <button
         id="cta-contact-submit"
@@ -246,34 +304,42 @@ export function ContactForm({ variant = "dark", defaultService }: ContactFormPro
           >
             {state.successMessage}
           </p>
+          <p
+            className={`mt-2 text-sm leading-relaxed ${
+              variant === "dark" ? "text-white/72" : "text-emerald-900/72"
+            }`}
+          >
+            אם נוח לכם להמשיך מיד, אפשר גם להתקשר או לשלוח הודעה בוואטסאפ.
+          </p>
           <div className="mt-4 flex flex-wrap gap-2">
-            <Link
-              href="/gallery"
-              data-track-event="cta_click"
+            <a
+              href={`tel:${PHONE_TEL}`}
+              data-track-event="click_to_call"
               data-track-placement="contact_form_success"
-              data-track-label="contact_form_success_gallery"
+              data-track-label="contact_form_success_phone"
               className={`inline-flex min-h-[40px] items-center justify-center rounded-xl px-4 py-2 text-sm font-semibold transition ${
                 variant === "dark"
                   ? "bg-white/14 text-white hover:bg-white/20"
                   : "bg-white text-emerald-800 shadow-sm hover:bg-emerald-100"
               }`}
             >
-              לצפייה בגלריה
-            </Link>
-            <Link
-              href="/services/print"
-              data-track-event="service_navigation_click"
+              התקשרו
+            </a>
+            <a
+              href={WHATSAPP_CONTACT_URL}
+              target="_blank"
+              rel="noopener noreferrer"
+              data-track-event="whatsapp_click"
               data-track-placement="contact_form_success"
-              data-track-label="/services/print"
-              data-track-service="print"
+              data-track-label="contact_form_success_whatsapp"
               className={`inline-flex min-h-[40px] items-center justify-center rounded-xl px-4 py-2 text-sm font-semibold transition ${
                 variant === "dark"
                   ? "bg-white/10 text-white hover:bg-white/18"
                   : "bg-white text-emerald-800 shadow-sm hover:bg-emerald-100"
               }`}
             >
-              חזרה לשירותים
-            </Link>
+              וואטסאפ
+            </a>
           </div>
         </div>
       )}

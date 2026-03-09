@@ -1,6 +1,7 @@
 import { sendLeadEmail } from "@/lib/email/sendLeadEmail";
+import { enforceContactRateLimit } from "@/lib/contact/contactRateLimit";
 import { contactSchema } from "@/lib/schemas/contact.schema";
-import type { ContactPayload } from "@/types/contact";
+import type { ContactPayload, ContactSubmissionContext } from "@/types/contact";
 import type { ContactFormFieldErrors } from "@/types/contactForm";
 
 type SubmitContactLeadSuccess = {
@@ -10,7 +11,7 @@ type SubmitContactLeadSuccess = {
 
 type SubmitContactLeadFailure = {
   success: false;
-  status: 400 | 500;
+  status: 400 | 429 | 500;
   fieldErrors: ContactFormFieldErrors;
   formError: string | null;
 };
@@ -24,6 +25,12 @@ function normalizeInput(input: unknown): Record<string, unknown> {
       phone: input.get("phone"),
       email: input.get("email"),
       service: input.get("service"),
+      sourcePage: input.get("sourcePage"),
+      referrer: input.get("referrer"),
+      utmSource: input.get("utmSource"),
+      utmMedium: input.get("utmMedium"),
+      utmCampaign: input.get("utmCampaign"),
+      website: input.get("website"),
     };
   }
 
@@ -47,8 +54,44 @@ function toFieldErrors(fieldErrors: Record<string, string[] | undefined>): Conta
   };
 }
 
-export async function submitContactLead(input: unknown): Promise<SubmitContactLeadResult> {
+function coerceOptionalValue(input: unknown) {
+  const value = typeof input === "string" ? input.trim() : "";
+  return value || undefined;
+}
+
+function buildPayload(data: Record<string, unknown>): ContactPayload {
+  return {
+    name: String(data.name ?? "").trim(),
+    phone: String(data.phone ?? "").trim(),
+    email: String(data.email ?? "").trim(),
+    service: String(data.service ?? "").trim(),
+    sourcePage: coerceOptionalValue(data.sourcePage),
+    referrer: coerceOptionalValue(data.referrer),
+    utmSource: coerceOptionalValue(data.utmSource),
+    utmMedium: coerceOptionalValue(data.utmMedium),
+    utmCampaign: coerceOptionalValue(data.utmCampaign),
+  };
+}
+
+export async function submitContactLead(
+  input: unknown,
+  context: ContactSubmissionContext = {}
+): Promise<SubmitContactLeadResult> {
   const normalizedInput = normalizeInput(input);
+  const honeypotValue = String(normalizedInput.website ?? "").trim();
+
+  if (honeypotValue) {
+    return {
+      success: true,
+      payload: {
+        name: "spam-blocked",
+        phone: "",
+        email: "",
+        service: "other",
+      },
+    };
+  }
+
   const parsed = contactSchema.safeParse(normalizedInput);
 
   if (!parsed.success) {
@@ -60,15 +103,24 @@ export async function submitContactLead(input: unknown): Promise<SubmitContactLe
     };
   }
 
-  const payload: ContactPayload = {
-    name: parsed.data.name,
-    phone: parsed.data.phone,
-    email: parsed.data.email,
-    service: parsed.data.service,
-  };
+  const payload = buildPayload(parsed.data);
+  const rateLimitResult = enforceContactRateLimit({
+    ipAddress: context.ipAddress,
+    email: payload.email,
+    phone: payload.phone,
+  });
+
+  if (!rateLimitResult.allowed) {
+    return {
+      success: false,
+      status: 429,
+      fieldErrors: {},
+      formError: "בוצעו יותר מדי פניות בפרק זמן קצר. נסו שוב בעוד כמה דקות.",
+    };
+  }
 
   try {
-    await sendLeadEmail(payload);
+    await sendLeadEmail(payload, context);
     return {
       success: true,
       payload,

@@ -1,4 +1,5 @@
-import type { ContactPayload } from "@/types/contact";
+import type { ContactPayload, ContactSubmissionContext } from "@/types/contact";
+import { WHATSAPP_CONTACT_URL } from "@/lib/constants";
 import { getResendClient } from "./resend";
 
 function sanitizeText(value: string): string {
@@ -22,7 +23,24 @@ function formatSubmittedAt(date: Date): string {
   }).format(date);
 }
 
-function buildLeadEmailHtml(payload: ContactPayload, submittedAt: string): string {
+function buildMetaRow(label: string, value: string | undefined) {
+  if (!value) {
+    return "";
+  }
+
+  return `
+    <tr>
+      <td style="width:140px;font-weight:700;color:#32517f;">${escapeHtml(label)}</td>
+      <td style="background:#f7faff;border:1px solid #e1ebff;border-radius:10px;padding:10px 12px;">${escapeHtml(value)}</td>
+    </tr>
+  `;
+}
+
+function buildLeadEmailHtml(
+  payload: ContactPayload,
+  submittedAt: string,
+  context: ContactSubmissionContext
+): string {
   const name = escapeHtml(payload.name);
   const phone = escapeHtml(payload.phone);
   const email = escapeHtml(payload.email);
@@ -30,6 +48,20 @@ function buildLeadEmailHtml(payload: ContactPayload, submittedAt: string): strin
   const timestamp = escapeHtml(submittedAt);
   const telHref = `tel:${payload.phone.replace(/[^\d+]/g, "")}`;
   const mailHref = `mailto:${payload.email}`;
+  const whatsappHref = WHATSAPP_CONTACT_URL;
+
+  const metaRows = [
+    buildMetaRow("עמוד מקור", payload.sourcePage),
+    buildMetaRow("רפרר", payload.referrer),
+    buildMetaRow("UTM Source", payload.utmSource),
+    buildMetaRow("UTM Medium", payload.utmMedium),
+    buildMetaRow("UTM Campaign", payload.utmCampaign),
+    buildMetaRow("IP", context.ipAddress ?? undefined),
+    buildMetaRow("User Agent", context.userAgent ?? undefined),
+    buildMetaRow("נשלח דרך", context.submittedVia ?? undefined),
+  ]
+    .filter(Boolean)
+    .join("");
 
   return `
   <!doctype html>
@@ -48,6 +80,10 @@ function buildLeadEmailHtml(payload: ContactPayload, submittedAt: string): strin
                 <td style="background:linear-gradient(90deg,#0d2f66,#1f6de8);padding:20px 24px;color:#ffffff;">
                   <div style="font-size:13px;opacity:0.88;">סקיצה אריזות</div>
                   <div style="font-size:26px;font-weight:800;line-height:1.25;margin-top:6px;">פנייה חדשה מהאתר</div>
+                  <div style="margin-top:10px;font-size:13px;line-height:1.6;color:rgba(255,255,255,0.86);">
+                    <span style="display:inline-block;margin-left:12px;">סוג פנייה: ${service}</span>
+                    <span style="display:inline-block;">זמן שליחה: ${timestamp}</span>
+                  </div>
                 </td>
               </tr>
               <tr>
@@ -55,37 +91,46 @@ function buildLeadEmailHtml(payload: ContactPayload, submittedAt: string): strin
                   <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="border-collapse:separate;border-spacing:0 10px;">
                     <tr>
                       <td style="width:140px;font-weight:700;color:#32517f;">שם מלא</td>
-                      <td style="background:#f7faff;border:1px solid #e1ebff;border-radius:10px;padding:10px 12px;">${name}</td>
+                      <td style="background:#f7faff;border:1px solid #e1ebff;border-radius:12px;padding:12px 14px;">${name}</td>
                     </tr>
                     <tr>
                       <td style="width:140px;font-weight:700;color:#32517f;">טלפון</td>
-                      <td style="background:#f7faff;border:1px solid #e1ebff;border-radius:10px;padding:10px 12px;">${phone}</td>
+                      <td style="background:#f7faff;border:1px solid #e1ebff;border-radius:12px;padding:12px 14px;">${phone}</td>
                     </tr>
                     <tr>
                       <td style="width:140px;font-weight:700;color:#32517f;">דוא"ל</td>
-                      <td style="background:#f7faff;border:1px solid #e1ebff;border-radius:10px;padding:10px 12px;">${email}</td>
+                      <td style="background:#f7faff;border:1px solid #e1ebff;border-radius:12px;padding:12px 14px;">${email}</td>
                     </tr>
                     <tr>
                       <td style="width:140px;font-weight:700;color:#32517f;">סוג פנייה</td>
-                      <td style="background:#f7faff;border:1px solid #e1ebff;border-radius:10px;padding:10px 12px;">${service}</td>
-                    </tr>
-                    <tr>
-                      <td style="width:140px;font-weight:700;color:#32517f;">זמן שליחה</td>
-                      <td style="background:#f7faff;border:1px solid #e1ebff;border-radius:10px;padding:10px 12px;">${timestamp}</td>
+                      <td style="background:#f7faff;border:1px solid #e1ebff;border-radius:12px;padding:12px 14px;">${service}</td>
                     </tr>
                   </table>
 
                   <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="margin-top:18px;">
                     <tr>
-                      <td style="font-size:13px;color:#5d759d;padding-bottom:10px;">פעולות מהירות</td>
+                      <td style="font-size:13px;color:#5d759d;padding-bottom:10px;">דרכי יצירת קשר</td>
                     </tr>
                     <tr>
                       <td>
                         <a href="${telHref}" style="display:inline-block;background:#0f4ec9;color:#ffffff;text-decoration:none;padding:10px 16px;border-radius:10px;font-weight:700;margin-left:8px;">חיוג ללקוח</a>
+                        <a href="${whatsappHref}" style="display:inline-block;background:#25D366;color:#ffffff;text-decoration:none;padding:10px 16px;border-radius:10px;font-weight:700;margin-left:8px;">וואטסאפ</a>
                         <a href="${mailHref}" style="display:inline-block;background:#eef4ff;color:#0f4ec9;text-decoration:none;padding:10px 16px;border-radius:10px;font-weight:700;border:1px solid #cfe0ff;">שליחת מייל</a>
                       </td>
                     </tr>
                   </table>
+
+                  ${
+                    metaRows
+                      ? `
+                  <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="margin-top:20px;border-top:1px solid #e7efff;padding-top:16px;border-collapse:separate;border-spacing:0 10px;">
+                    <tr>
+                      <td style="font-size:13px;color:#5d759d;padding-bottom:4px;">פרטי מקור ומדידה</td>
+                    </tr>
+                    ${metaRows}
+                  </table>`
+                      : ""
+                  }
                 </td>
               </tr>
               <tr>
@@ -102,7 +147,10 @@ function buildLeadEmailHtml(payload: ContactPayload, submittedAt: string): strin
   `;
 }
 
-export async function sendLeadEmail(payload: ContactPayload): Promise<void> {
+export async function sendLeadEmail(
+  payload: ContactPayload,
+  context: ContactSubmissionContext = {}
+): Promise<void> {
   const resend = getResendClient();
   const from = process.env.RESEND_FROM_EMAIL?.trim();
   const recipient = process.env.RESEND_TO_EMAIL?.trim() || "adi181800030@gmail.com";
@@ -116,16 +164,21 @@ export async function sendLeadEmail(payload: ContactPayload): Promise<void> {
     phone: sanitizeText(payload.phone),
     email: sanitizeText(payload.email).toLowerCase(),
     service: sanitizeText(payload.service),
+    sourcePage: sanitizeText(payload.sourcePage ?? "") || undefined,
+    referrer: sanitizeText(payload.referrer ?? "") || undefined,
+    utmSource: sanitizeText(payload.utmSource ?? "") || undefined,
+    utmMedium: sanitizeText(payload.utmMedium ?? "") || undefined,
+    utmCampaign: sanitizeText(payload.utmCampaign ?? "") || undefined,
   };
 
   const submittedAtDate = new Date();
   const submittedAt = formatSubmittedAt(submittedAtDate);
-  const html = buildLeadEmailHtml(safePayload, submittedAt);
+  const html = buildLeadEmailHtml(safePayload, submittedAt, context);
 
   const { error } = await resend.emails.send({
     from,
     to: [recipient],
-    subject: `פנייה חדשה מהאתר - ${safePayload.name}`,
+    subject: `פנייה חדשה מהאתר - ${safePayload.service} - ${safePayload.name}`,
     replyTo: safePayload.email,
     text: [
       "ליד חדש התקבל מאתר סקיצה אריזות",
@@ -134,9 +187,19 @@ export async function sendLeadEmail(payload: ContactPayload): Promise<void> {
       `טלפון: ${safePayload.phone}`,
       `דוא\"ל: ${safePayload.email}`,
       `סוג פנייה: ${safePayload.service}`,
+      safePayload.sourcePage ? `עמוד מקור: ${safePayload.sourcePage}` : null,
+      safePayload.referrer ? `רפרר: ${safePayload.referrer}` : null,
+      safePayload.utmSource ? `UTM Source: ${safePayload.utmSource}` : null,
+      safePayload.utmMedium ? `UTM Medium: ${safePayload.utmMedium}` : null,
+      safePayload.utmCampaign ? `UTM Campaign: ${safePayload.utmCampaign}` : null,
+      context.ipAddress ? `IP: ${context.ipAddress}` : null,
+      context.userAgent ? `User Agent: ${context.userAgent}` : null,
+      context.submittedVia ? `נשלח דרך: ${context.submittedVia}` : null,
       `מקור: website-contact-form`,
       `זמן: ${submittedAt}`,
-    ].join("\n"),
+    ]
+      .filter(Boolean)
+      .join("\n"),
     html,
   });
 

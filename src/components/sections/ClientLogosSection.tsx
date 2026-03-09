@@ -1,5 +1,12 @@
+import Link from "next/link";
 import Image from "next/image";
 import { CLIENT_LOGOS } from "@/lib/content/clientLogos";
+
+const trustStatements = [
+  "עבודה מול מותגים, קמעונאות ומוצרי צריכה",
+  "שילוב בין תכנון, עיצוב, הדמיה והפקה",
+  "מעבר מסודר מרעיון לפרויקט ביצוע",
+] as const;
 
 export function ClientLogosSection() {
   return (
@@ -26,6 +33,25 @@ export function ClientLogosSection() {
                 ממותגי קוסמטיקה וקמעונאות ועד גופים מובילים, לקוחות בוחרים בנו לפתרונות אריזה,
                 דפוס ומיתוג שמבוצעים ברמה מדויקת ועקבית.
               </p>
+              <div className="mt-5 flex flex-wrap justify-center gap-2.5 lg:justify-start">
+                {trustStatements.map((statement) => (
+                  <span
+                    key={statement}
+                    className="rounded-full border border-blue-100 bg-blue-50/75 px-4 py-2 text-sm font-semibold text-primary"
+                  >
+                    {statement}
+                  </span>
+                ))}
+              </div>
+              <Link
+                href="/gallery"
+                data-track-event="cta_click"
+                data-track-placement="home_partners"
+                data-track-label="home_partners_gallery"
+                className="mt-5 inline-flex text-sm font-semibold text-primary underline underline-offset-4 transition hover:no-underline"
+              >
+                לצפייה בעבודות מהגלריה
+              </Link>
             </div>
 
             <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 sm:gap-4 xl:grid-cols-5">

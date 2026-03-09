@@ -10,6 +10,10 @@ function firstFieldError(fieldErrors: ContactFormFieldErrors): string | null {
   return Object.values(fieldErrors).find(Boolean) ?? null;
 }
 
+function getFirstHeaderValue(headerValue: string | null) {
+  return headerValue?.split(",")[0]?.trim() || null;
+}
+
 export async function POST(request: Request) {
   try {
     const contentType = request.headers.get("content-type") || "";
@@ -37,7 +41,14 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: "נתוני הבקשה לא תקינים" }, { status: 400 });
     }
 
-    const result = await submitContactLead(raw);
+    const result = await submitContactLead(raw, {
+      ipAddress:
+        getFirstHeaderValue(request.headers.get("x-forwarded-for")) ||
+        getFirstHeaderValue(request.headers.get("cf-connecting-ip")) ||
+        getFirstHeaderValue(request.headers.get("x-real-ip")),
+      userAgent: request.headers.get("user-agent"),
+      submittedVia: "api_contact",
+    });
     if (!result.success) {
       return NextResponse.json(
         { error: result.formError || firstFieldError(result.fieldErrors) || "שגיאה בנתונים" },

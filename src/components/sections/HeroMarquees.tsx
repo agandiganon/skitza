@@ -16,11 +16,31 @@ type HeroMarqueesProps = {
   children: ReactNode;
 };
 
-function shuffleImages(images: readonly HeroGalleryImage[]): HeroGalleryImage[] {
+const INITIAL_HERO_IMAGE_COUNT = 12;
+
+function buildImageSeed(images: readonly HeroGalleryImage[]) {
+  const source = images.map((image) => image.src).join("|");
+  let seed = 2166136261;
+
+  for (let index = 0; index < source.length; index += 1) {
+    seed ^= source.charCodeAt(index);
+    seed = Math.imul(seed, 16777619);
+  }
+
+  return seed >>> 0;
+}
+
+function shuffleImages(images: readonly HeroGalleryImage[], seed: number): HeroGalleryImage[] {
   const shuffled = [...images];
+  let randomSeed = seed || 1;
+
+  const nextRandom = () => {
+    randomSeed = (Math.imul(randomSeed, 1664525) + 1013904223) >>> 0;
+    return randomSeed / 4294967296;
+  };
 
   for (let index = shuffled.length - 1; index > 0; index -= 1) {
-    const randomIndex = Math.floor(Math.random() * (index + 1));
+    const randomIndex = Math.floor(nextRandom() * (index + 1));
     [shuffled[index], shuffled[randomIndex]] = [shuffled[randomIndex], shuffled[index]];
   }
 
@@ -176,19 +196,54 @@ function HorizontalMarqueeRow({ images, reduceMotion }: HorizontalMarqueeRowProp
 
 export function HeroMarquees({ images, children }: HeroMarqueesProps) {
   const reduceMotion = useStableReducedMotion();
-  const [shuffledImages, setShuffledImages] = useState<readonly HeroGalleryImage[]>(images);
-
-  useEffect(() => {
-    setShuffledImages(shuffleImages(images));
+  const [showAllImages, setShowAllImages] = useState(false);
+  const shuffledImages = useMemo(() => {
+    return shuffleImages(images, buildImageSeed(images));
   }, [images]);
 
+  useEffect(() => {
+    let timeoutId: ReturnType<typeof setTimeout> | null = null;
+    let idleId: number | null = null;
+
+    const revealAllImages = () => {
+      setShowAllImages(true);
+    };
+
+    if (typeof window === "undefined") {
+      return;
+    }
+
+    if ("requestIdleCallback" in window) {
+      idleId = window.requestIdleCallback(revealAllImages, { timeout: 1400 });
+    } else {
+      timeoutId = setTimeout(revealAllImages, 1100);
+    }
+
+    return () => {
+      if (idleId !== null && "cancelIdleCallback" in window) {
+        window.cancelIdleCallback(idleId);
+      }
+
+      if (timeoutId !== null) {
+        clearTimeout(timeoutId);
+      }
+    };
+  }, [images]);
+  const displayImages = useMemo(() => {
+    if (showAllImages || shuffledImages.length <= INITIAL_HERO_IMAGE_COUNT) {
+      return shuffledImages;
+    }
+
+    return shuffledImages.slice(0, INITIAL_HERO_IMAGE_COUNT);
+  }, [showAllImages, shuffledImages]);
+
   const leftColumnImages = useMemo(
-    () => shuffledImages.filter((_, index) => index % 2 === 0),
-    [shuffledImages]
+    () => displayImages.filter((_, index) => index % 2 === 0),
+    [displayImages]
   );
   const rightColumnImages = useMemo(
-    () => [...shuffledImages.filter((_, index) => index % 2 === 1)].reverse(),
-    [shuffledImages]
+    () => [...displayImages.filter((_, index) => index % 2 === 1)].reverse(),
+    [displayImages]
   );
 
   return (
@@ -211,7 +266,7 @@ export function HeroMarquees({ images, children }: HeroMarqueesProps) {
 
       <div className="flex flex-col items-center lg:hidden">
         {children}
-        <HorizontalMarqueeRow images={shuffledImages} reduceMotion={reduceMotion} />
+        <HorizontalMarqueeRow images={displayImages} reduceMotion={reduceMotion} />
       </div>
     </>
   );

@@ -1,9 +1,6 @@
 "use client";
 
-import { PHONE_TEL, WA_PHONE } from "@/lib/constants";
-
-const WA_MESSAGE = "שלום סקיצה אריזות, הגעתי מהאתר ואשמח לקבל הצעת מחיר לאריזות.";
-const WA_URL = `https://wa.me/${WA_PHONE}?text=${encodeURIComponent(WA_MESSAGE)}`;
+import { PHONE_TEL, WHATSAPP_CONTACT_URL } from "@/lib/constants";
 
 export function MobileStickyBar() {
   return (
@@ -27,7 +24,7 @@ export function MobileStickyBar() {
         data-track-event="whatsapp_click"
         data-track-placement="mobile_sticky_bar"
         data-track-label="mobile_whatsapp"
-        href={WA_URL}
+        href={WHATSAPP_CONTACT_URL}
         target="_blank"
         rel="noopener noreferrer"
         className="flex min-h-[50px] flex-1 items-center justify-center gap-2 rounded-2xl bg-[#25D366] px-4 py-3 font-semibold text-white shadow-lg transition active:opacity-90"

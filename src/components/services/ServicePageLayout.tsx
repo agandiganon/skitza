@@ -46,12 +46,14 @@ export function ServicePageLayout({ page }: ServicePageLayoutProps) {
               {page.heroBody}
             </p>
             <div className="mt-6 flex flex-wrap items-center justify-center gap-2.5">
-              <span className="rounded-full border border-blue-100 bg-white/80 px-4 py-2 text-sm font-semibold text-primary">
-                מתאים לעסקים שצריכים תהליך מסודר
-              </span>
-              <span className="rounded-full border border-blue-100 bg-white/80 px-4 py-2 text-sm font-semibold text-primary">
-                אפשר להתחיל גם מרעיון וגם ממוצר קיים
-              </span>
+              {page.heroPills.map((pill) => (
+                <span
+                  key={pill}
+                  className="rounded-full border border-blue-100 bg-white/80 px-4 py-2 text-sm font-semibold text-primary"
+                >
+                  {pill}
+                </span>
+              ))}
             </div>
             <div className="mt-8 flex flex-col items-center justify-center gap-3 sm:flex-row">
               <Link
@@ -63,16 +65,6 @@ export function ServicePageLayout({ page }: ServicePageLayoutProps) {
                 className="inline-flex min-h-[48px] items-center justify-center rounded-2xl bg-gradient-to-l from-accent-cyan via-blue-500 to-primary px-8 py-3.5 text-base font-semibold text-white shadow-lg transition hover:-translate-y-0.5 hover:opacity-95 focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2"
               >
                 {page.primaryCtaLabel}
-              </Link>
-              <Link
-                href="/contact"
-                data-track-event="cta_click"
-                data-track-placement="service_hero"
-                data-track-label={`${page.href}::contact_page`}
-                data-track-service={page.key}
-                className="inline-flex min-h-[48px] items-center justify-center rounded-2xl border border-blue-200 bg-white/85 px-8 py-3.5 text-base font-semibold text-primary transition hover:border-blue-300 hover:bg-blue-50 focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2"
-              >
-                מעבר לעמוד צור קשר
               </Link>
               <Link
                 href="/gallery"
@@ -151,6 +143,40 @@ export function ServicePageLayout({ page }: ServicePageLayoutProps) {
           </aside>
         </section>
 
+        <section className="cv-auto mt-10 grid gap-5 lg:mt-12 lg:grid-cols-2">
+          <article className="rounded-[2rem] border border-blue-100 bg-white/92 p-6 shadow-[0_22px_60px_-42px_rgba(15,23,42,0.36)] sm:p-8">
+            <h2 className="text-3xl font-black tracking-tight text-primary sm:text-4xl">
+              {page.focusTitle}
+            </h2>
+            <ul className="mt-6 space-y-3">
+              {page.focusItems.map((item) => (
+                <li
+                  key={item}
+                  className="rounded-2xl border border-blue-100 bg-blue-50/55 px-4 py-4 leading-relaxed text-foreground/78"
+                >
+                  {item}
+                </li>
+              ))}
+            </ul>
+          </article>
+
+          <article className="rounded-[2rem] border border-blue-100 bg-white/92 p-6 shadow-[0_22px_60px_-42px_rgba(15,23,42,0.36)] sm:p-8">
+            <h2 className="text-3xl font-black tracking-tight text-primary sm:text-4xl">
+              {page.prepTitle}
+            </h2>
+            <ul className="mt-6 space-y-3">
+              {page.prepItems.map((item) => (
+                <li
+                  key={item}
+                  className="rounded-2xl border border-blue-100 bg-white px-4 py-4 leading-relaxed text-foreground/78"
+                >
+                  {item}
+                </li>
+              ))}
+            </ul>
+          </article>
+        </section>
+
         <FaqSection
           items={page.faq}
           className="mt-10 sm:mt-12"
@@ -226,14 +252,14 @@ export function ServicePageLayout({ page }: ServicePageLayoutProps) {
                 מעבר לטופס יצירת קשר
               </Link>
               <Link
-                href="/gallery"
+                href={relatedServices[0]?.href ?? "/contact"}
                 data-track-event="cta_click"
                 data-track-placement="service_bottom"
-                data-track-label={`${page.href}::bottom_gallery`}
-                data-track-service={page.key}
+                data-track-label={`${page.href}::bottom_related`}
+                data-track-service={relatedServices[0]?.key ?? page.key}
                 className="inline-flex min-h-[48px] items-center justify-center rounded-2xl border border-white/25 bg-white/10 px-7 py-3 text-base font-semibold text-white transition hover:bg-white/16 focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-blue-900"
               >
-                צפייה בגלריה
+                מעבר לשירות משלים
               </Link>
             </div>
           </div>

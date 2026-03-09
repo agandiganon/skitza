@@ -2,7 +2,12 @@
 
 import { useSyncExternalStore } from "react";
 import Script from "next/script";
-import { COOKIE_CONSENT_STORAGE_KEY } from "@/lib/constants";
+import {
+  getCookieConsentClientSnapshot,
+  getCookieConsentServerSnapshot,
+  hasAnalyticsConsent,
+  subscribeToCookieConsent,
+} from "@/lib/consent";
 
 function getValidGtmId(): string | null {
   const gtmId = process.env.NEXT_PUBLIC_GTM_ID?.trim();
@@ -13,37 +18,15 @@ function getValidGtmId(): string | null {
   return gtmId;
 }
 
-function subscribe(callback: () => void) {
-  const handleChange = () => {
-    callback();
-  };
-
-  window.addEventListener("storage", handleChange);
-  window.addEventListener("cookie-consent-sync", handleChange);
-
-  return () => {
-    window.removeEventListener("storage", handleChange);
-    window.removeEventListener("cookie-consent-sync", handleChange);
-  };
-}
-
-function getClientSnapshot() {
-  try {
-    return localStorage.getItem(COOKIE_CONSENT_STORAGE_KEY) === "true";
-  } catch {
-    return false;
-  }
-}
-
-function getServerSnapshot() {
-  return false;
-}
-
 export function GtmScripts() {
   const gtmId = getValidGtmId();
-  const hasConsent = useSyncExternalStore(subscribe, getClientSnapshot, getServerSnapshot);
+  const consentChoice = useSyncExternalStore(
+    subscribeToCookieConsent,
+    getCookieConsentClientSnapshot,
+    getCookieConsentServerSnapshot
+  );
 
-  if (!gtmId || !hasConsent) return null;
+  if (!gtmId || !hasAnalyticsConsent(consentChoice)) return null;
 
   return (
     <Script id="gtm-base" strategy="afterInteractive">

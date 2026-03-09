@@ -1,6 +1,9 @@
 export const PHONE_DISPLAY = "054-4282449";
 export const PHONE_TEL = "0544282449";
 export const WA_PHONE = "972544282449";
+export const WHATSAPP_MESSAGE_CONTACT =
+  "שלום סקיצה אריזות, הגעתי מהאתר ואשמח לדבר על תכנון, עיצוב או הצעת מחיר.";
+export const WHATSAPP_CONTACT_URL = `https://wa.me/${WA_PHONE}?text=${encodeURIComponent(WHATSAPP_MESSAGE_CONTACT)}`;
 export const ADDRESS = "המעיין 4, חולון";
 export const ADDRESS_MAP_URL =
   "https://www.google.com/maps/search/?api=1&query=%D7%94%D7%9E%D7%A2%D7%99%D7%99%D7%9F+4+%D7%97%D7%95%D7%9C%D7%95%D7%9F";
@@ -146,7 +149,9 @@ export function getContactServiceValueFromQuery(serviceKey: string | null | unde
 
 /** Cookie consent bar (link text to privacy page) */
 export const COOKIE_CONSENT_TEXT =
-  'אנו משתמשים בקבצי קוקיז וטכנולוגיות ניטור כדי לאפשר לאתר לפעול, לשפר חווית משתמש ולסייע בשיווק. למידע נוסף ראו ';
+  'אנו משתמשים בקבצי קוקיז וטכנולוגיות ניטור כדי לאפשר לאתר לפעול, להבין אילו דפים עובדים טוב יותר ולשפר את חוויית המשתמש. למידע נוסף ראו ';
 export const COOKIE_CONSENT_LINK_LABEL = "מדיניות פרטיות";
-export const COOKIE_CONSENT_BUTTON = "הבנתי";
+export const COOKIE_CONSENT_ACCEPT_BUTTON = "אשר הכל";
+export const COOKIE_CONSENT_ESSENTIAL_BUTTON = "רק חיוניים";
+export const COOKIE_CONSENT_DETAILS_BUTTON = "פירוט";
 export const COOKIE_CONSENT_STORAGE_KEY = "skitza-cookie-consent";
