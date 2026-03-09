@@ -18,6 +18,11 @@ type PortfolioProps = {
   lightboxPlacement?: "home_gallery" | "gallery_page";
 };
 
+type NetworkInformationLike = {
+  effectiveType?: string;
+  saveData?: boolean;
+};
+
 function getNeighborIndices(index: number, length: number) {
   if (length <= 1) {
     return [];
@@ -88,6 +93,36 @@ function preloadProjectOriginal(
   image.src = sourcePath;
 }
 
+function isSmallViewport() {
+  if (typeof window === "undefined") {
+    return false;
+  }
+
+  return window.matchMedia("(max-width: 767px)").matches;
+}
+
+function canPreloadNeighbors() {
+  if (typeof navigator === "undefined") {
+    return false;
+  }
+
+  const connection = (navigator as Navigator & { connection?: NetworkInformationLike }).connection;
+
+  if (!connection) {
+    return !isSmallViewport();
+  }
+
+  if (connection.saveData) {
+    return false;
+  }
+
+  if (connection.effectiveType && ["slow-2g", "2g", "3g"].includes(connection.effectiveType)) {
+    return false;
+  }
+
+  return true;
+}
+
 export function Portfolio({
   mode = "home",
   projects,
@@ -144,17 +179,6 @@ export function Portfolio({
       setLoadedOriginals,
       setFailedOriginals
     );
-    getNeighborIndices(activeIndex, projects.length).forEach((neighborIndex) => {
-      const neighborProject = projects[neighborIndex];
-      if (neighborProject) {
-        preloadProjectOriginal(
-          neighborProject.originalSrc,
-          preloadedOriginalsRef,
-          setLoadedOriginals,
-          setFailedOriginals
-        );
-      }
-    });
 
     const handleKeyDown = (event: KeyboardEvent) => {
       if (event.key === "Escape") {
@@ -205,6 +229,38 @@ export function Portfolio({
 
     previousActiveIndexRef.current = activeIndex;
   }, [activeIndex]);
+
+  useEffect(() => {
+    if (
+      !resolvedEnableLightbox ||
+      activeIndex === null ||
+      !activeProject ||
+      !activeOriginalLoaded ||
+      !canPreloadNeighbors()
+    ) {
+      return;
+    }
+
+    getNeighborIndices(activeIndex, projects.length).forEach((neighborIndex) => {
+      const neighborProject = projects[neighborIndex];
+      if (!neighborProject) {
+        return;
+      }
+
+      preloadProjectOriginal(
+        neighborProject.originalSrc,
+        preloadedOriginalsRef,
+        setLoadedOriginals,
+        setFailedOriginals
+      );
+    });
+  }, [
+    activeIndex,
+    activeOriginalLoaded,
+    activeProject,
+    projects,
+    resolvedEnableLightbox,
+  ]);
 
   function openLightbox(index: number, trigger: HTMLButtonElement) {
     if (!resolvedEnableLightbox) {
@@ -408,14 +464,6 @@ export function Portfolio({
                               setFailedOriginals
                             )
                           }
-                          onTouchStart={() =>
-                            preloadProjectOriginal(
-                              project.originalSrc,
-                              preloadedOriginalsRef,
-                              setLoadedOriginals,
-                              setFailedOriginals
-                            )
-                          }
                           aria-label={`עבור לתמונה ${index + 1}`}
                           aria-current={isActive ? "true" : undefined}
                           className={`relative h-[3.25rem] w-[3.25rem] shrink-0 overflow-hidden rounded-[1rem] border transition duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/80 focus-visible:ring-offset-2 focus-visible:ring-offset-slate-900/70 sm:h-[3.65rem] sm:w-[3.65rem] lg:h-[4.1rem] lg:w-[4.1rem] ${
@@ -503,14 +551,6 @@ export function Portfolio({
                       )
                     }
                     onFocus={() =>
-                      preloadProjectOriginal(
-                        project.originalSrc,
-                        preloadedOriginalsRef,
-                        setLoadedOriginals,
-                        setFailedOriginals
-                      )
-                    }
-                    onTouchStart={() =>
                       preloadProjectOriginal(
                         project.originalSrc,
                         preloadedOriginalsRef,

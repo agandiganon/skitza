@@ -13,7 +13,7 @@ const SOURCE_EXTENSIONS = new Set([".png", ".jpg", ".jpeg", ".webp"]);
 const VARIANTS = [
   {
     key: "hero",
-    size: 512,
+    size: 384,
     quality: 70,
   },
   {
