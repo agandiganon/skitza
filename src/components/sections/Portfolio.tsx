@@ -28,6 +28,13 @@ type NetworkInformationLike = {
   saveData?: boolean;
 };
 
+type BackgroundPreloadProfile = {
+  batchSize: number;
+  batchDelayMs: number;
+  idleDelayMs: number;
+  idleTimeoutMs: number;
+};
+
 function getNeighborIndices(index: number, length: number) {
   if (length <= 1) {
     return [];
@@ -40,11 +47,11 @@ function getNeighborIndices(index: number, length: number) {
     : [previousIndex, nextIndex];
 }
 
-function markOriginalLoaded(
+function markLightboxLoaded(
   sourcePath: string,
-  setLoadedOriginals: Dispatch<SetStateAction<Record<string, true>>>,
+  setLoadedSources: Dispatch<SetStateAction<Record<string, true>>>,
 ) {
-  setLoadedOriginals((current) => {
+  setLoadedSources((current) => {
     if (current[sourcePath]) {
       return current;
     }
@@ -56,11 +63,11 @@ function markOriginalLoaded(
   });
 }
 
-function markOriginalFailed(
+function markLightboxFailed(
   sourcePath: string,
-  setFailedOriginals: Dispatch<SetStateAction<Record<string, true>>>,
+  setFailedSources: Dispatch<SetStateAction<Record<string, true>>>,
 ) {
-  setFailedOriginals((current) => {
+  setFailedSources((current) => {
     if (current[sourcePath]) {
       return current;
     }
@@ -72,30 +79,30 @@ function markOriginalFailed(
   });
 }
 
-function preloadProjectOriginal(
+function preloadLightboxAsset(
   sourcePath: string,
-  preloadedOriginalsRef: RefObject<Set<string>>,
-  setLoadedOriginals: Dispatch<SetStateAction<Record<string, true>>>,
-  setFailedOriginals: Dispatch<SetStateAction<Record<string, true>>>,
+  preloadedSourcesRef: RefObject<Set<string>>,
+  setLoadedSources: Dispatch<SetStateAction<Record<string, true>>>,
+  setFailedSources: Dispatch<SetStateAction<Record<string, true>>>,
 ) {
   if (!sourcePath || typeof window === 'undefined') {
     return;
   }
 
-  if (preloadedOriginalsRef.current?.has(sourcePath)) {
+  if (preloadedSourcesRef.current?.has(sourcePath)) {
     return;
   }
 
-  preloadedOriginalsRef.current?.add(sourcePath);
+  preloadedSourcesRef.current?.add(sourcePath);
 
   const image = new window.Image();
   image.decoding = 'async';
   image.onload = () => {
-    markOriginalLoaded(sourcePath, setLoadedOriginals);
+    markLightboxLoaded(sourcePath, setLoadedSources);
   };
   image.onerror = () => {
-    markOriginalFailed(sourcePath, setFailedOriginals);
-    preloadedOriginalsRef.current?.delete(sourcePath);
+    markLightboxFailed(sourcePath, setFailedSources);
+    preloadedSourcesRef.current?.delete(sourcePath);
   };
   image.src = sourcePath;
 }
@@ -135,6 +142,62 @@ function canPreloadNeighbors() {
   return true;
 }
 
+function getBackgroundPreloadProfile(): BackgroundPreloadProfile {
+  const isSlowConnection =
+    typeof navigator !== 'undefined' &&
+    'connection' in navigator &&
+    Boolean(
+      (
+        navigator as Navigator & {
+          connection?: NetworkInformationLike;
+        }
+      ).connection?.saveData,
+    );
+  const effectiveType =
+    typeof navigator !== 'undefined' && 'connection' in navigator
+      ? (
+          navigator as Navigator & {
+            connection?: NetworkInformationLike;
+          }
+        ).connection?.effectiveType
+      : undefined;
+
+  if (isSlowConnection || ['slow-2g', '2g'].includes(effectiveType ?? '')) {
+    return {
+      batchSize: 1,
+      batchDelayMs: 1600,
+      idleDelayMs: 2200,
+      idleTimeoutMs: 2800,
+    };
+  }
+
+  if (isSmallViewport() || (effectiveType && ['3g'].includes(effectiveType))) {
+    return {
+      batchSize: 1,
+      batchDelayMs: 900,
+      idleDelayMs: 1500,
+      idleTimeoutMs: 2200,
+    };
+  }
+
+  return {
+    batchSize: 3,
+    batchDelayMs: 280,
+    idleDelayMs: 900,
+    idleTimeoutMs: 1600,
+  };
+}
+
+function orderProjectsForBackgroundPreload(projects: readonly ProjectItem[]) {
+  return [...projects].sort((left, right) => {
+    if (left.featuredHome !== right.featuredHome) {
+      return left.featuredHome ? -1 : 1;
+    }
+
+    return left.id - right.id;
+  });
+}
+
 export function Portfolio({
   mode = 'home',
   projects,
@@ -148,27 +211,27 @@ export function Portfolio({
   const eagerImagesCount = isHome ? 2 : 1;
   const priorityImagesCount = 1;
   const [activeIndex, setActiveIndex] = useState<number | null>(null);
-  const [loadedOriginals, setLoadedOriginals] = useState<Record<string, true>>(
-    {},
-  );
-  const [failedOriginals, setFailedOriginals] = useState<Record<string, true>>(
-    {},
-  );
+  const [loadedLightboxSources, setLoadedLightboxSources] = useState<
+    Record<string, true>
+  >({});
+  const [failedLightboxSources, setFailedLightboxSources] = useState<
+    Record<string, true>
+  >({});
   const triggerRef = useRef<HTMLButtonElement | null>(null);
   const dialogRef = useRef<HTMLDivElement | null>(null);
   const thumbnailRefs = useRef<(HTMLButtonElement | null)[]>([]);
-  const preloadedOriginalsRef = useRef<Set<string>>(new Set());
+  const preloadedLightboxSourcesRef = useRef<Set<string>>(new Set());
   const previousActiveIndexRef = useRef<number | null>(null);
   const touchStartRef = useRef<{ x: number; y: number } | null>(null);
 
   const activeProject =
     activeIndex === null ? null : (projects[activeIndex] ?? null);
-  const activeOriginalSrc = activeProject?.originalSrc ?? null;
-  const activeOriginalLoaded = activeOriginalSrc
-    ? Boolean(loadedOriginals[activeOriginalSrc])
+  const activeLightboxSrc = activeProject?.lightboxSrc ?? null;
+  const activeLightboxLoaded = activeLightboxSrc
+    ? Boolean(loadedLightboxSources[activeLightboxSrc])
     : false;
-  const activeOriginalFailed = activeOriginalSrc
-    ? Boolean(failedOriginals[activeOriginalSrc])
+  const activeLightboxFailed = activeLightboxSrc
+    ? Boolean(failedLightboxSources[activeLightboxSrc])
     : false;
   const sectionClassName = isHome
     ? 'cv-auto bg-white px-4 py-14 sm:py-16 lg:py-20'
@@ -196,11 +259,11 @@ export function Portfolio({
     const previousOverflow = document.body.style.overflow;
     document.body.style.overflow = 'hidden';
 
-    preloadProjectOriginal(
-      activeProject.originalSrc,
-      preloadedOriginalsRef,
-      setLoadedOriginals,
-      setFailedOriginals,
+    preloadLightboxAsset(
+      activeProject.lightboxSrc,
+      preloadedLightboxSourcesRef,
+      setLoadedLightboxSources,
+      setFailedLightboxSources,
     );
 
     const handleKeyDown = (event: KeyboardEvent) => {
@@ -260,7 +323,7 @@ export function Portfolio({
       !resolvedEnableLightbox ||
       activeIndex === null ||
       !activeProject ||
-      !activeOriginalLoaded ||
+      !activeLightboxLoaded ||
       !canPreloadNeighbors()
     ) {
       return;
@@ -273,21 +336,103 @@ export function Portfolio({
           return;
         }
 
-        preloadProjectOriginal(
-          neighborProject.originalSrc,
-          preloadedOriginalsRef,
-          setLoadedOriginals,
-          setFailedOriginals,
+        preloadLightboxAsset(
+          neighborProject.lightboxSrc,
+          preloadedLightboxSourcesRef,
+          setLoadedLightboxSources,
+          setFailedLightboxSources,
         );
       },
     );
   }, [
     activeIndex,
-    activeOriginalLoaded,
+    activeLightboxLoaded,
     activeProject,
     projects,
     resolvedEnableLightbox,
   ]);
+
+  useEffect(() => {
+    if (!resolvedEnableLightbox || typeof window === 'undefined') {
+      return;
+    }
+
+    const preloadQueue = orderProjectsForBackgroundPreload(projects)
+      .map((project) => project.lightboxSrc)
+      .filter(
+        (sourcePath) =>
+          sourcePath && !preloadedLightboxSourcesRef.current?.has(sourcePath),
+      );
+
+    if (preloadQueue.length === 0) {
+      return;
+    }
+
+    const profile = getBackgroundPreloadProfile();
+    const idleWindow = window as Window & {
+      requestIdleCallback?: (
+        callback: () => void,
+        options?: { timeout: number },
+      ) => number;
+      cancelIdleCallback?: (handle: number) => void;
+    };
+    let cancelled = false;
+    let startTimer = 0;
+    let batchTimer = 0;
+    let idleHandle: number | undefined;
+    let queueIndex = 0;
+
+    const runBatch = () => {
+      if (cancelled) {
+        return;
+      }
+
+      const batch = preloadQueue.slice(
+        queueIndex,
+        queueIndex + profile.batchSize,
+      );
+
+      batch.forEach((sourcePath) => {
+        preloadLightboxAsset(
+          sourcePath,
+          preloadedLightboxSourcesRef,
+          setLoadedLightboxSources,
+          setFailedLightboxSources,
+        );
+      });
+
+      queueIndex += batch.length;
+
+      if (queueIndex < preloadQueue.length) {
+        batchTimer = window.setTimeout(runBatch, profile.batchDelayMs);
+      }
+    };
+
+    const startPreloading = () => {
+      if (cancelled) {
+        return;
+      }
+
+      startTimer = window.setTimeout(runBatch, profile.idleDelayMs);
+    };
+
+    if (idleWindow.requestIdleCallback) {
+      idleHandle = idleWindow.requestIdleCallback(startPreloading, {
+        timeout: profile.idleTimeoutMs,
+      });
+    } else {
+      startPreloading();
+    }
+
+    return () => {
+      cancelled = true;
+      if (idleHandle !== undefined) {
+        idleWindow.cancelIdleCallback?.(idleHandle);
+      }
+      window.clearTimeout(startTimer);
+      window.clearTimeout(batchTimer);
+    };
+  }, [projects, resolvedEnableLightbox]);
 
   function openLightbox(index: number, trigger: HTMLButtonElement) {
     if (!resolvedEnableLightbox) {
@@ -300,11 +445,11 @@ export function Portfolio({
     }
 
     triggerRef.current = trigger;
-    preloadProjectOriginal(
-      project.originalSrc,
-      preloadedOriginalsRef,
-      setLoadedOriginals,
-      setFailedOriginals,
+    preloadLightboxAsset(
+      project.lightboxSrc,
+      preloadedLightboxSourcesRef,
+      setLoadedLightboxSources,
+      setFailedLightboxSources,
     );
     setActiveIndex(index);
     pushToDataLayer('gallery_lightbox_open', {
@@ -445,7 +590,7 @@ export function Portfolio({
                         className="h-full w-full scale-105 object-contain p-2 opacity-45 blur-2xl sm:p-4 lg:p-5"
                       />
                     </div>
-                    {!activeOriginalLoaded && !activeOriginalFailed ? (
+                    {!activeLightboxLoaded && !activeLightboxFailed ? (
                       <div className="absolute inset-0 flex items-center justify-center">
                         <div className="rounded-[1.6rem] border border-white/12 bg-slate-950/28 px-5 py-4 text-center text-white shadow-[0_22px_52px_-30px_rgba(15,23,42,0.72)] backdrop-blur-xl">
                           <span className="mx-auto block h-10 w-10 animate-spin rounded-full border-2 border-white/28 border-t-white" />
@@ -455,7 +600,7 @@ export function Portfolio({
                         </div>
                       </div>
                     ) : null}
-                    {activeOriginalFailed ? (
+                    {activeLightboxFailed ? (
                       <div className="absolute inset-0 flex items-center justify-center">
                         <div className="rounded-[1.6rem] border border-rose-200/35 bg-slate-950/34 px-5 py-4 text-center text-white shadow-[0_22px_52px_-30px_rgba(15,23,42,0.72)] backdrop-blur-xl">
                           <p className="text-sm font-semibold text-white">
@@ -467,26 +612,26 @@ export function Portfolio({
                     <div className="gallery-lightbox-media absolute inset-0">
                       {/* eslint-disable-next-line @next/next/no-img-element */}
                       <img
-                        key={activeProject.originalSrc}
-                        src={activeProject.originalSrc}
+                        key={activeProject.lightboxSrc}
+                        src={activeProject.lightboxSrc}
                         alt={activeProject.imageAlt}
                         decoding="async"
                         loading="eager"
                         fetchPriority="high"
                         onLoad={() =>
-                          markOriginalLoaded(
-                            activeProject.originalSrc,
-                            setLoadedOriginals,
+                          markLightboxLoaded(
+                            activeProject.lightboxSrc,
+                            setLoadedLightboxSources,
                           )
                         }
                         onError={() =>
-                          markOriginalFailed(
-                            activeProject.originalSrc,
-                            setFailedOriginals,
+                          markLightboxFailed(
+                            activeProject.lightboxSrc,
+                            setFailedLightboxSources,
                           )
                         }
                         className={`h-full w-full object-contain p-2 transition-opacity duration-300 sm:p-4 lg:p-5 ${
-                          activeOriginalLoaded ? 'opacity-100' : 'opacity-0'
+                          activeLightboxLoaded ? 'opacity-100' : 'opacity-0'
                         }`}
                       />
                     </div>
@@ -537,19 +682,19 @@ export function Portfolio({
                           type="button"
                           onClick={() => setActiveIndex(index)}
                           onMouseEnter={() =>
-                            preloadProjectOriginal(
-                              project.originalSrc,
-                              preloadedOriginalsRef,
-                              setLoadedOriginals,
-                              setFailedOriginals,
+                            preloadLightboxAsset(
+                              project.lightboxSrc,
+                              preloadedLightboxSourcesRef,
+                              setLoadedLightboxSources,
+                              setFailedLightboxSources,
                             )
                           }
                           onFocus={() =>
-                            preloadProjectOriginal(
-                              project.originalSrc,
-                              preloadedOriginalsRef,
-                              setLoadedOriginals,
-                              setFailedOriginals,
+                            preloadLightboxAsset(
+                              project.lightboxSrc,
+                              preloadedLightboxSourcesRef,
+                              setLoadedLightboxSources,
+                              setFailedLightboxSources,
                             )
                           }
                           aria-label={`עבור לתמונה ${index + 1}`}
@@ -637,19 +782,19 @@ export function Portfolio({
                       openLightbox(index, event.currentTarget)
                     }
                     onMouseEnter={() =>
-                      preloadProjectOriginal(
-                        project.originalSrc,
-                        preloadedOriginalsRef,
-                        setLoadedOriginals,
-                        setFailedOriginals,
+                      preloadLightboxAsset(
+                        project.lightboxSrc,
+                        preloadedLightboxSourcesRef,
+                        setLoadedLightboxSources,
+                        setFailedLightboxSources,
                       )
                     }
                     onFocus={() =>
-                      preloadProjectOriginal(
-                        project.originalSrc,
-                        preloadedOriginalsRef,
-                        setLoadedOriginals,
-                        setFailedOriginals,
+                      preloadLightboxAsset(
+                        project.lightboxSrc,
+                        preloadedLightboxSourcesRef,
+                        setLoadedLightboxSources,
+                        setFailedLightboxSources,
                       )
                     }
                     className={`${frameClassName} focus:ring-primary block w-full transition duration-200 focus:ring-2 focus:outline-none focus:ring-inset active:scale-[0.995]`}

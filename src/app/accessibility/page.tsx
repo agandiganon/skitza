@@ -30,10 +30,10 @@ export const metadata: Metadata = {
 
 export default function AccessibilityPage() {
   return (
-    <main className="min-h-screen bg-gradient-to-b from-blue-50 via-white to-blue-50 px-4 pt-6 pb-16 sm:pt-8 sm:pb-20">
-      <div className="mx-auto max-w-4xl rounded-2xl border-2 border-blue-100 bg-white/80 p-8 shadow-lg ring-1 ring-blue-50 sm:p-10">
-        <h1 className="text-primary mb-6 text-3xl font-bold">הצהרת נגישות</h1>
-        <div className="text-foreground/90 space-y-6 text-base leading-relaxed">
+    <main className="min-h-screen bg-[linear-gradient(180deg,_rgba(247,250,255,0.96),_rgba(255,255,255,1)_30%,_rgba(247,250,255,0.88)_100%)] px-4 pt-6 pb-16 sm:pt-8 sm:pb-20">
+      <div className="mx-auto max-w-4xl rounded-[1.8rem] border border-slate-200/90 bg-white p-7 shadow-[0_22px_60px_-52px_rgba(15,23,42,0.18)] sm:p-9">
+        <h1 className="text-primary mb-6 text-3xl font-black">הצהרת נגישות</h1>
+        <div className="text-foreground/88 space-y-6 text-base leading-relaxed">
           <section>
             <h2 className="text-primary mb-2 text-xl font-bold">
               מחויבות לנגישות

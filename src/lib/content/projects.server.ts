@@ -92,6 +92,10 @@ export function getProjects() {
         `/pictures-derived/thumb/${project.basename}.webp`,
         project.assetVersion,
       ),
+      lightboxSrc: buildAssetUrl(
+        `/pictures-derived/lightbox/${project.basename}.webp`,
+        project.assetVersion,
+      ),
       assetVersion: project.assetVersion,
     }));
 

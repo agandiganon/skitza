@@ -109,7 +109,7 @@ function HeroCenterContent() {
           </span>
         </h1>
         <p className="mt-2 text-[13px] font-semibold tracking-[0.01em] text-[#3E5771] sm:text-base lg:text-[22px]">
-          הדפסה בכל כמות ובזמני אספקה מהירים
+          תכנון, עיצוב והפקת אריזות לעסקים במקום אחד
         </p>
         <div
           className="from-accent-cyan to-primary mx-auto mt-3 h-1 w-28 rounded-full bg-gradient-to-l via-blue-500 sm:w-40"

@@ -131,15 +131,15 @@ export default async function ContactPage({ searchParams }: ContactPageProps) {
           }),
         ]}
       />
-      <main className="min-h-screen bg-[linear-gradient(180deg,_rgba(243,247,255,0.88),_rgba(255,255,255,1)_28%,_rgba(238,246,255,0.82)_100%)] px-4 pt-6 pb-16 sm:pt-8 sm:pb-20">
+      <main className="min-h-screen bg-[linear-gradient(180deg,_rgba(247,250,255,0.94),_rgba(255,255,255,1)_32%,_rgba(243,248,255,0.9)_100%)] px-4 pt-6 pb-16 sm:pt-8 sm:pb-20">
         <div className="mx-auto max-w-6xl">
           <Breadcrumbs
             items={[{ label: 'דף הבית', href: '/' }, { label: 'צור קשר' }]}
           />
 
-          <section className="cv-auto overflow-hidden rounded-[2.4rem] border border-blue-100/80 bg-white/92 p-6 shadow-[0_30px_95px_-52px_rgba(15,23,42,0.38)] backdrop-blur-xl sm:p-8 lg:p-10">
+          <section className="cv-auto overflow-hidden rounded-[2.2rem] border border-white/80 bg-white/90 p-5 shadow-[0_26px_80px_-56px_rgba(15,23,42,0.22)] backdrop-blur-xl sm:p-7 lg:p-8">
             <div className="grid gap-8 lg:grid-cols-[minmax(0,1.05fr)_minmax(360px,0.95fr)] lg:items-start">
-              <div className="relative overflow-hidden rounded-[2rem] border border-blue-100/80 bg-[linear-gradient(180deg,_rgba(247,251,255,0.98),_rgba(234,244,255,0.82))] p-6 shadow-[0_24px_70px_-48px_rgba(15,23,42,0.34)] sm:p-8">
+              <div className="relative overflow-hidden rounded-[1.9rem] border border-blue-100/70 bg-[linear-gradient(180deg,_rgba(248,251,255,0.98),_rgba(240,247,255,0.82))] p-6 shadow-[0_20px_56px_-42px_rgba(15,23,42,0.18)] sm:p-7">
                 <div
                   className="pointer-events-none absolute top-10 -left-10 h-32 w-32 rounded-full bg-cyan-300/20 blur-3xl"
                   aria-hidden
@@ -157,7 +157,7 @@ export default async function ContactPage({ searchParams }: ContactPageProps) {
                   </h1>
                   <p className="text-foreground/88 mt-5 max-w-2xl text-lg leading-relaxed sm:text-xl">
                     אפשר להשאיר פרטים, להתקשר או לשלוח הודעה בוואטסאפ. אם נוח
-                    לכם, מלאו את הטופס הקצר ונחזור אליכם להמשך תיאום.
+                    לכם, מלאו את הטופס הקצר ונחזור אליכם להמשך תיאום מסודר.
                   </p>
 
                   <div className="mt-7 grid gap-3 sm:grid-cols-2">
@@ -210,7 +210,7 @@ export default async function ContactPage({ searchParams }: ContactPageProps) {
                     })}
                   </div>
 
-                  <div className="mt-6 rounded-[1.45rem] border border-blue-100/80 bg-white/80 px-4 py-4 shadow-sm">
+                  <div className="mt-6 rounded-[1.35rem] border border-blue-100/75 bg-white/84 px-4 py-4 shadow-[0_12px_30px_-28px_rgba(15,23,42,0.18)]">
                     <div className="flex items-start gap-3">
                       <span className="text-primary inline-flex h-10 w-10 items-center justify-center rounded-2xl bg-blue-100">
                         <MapPin className="h-5 w-5" aria-hidden />
@@ -239,7 +239,7 @@ export default async function ContactPage({ searchParams }: ContactPageProps) {
               <section
                 id="contact-form"
                 aria-labelledby="contact-form-heading"
-                className="rounded-[2rem] border border-blue-100/80 bg-[linear-gradient(180deg,_rgba(255,255,255,1),_rgba(239,246,255,0.78))] p-6 shadow-[0_26px_72px_-44px_rgba(15,23,42,0.42)] sm:p-8"
+                className="rounded-[1.9rem] border border-blue-100/75 bg-[linear-gradient(180deg,_rgba(255,255,255,0.98),_rgba(244,249,255,0.86))] p-6 shadow-[0_20px_56px_-42px_rgba(15,23,42,0.18)] sm:p-7"
               >
                 <p className="text-sm font-black tracking-[0.24em] text-blue-700/90 uppercase">
                   טופס קצר
@@ -250,8 +250,9 @@ export default async function ContactPage({ searchParams }: ContactPageProps) {
                 >
                   השאירו פרטים
                 </h2>
-                <p className="text-foreground/86 mt-3 text-base leading-relaxed">
-                  מלאו שם, טלפון, דוא&quot;ל וסוג פנייה, ונחזור אליכם להמשך.
+                <p className="text-foreground/82 mt-3 text-base leading-relaxed">
+                  מלאו שם, טלפון, דוא&quot;ל וסוג פנייה, ונחזור אליכם להמשך
+                  תיאום.
                 </p>
                 <div className="mt-6">
                   <ContactForm

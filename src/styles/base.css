@@ -15,7 +15,7 @@
   --accent-magenta: #d946ef;
   --accent-yellow: #eab308;
   --accent-pink: #ec4899;
-  --mobile-sticky-bar-height: 5.9rem;
+  --mobile-sticky-bar-height: 5.55rem;
   --floating-stack-offset: calc(
     var(--mobile-sticky-bar-height) + env(safe-area-inset-bottom)
   );

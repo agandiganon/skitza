@@ -6,5 +6,6 @@ export type ProjectItem = {
   heroSrc: string;
   cardSrc: string;
   thumbSrc: string;
+  lightboxSrc: string;
   assetVersion: string;
 };

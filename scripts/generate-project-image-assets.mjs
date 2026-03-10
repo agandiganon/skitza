@@ -26,6 +26,11 @@ const VARIANTS = [
     size: 160,
     quality: 60,
   },
+  {
+    key: 'lightbox',
+    size: 1800,
+    quality: 92,
+  },
 ];
 
 async function ensureDirectory(directoryPath) {

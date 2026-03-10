@@ -172,7 +172,7 @@ export function getContactServiceValueFromQuery(
 
 /** Cookie consent bar (link text to privacy page) */
 export const COOKIE_CONSENT_TEXT =
-  'האתר משתמש בקבצי קוקיז וטכנולוגיות ניטור לצורך תפעול, מדידה ושיפור חוויית המשתמש. למידע נוסף ראו ';
+  'האתר משתמש בקבצי קוקיז לצורך תפעול ומדידה. פרטים נוספים ב־';
 export const COOKIE_CONSENT_LINK_LABEL = 'מדיניות פרטיות';
 export const COOKIE_CONSENT_ACCEPT_BUTTON = 'הבנתי';
 export const COOKIE_CONSENT_STORAGE_KEY = 'skitza-cookie-consent';

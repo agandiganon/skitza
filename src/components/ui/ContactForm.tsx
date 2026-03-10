@@ -38,7 +38,7 @@ function isLikelyEmail(value: string) {
 const inputClass = {
   dark: 'w-full rounded-lg border border-primary-foreground/20 bg-white/10 px-4 py-3 text-primary-foreground placeholder:text-primary-foreground/50 focus:border-primary-foreground/50 focus:outline-none focus:ring-1 focus:ring-primary-foreground/30',
   light:
-    'w-full rounded-lg border border-primary/20 bg-white px-4 py-3 text-foreground placeholder:text-foreground/50 focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary/30',
+    'w-full rounded-xl border border-blue-100/85 bg-white/96 px-4 py-3 text-foreground shadow-[0_10px_24px_-22px_rgba(15,23,42,0.18)] placeholder:text-foreground/46 transition focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary/30',
 };
 
 const errorClass = {

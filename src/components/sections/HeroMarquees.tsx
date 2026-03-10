@@ -16,7 +16,7 @@ type HeroMarqueesProps = {
   children: ReactNode;
 };
 
-const INITIAL_HERO_IMAGE_COUNT = 12;
+const INITIAL_HERO_IMAGE_COUNT = 10;
 
 function buildImageSeed(images: readonly HeroGalleryImage[]) {
   const source = images.map((image) => image.src).join('|');

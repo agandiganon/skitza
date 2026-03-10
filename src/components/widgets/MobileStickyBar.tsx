@@ -4,14 +4,14 @@ import { PHONE_TEL, WHATSAPP_CONTACT_URL } from '@/lib/constants';
 
 export function MobileStickyBar() {
   return (
-    <div className="border-primary/12 fixed inset-x-0 bottom-0 z-[55] flex gap-2 border-t bg-white/94 px-3 pt-3 pb-[calc(env(safe-area-inset-bottom)+0.7rem)] shadow-[0_-16px_34px_-22px_rgba(15,23,42,0.42)] backdrop-blur-xl sm:hidden">
+    <div className="fixed inset-x-0 bottom-0 z-[55] flex gap-2.5 border-t border-slate-200/85 bg-white/92 px-3 pt-2.5 pb-[calc(env(safe-area-inset-bottom)+0.55rem)] shadow-[0_-14px_32px_-24px_rgba(15,23,42,0.34)] backdrop-blur-xl sm:hidden">
       <a
         id="cta-call-mobile"
         data-track-event="click_to_call"
         data-track-placement="mobile_sticky_bar"
         data-track-label="mobile_call"
         href={`tel:${PHONE_TEL}`}
-        className="bg-primary text-primary-foreground flex min-h-[50px] flex-1 items-center justify-center gap-2 rounded-2xl px-4 py-3 font-semibold shadow-lg transition active:opacity-90"
+        className="bg-primary text-primary-foreground flex min-h-[48px] flex-1 items-center justify-center gap-2 rounded-2xl px-4 py-3 font-semibold shadow-[0_14px_30px_-22px_rgba(30,58,95,0.5)] transition active:scale-[0.99] active:opacity-95"
         aria-label="התקשר עכשיו"
       >
         <svg
@@ -38,7 +38,7 @@ export function MobileStickyBar() {
         href={WHATSAPP_CONTACT_URL}
         target="_blank"
         rel="noopener noreferrer"
-        className="flex min-h-[50px] flex-1 items-center justify-center gap-2 rounded-2xl bg-[#25D366] px-4 py-3 font-semibold text-white shadow-lg transition active:opacity-90"
+        className="flex min-h-[48px] flex-1 items-center justify-center gap-2 rounded-2xl bg-[#25D366] px-4 py-3 font-semibold text-white shadow-[0_14px_28px_-22px_rgba(37,211,102,0.56)] transition active:scale-[0.99] active:opacity-95"
         aria-label="שלח הודעה בוואטסאפ"
       >
         <svg

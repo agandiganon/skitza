@@ -39,7 +39,7 @@ export function DeferredWidgets() {
   const [showWhatsAppFloat, setShowWhatsAppFloat] = useState(false);
 
   useEffect(() => {
-    const timer = window.setTimeout(() => setShowCookieConsent(true), 420);
+    const timer = window.setTimeout(() => setShowCookieConsent(true), 1050);
     return () => window.clearTimeout(timer);
   }, []);
 
@@ -78,7 +78,7 @@ export function DeferredWidgets() {
     fallbackTimer = window.setTimeout(() => {
       cleanupEvents();
       activate();
-    }, 2200);
+    }, 2500);
 
     const idleWindow = window as WindowWithIdleCallback;
     if (idleWindow.requestIdleCallback) {
@@ -87,7 +87,7 @@ export function DeferredWidgets() {
           cleanupEvents();
           activate();
         },
-        { timeout: 1800 },
+        { timeout: 2100 },
       );
     }
 

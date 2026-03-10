@@ -3,9 +3,10 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
+    "prepare:dev": "node scripts/prepare-dev.mjs",
     "project-images:build": "node scripts/generate-project-image-assets.mjs",
     "prepare": "husky",
-    "predev": "npm run project-images:build",
+    "predev": "npm run prepare:dev && npm run project-images:build",
     "prebuild": "npm run project-images:build",
     "prestart": "npm run project-images:build",
     "pretypecheck": "npm run project-images:build",
