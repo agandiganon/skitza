@@ -6,9 +6,14 @@ const ROOT = process.cwd();
 const targets = [
   ['.next', 'cache'],
   ['.next', 'dev'],
+  ['.next', 'diagnostics'],
   ['.next', 'trace'],
+  ['.next', 'trace-build'],
+  ['.next', 'turbopack'],
+  ['.next', 'types'],
   ['.next-dev'],
   ['.next-prod'],
+  ['.turbo'],
 ];
 
 for (const segments of targets) {
@@ -21,14 +26,6 @@ for (const segments of targets) {
   });
 }
 
-const generatedTypeArtifacts = [
-  path.join(ROOT, '.next', 'types', 'routes.d 2.ts'),
-  path.join(ROOT, '.next', 'types', 'validator 2.ts'),
-  path.join(ROOT, '.next', 'types', 'cache-life 2.d.ts'),
-];
-
-for (const artifact of generatedTypeArtifacts) {
-  fs.rmSync(artifact, { force: true });
-}
-
-console.log('[prepare-dev] cleared stale Next.js dev caches');
+console.log(
+  '[prepare-dev] cleared stale Next.js and Turbopack dev caches while preserving production build output',
+);

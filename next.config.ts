@@ -9,8 +9,32 @@ const createNextConfig = (phase: string): NextConfig => {
   const isDev = phase === PHASE_DEVELOPMENT_SERVER;
   const isProductionPhase =
     phase === PHASE_PRODUCTION_BUILD || phase === PHASE_PRODUCTION_SERVER;
+  const contentSecurityPolicy = [
+    "default-src 'self'",
+    "base-uri 'self'",
+    "form-action 'self'",
+    "frame-ancestors 'none'",
+    "object-src 'none'",
+    "script-src 'self' 'unsafe-inline' https://www.googletagmanager.com",
+    "style-src 'self' 'unsafe-inline'",
+    "img-src 'self' data: blob: https:",
+    "font-src 'self' data: https://fonts.gstatic.com",
+    [
+      "connect-src 'self'",
+      'https://www.googletagmanager.com',
+      'https://www.google-analytics.com',
+      'https://region1.google-analytics.com',
+      'https://vitals.vercel-insights.com',
+      'https://va.vercel-scripts.com',
+    ].join(' '),
+    "worker-src 'self' blob:",
+    "frame-src 'self' https://www.googletagmanager.com",
+    "media-src 'self' blob:",
+    'upgrade-insecure-requests',
+  ].join('; ');
 
   const securityHeaders = [
+    { key: 'Content-Security-Policy', value: contentSecurityPolicy },
     { key: 'X-Content-Type-Options', value: 'nosniff' },
     { key: 'X-Frame-Options', value: 'DENY' },
     { key: 'Referrer-Policy', value: 'strict-origin-when-cross-origin' },
