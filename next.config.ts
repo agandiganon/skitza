@@ -1,4 +1,5 @@
 import type { NextConfig } from 'next';
+import os from 'node:os';
 import {
   PHASE_DEVELOPMENT_SERVER,
   PHASE_PRODUCTION_BUILD,
@@ -9,6 +10,22 @@ const createNextConfig = (phase: string): NextConfig => {
   const isDev = phase === PHASE_DEVELOPMENT_SERVER;
   const isProductionPhase =
     phase === PHASE_PRODUCTION_BUILD || phase === PHASE_PRODUCTION_SERVER;
+  const localDevOrigins = Array.from(
+    new Set([
+      'localhost',
+      '127.0.0.1',
+      ...Object.values(os.networkInterfaces())
+        .flat()
+        .flatMap((network) =>
+          network &&
+          network.family === 'IPv4' &&
+          !network.internal &&
+          network.address
+            ? [network.address]
+            : [],
+        ),
+    ]),
+  );
   const contentSecurityPolicy = [
     "default-src 'self'",
     "base-uri 'self'",
@@ -74,8 +91,10 @@ const createNextConfig = (phase: string): NextConfig => {
   ];
 
   return {
+    distDir: '.next-runtime',
     reactStrictMode: true,
     devIndicators: false,
+    allowedDevOrigins: localDevOrigins,
     async headers() {
       if (isDev) {
         return [];

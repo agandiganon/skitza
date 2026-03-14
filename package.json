@@ -17,10 +17,10 @@
     "lint": "eslint . --ignore-pattern archive/**",
     "format": "prettier . --write",
     "format:check": "prettier . --check",
-    "typecheck": "mkdir -p .next/types && rm -f \".next/types/routes.d 2.ts\" \".next/types/validator 2.ts\" \".next/types/cache-life 2.d.ts\" tsconfig.tsbuildinfo && npx next typegen && node -e \"const fs=require('fs');fs.mkdirSync('.next/types',{recursive:true});fs.writeFileSync('.next/types/cache-life.d.ts','');\" && npx tsc --noEmit -p tsconfig.json",
+    "typecheck": "mkdir -p .next-runtime/types && rm -f \".next-runtime/types/routes.d 2.ts\" \".next-runtime/types/validator 2.ts\" \".next-runtime/types/cache-life 2.d.ts\" tsconfig.tsbuildinfo && npx next typegen && node -e \"const fs=require('fs');fs.mkdirSync('.next-runtime/types',{recursive:true});fs.writeFileSync('.next-runtime/types/cache-life.d.ts','');\" && npx tsc --noEmit -p tsconfig.json",
     "convert:gallery-images": "node scripts/convert-gallery-images.mjs",
     "smoke": "bash scripts/smoke-check.sh",
-    "clean": "node -e \"const fs=require('node:fs');['.next','.next-dev','.next-prod','.playwright-cli','.smoke-frontend.log'].forEach((target)=>fs.rmSync(target,{recursive:true,force:true,maxRetries:10,retryDelay:100}))\""
+    "clean": "node -e \"const fs=require('node:fs');['.next','.next-runtime','.next-dev','.next-prod','.playwright-cli','.smoke-frontend.log'].forEach((target)=>fs.rmSync(target,{recursive:true,force:true,maxRetries:10,retryDelay:100}))\""
   },
   "dependencies": {
     "@vercel/analytics": "^1.6.1",
