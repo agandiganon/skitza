@@ -89,15 +89,15 @@ function VerticalMarqueeColumn({
     <aside
       ref={containerRef}
       {...bind}
-      className="hero-marquee hero-marquee--vertical relative hidden h-[458px] overflow-hidden lg:block xl:h-[468px]"
+      className="hero-marquee hero-marquee--vertical pointer-events-none relative block h-full min-h-0 self-stretch overflow-hidden lg:pointer-events-auto"
       aria-label="גלריית פרויקטים מתחלפת"
     >
-      <div className="pointer-events-none absolute inset-x-0 top-0 z-10 h-20 bg-gradient-to-b from-blue-100/95 to-transparent" />
-      <div className="pointer-events-none absolute inset-x-0 bottom-0 z-10 h-20 bg-gradient-to-t from-blue-100/95 to-transparent" />
+      <div className="pointer-events-none absolute inset-x-0 top-0 z-10 h-10 bg-gradient-to-b from-blue-100/95 to-transparent sm:h-12 lg:h-16" />
+      <div className="pointer-events-none absolute inset-x-0 bottom-0 z-10 h-10 bg-gradient-to-t from-blue-100/95 to-transparent sm:h-12 lg:h-16" />
 
       <div
         ref={trackRef}
-        className="hero-marquee-track flex flex-col items-center gap-3 pb-3"
+        className="hero-marquee-track flex flex-col items-center gap-[clamp(0.55rem,1.05vw,0.9rem)] pb-[clamp(0.55rem,1.05vw,0.9rem)]"
       >
         {loopItems.map((image, index) => {
           const isClone = index >= images.length;
@@ -106,9 +106,9 @@ function VerticalMarqueeColumn({
               key={`${image.src}-${index}`}
               aria-hidden={isClone}
               onDragStart={preventNativeDrag}
-              className="hero-marquee-card group relative aspect-square w-full max-w-[186px] overflow-hidden rounded-[1.45rem] border border-white/85 bg-white/75 p-1 shadow-[0_12px_24px_rgba(15,23,42,0.15)] backdrop-blur-sm"
+              className="hero-marquee-card group relative aspect-square w-full overflow-hidden rounded-[clamp(1rem,1.7vw,1.45rem)] border border-white/85 bg-white/75 p-[clamp(0.18rem,0.4vw,0.3rem)] shadow-[0_12px_24px_rgba(15,23,42,0.15)] backdrop-blur-sm"
             >
-              <div className="relative h-full w-full overflow-hidden rounded-[1.15rem] border border-blue-100/60 bg-slate-50/80">
+              <div className="relative h-full w-full overflow-hidden rounded-[clamp(0.82rem,1.4vw,1.15rem)] border border-blue-100/60 bg-slate-50/80">
                 <Image
                   src={image.src}
                   alt={isClone ? '' : image.alt}
@@ -117,8 +117,8 @@ function VerticalMarqueeColumn({
                   placeholder="blur"
                   blurDataURL={image.blurDataUrl}
                   draggable={false}
-                  sizes="(max-width: 1279px) 0px, (max-width: 1536px) 220px, 250px"
-                  className="h-full w-full object-contain p-1.5 transition-transform duration-500 ease-out group-hover:scale-[1.045]"
+                  sizes="(max-width: 767px) 92px, (max-width: 1024px) 116px, (max-width: 1440px) 168px, 210px"
+                  className="h-full w-full object-contain p-[clamp(0.25rem,0.65vw,0.55rem)] transition-transform duration-500 ease-out group-hover:scale-[1.045]"
                   loading="lazy"
                   decoding="async"
                 />
@@ -128,87 +128,6 @@ function VerticalMarqueeColumn({
         })}
       </div>
     </aside>
-  );
-}
-
-type HorizontalMarqueeRowProps = {
-  images: readonly HeroGalleryImage[];
-  reduceMotion: boolean;
-};
-
-function HorizontalMarqueeRow({
-  images,
-  reduceMotion,
-}: HorizontalMarqueeRowProps) {
-  const mobileItems = useMemo(() => [...images], [images]);
-
-  return (
-    <div
-      dir="ltr"
-      className="hero-marquee hero-marquee--horizontal relative mt-1 overflow-hidden rounded-[1.3rem] border border-blue-200/80 bg-white/45 px-0.5 py-0.5 backdrop-blur-sm lg:hidden"
-      aria-label="גלריית פרויקטים מתחלפת"
-    >
-      <div
-        className={`hero-marquee-track hero-mobile-marquee-track inline-flex items-stretch ${reduceMotion ? 'hero-mobile-marquee-track--static' : ''}`}
-      >
-        <div className="hero-mobile-marquee-group">
-          {mobileItems.map((image, index) => (
-            <article
-              key={`group-a-${image.src}-${index}`}
-              onDragStart={preventNativeDrag}
-              className="hero-marquee-card group relative h-[68px] w-[68px] shrink-0 overflow-hidden rounded-[1rem] border border-white/85 bg-white/85 p-1 shadow-[0_8px_18px_rgba(15,23,42,0.14)]"
-            >
-              <div className="relative h-full w-full overflow-hidden rounded-xl border border-blue-100/60 bg-slate-50/80">
-                <Image
-                  src={image.src}
-                  alt={image.alt}
-                  width={384}
-                  height={384}
-                  placeholder="blur"
-                  blurDataURL={image.blurDataUrl}
-                  draggable={false}
-                  sizes="106px"
-                  className="h-full w-full object-contain p-1 transition-transform duration-500 ease-out group-hover:scale-[1.05]"
-                  loading="lazy"
-                  decoding="async"
-                />
-              </div>
-            </article>
-          ))}
-        </div>
-        {!reduceMotion ? (
-          <div
-            className="hero-mobile-marquee-group"
-            data-clone="true"
-            aria-hidden
-          >
-            {mobileItems.map((image, index) => (
-              <article
-                key={`group-b-${image.src}-${index}`}
-                onDragStart={preventNativeDrag}
-                className="hero-marquee-card group relative h-[68px] w-[68px] shrink-0 overflow-hidden rounded-[1rem] border border-white/85 bg-white/85 p-1 shadow-[0_8px_18px_rgba(15,23,42,0.14)]"
-              >
-                <div className="relative h-full w-full overflow-hidden rounded-xl border border-blue-100/60 bg-slate-50/80">
-                  <Image
-                    src={image.src}
-                    alt=""
-                    width={384}
-                    height={384}
-                    placeholder="blur"
-                    blurDataURL={image.blurDataUrl}
-                    draggable={false}
-                    sizes="106px"
-                    className="h-full w-full object-contain p-1 transition-transform duration-500 ease-out group-hover:scale-[1.05]"
-                    loading="lazy"
-                    decoding="async"
-                  />
-                </div>
-              </article>
-            ))}
-          </div>
-        ) : null}
-      </div>
-    </div>
   );
 }
 
@@ -265,26 +184,20 @@ export function HeroMarquees({ images, children }: HeroMarqueesProps) {
   );
 
   return (
-    <div className="flex flex-col items-center gap-2 lg:grid lg:grid-cols-[minmax(220px,1.18fr)_minmax(610px,1.12fr)_minmax(220px,1.18fr)] lg:items-start lg:gap-5">
+    <div className="grid h-full min-h-0 w-full grid-cols-[clamp(3.85rem,14vw,5rem)_minmax(0,1fr)_clamp(3.85rem,14vw,5rem)] items-stretch gap-[clamp(0.45rem,1.35vw,1.5rem)] sm:grid-cols-[clamp(4.4rem,13vw,6.5rem)_minmax(0,1fr)_clamp(4.4rem,13vw,6.5rem)] md:grid-cols-[clamp(6.25rem,13vw,9rem)_minmax(0,1fr)_clamp(6.25rem,13vw,9rem)] lg:grid-cols-[clamp(9rem,13vw,12.5rem)_minmax(0,1fr)_clamp(9rem,13vw,12.5rem)] xl:grid-cols-[clamp(10rem,13vw,13rem)_minmax(0,1fr)_clamp(10rem,13vw,13rem)]">
       <VerticalMarqueeColumn
         images={leftColumnImages}
         reduceMotion={reduceMotion}
         direction={-1}
-        initialOffsetRatio={0.01}
+        initialOffsetRatio={0.06}
       />
-      <div className="w-full">{children}</div>
+      <div className="h-full min-w-0">{children}</div>
       <VerticalMarqueeColumn
         images={rightColumnImages}
         reduceMotion={reduceMotion}
         direction={1}
-        initialOffsetRatio={0.18}
+        initialOffsetRatio={0.22}
       />
-      <div className="w-full lg:hidden">
-        <HorizontalMarqueeRow
-          images={displayImages}
-          reduceMotion={reduceMotion}
-        />
-      </div>
     </div>
   );
 }
