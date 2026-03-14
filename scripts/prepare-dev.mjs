@@ -5,7 +5,6 @@ import { execSync } from 'node:child_process';
 const ROOT = process.cwd();
 
 const targets = [
-  ['.next'],
   ['.next-runtime', 'cache'],
   ['.next-runtime', 'dev'],
   ['.next-runtime', 'diagnostics'],
