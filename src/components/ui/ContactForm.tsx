@@ -36,9 +36,9 @@ function isLikelyEmail(value: string) {
 }
 
 const inputClass = {
-  dark: 'w-full rounded-lg border border-primary-foreground/20 bg-white/10 px-4 py-3 text-primary-foreground placeholder:text-primary-foreground/50 focus:border-primary-foreground/50 focus:outline-none focus:ring-1 focus:ring-primary-foreground/30',
+  dark: 'w-full appearance-none rounded-lg border border-primary-foreground/20 bg-white/10 px-4 py-3 text-base text-primary-foreground placeholder:text-primary-foreground/50 focus:border-primary-foreground/50 focus:outline-none focus:ring-1 focus:ring-primary-foreground/30',
   light:
-    'w-full rounded-xl border border-blue-100/85 bg-white/96 px-4 py-3 text-foreground shadow-[0_10px_24px_-22px_rgba(15,23,42,0.18)] placeholder:text-foreground/46 transition focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary/30',
+    'w-full appearance-none rounded-xl border border-blue-100/85 bg-white/96 px-4 py-3 text-base text-foreground shadow-[0_10px_24px_-22px_rgba(15,23,42,0.18)] placeholder:text-foreground/46 transition focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary/30',
 };
 
 const errorClass = {
@@ -374,6 +374,8 @@ export function ContactForm({
       </div>
       <button
         id="cta-contact-submit"
+        data-testid="submit-lead"
+        data-track-placement="contact_form"
         type="submit"
         disabled={isPending}
         className="from-accent-cyan to-primary focus:ring-offset-primary min-h-[44px] w-full rounded-xl bg-gradient-to-l via-blue-500 px-6 py-3 font-medium text-white shadow-lg transition hover:opacity-95 focus:ring-2 focus:ring-white focus:ring-offset-2 focus:outline-none active:scale-[0.99] active:opacity-100 disabled:opacity-70"
@@ -407,6 +409,7 @@ export function ContactForm({
           </p>
           <div className="mt-4 flex flex-wrap gap-2">
             <a
+              data-testid="contact-success-phone"
               href={`tel:${PHONE_TEL}`}
               data-track-event="click_to_call"
               data-track-placement="contact_form_success"
@@ -420,6 +423,7 @@ export function ContactForm({
               התקשרו
             </a>
             <a
+              data-testid="contact-success-whatsapp"
               href={WHATSAPP_CONTACT_URL}
               target="_blank"
               rel="noopener noreferrer"

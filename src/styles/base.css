@@ -42,6 +42,17 @@
 html {
   scroll-behavior: smooth;
   scroll-padding-top: 6rem;
+  overflow-x: clip;
+}
+
+button,
+input,
+select,
+textarea,
+[role='button'],
+a {
+  appearance: none;
+  -webkit-appearance: none;
 }
 
 a,
@@ -53,6 +64,30 @@ textarea,
   -webkit-tap-highlight-color: transparent;
 }
 
+::selection {
+  background: rgba(15, 78, 201, 0.18);
+  color: #0f172a;
+}
+
+* {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(15, 78, 201, 0.35) transparent;
+}
+
+*::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+
+*::-webkit-scrollbar-thumb {
+  background: rgba(15, 78, 201, 0.28);
+  border-radius: 999px;
+}
+
+*::-webkit-scrollbar-track {
+  background: transparent;
+}
+
 @media (prefers-reduced-motion: reduce) {
   html {
     scroll-behavior: auto;
@@ -62,6 +97,7 @@ textarea,
 body {
   position: relative;
   isolation: isolate;
+  overflow-x: clip;
   background: var(--background);
   color: var(--foreground);
   font-family:
@@ -119,6 +155,27 @@ body::before {
 @media (min-width: 640px) {
   body {
     padding-bottom: 0;
+  }
+}
+
+@media print {
+  body {
+    color: #000 !important;
+    background: #fff !important;
+    padding-bottom: 0 !important;
+  }
+
+  .gallery-lightbox-backdrop,
+  .cookie-consent-banner,
+  .mobile-sticky-bar,
+  #cta-whatsapp-float,
+  [data-a11y-widget='true'] {
+    display: none !important;
+  }
+
+  a {
+    color: #000 !important;
+    text-decoration: underline;
   }
 }
 

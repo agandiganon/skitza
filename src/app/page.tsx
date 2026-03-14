@@ -14,9 +14,9 @@ import { getProjects } from '@/lib/content/projects.server';
 import { buildFaqSchema } from '@/lib/seo/schema';
 
 export const metadata: Metadata = {
-  title: 'בית דפוס לאריזות בחולון',
+  title: 'סקיצה אריזות | בית דפוס בחולון לתכנון ועיצוב אריזות',
   description:
-    'בית דפוס בחולון להדפסת אריזות ואריזות מותאמות אישית לעסקים, עם תכנון, עיצוב וייצור מלא במקום אחד.',
+    'בית דפוס בחולון לתכנון, עיצוב והפקת אריזות קרטון לעסקים. צפו בגלריית עבודות, בחרו סוג פנייה, והשאירו פרטים לשיחה, ליווי מקצועי וקבלת הצעת מחיר מותאמת.',
   keywords: [
     'בית דפוס בחולון',
     'הדפסת אריזות',
@@ -30,9 +30,9 @@ export const metadata: Metadata = {
     },
   },
   openGraph: {
-    title: 'סקיצה אריזות | בית דפוס לאריזות בחולון',
+    title: 'סקיצה אריזות | בית דפוס בחולון לתכנון ועיצוב אריזות',
     description:
-      'הדפסת אריזות, תכנון אריזות ופתרונות מיתוג לעסקים מחולון לכל הארץ.',
+      'בית דפוס בחולון לתכנון, עיצוב והפקת אריזות קרטון לעסקים. צפו בגלריית עבודות, בחרו סוג פנייה, והשאירו פרטים לשיחה, ליווי מקצועי וקבלת הצעת מחיר מותאמת.',
     url: '/',
     locale: 'he_IL',
     type: 'website',
@@ -41,7 +41,7 @@ export const metadata: Metadata = {
         url: '/opengraph-image',
         width: 1200,
         height: 630,
-        alt: 'סקיצה אריזות - בית דפוס לאריזות בחולון',
+        alt: 'סקיצה אריזות - בית דפוס ותכנון אריזות בחולון',
       },
     ],
   },
@@ -58,6 +58,7 @@ export default function Home() {
           images={allProjects.map((project) => ({
             src: project.heroSrc,
             alt: project.imageAlt,
+            blurDataUrl: project.blurDataUrl,
           }))}
         />
         <About />

@@ -2,10 +2,12 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { ArrowUpLeft } from 'lucide-react';
 import { HeroMarquees } from '@/components/sections/HeroMarquees';
+import { BRAND_BLUR_DATA_URL } from '@/lib/media/placeholders';
 
 type HeroGalleryImage = {
   src: string;
   alt: string;
+  blurDataUrl: string;
 };
 
 type HeroProps = {
@@ -16,7 +18,7 @@ export function Hero({ images }: HeroProps) {
   return (
     <section
       id="home"
-      className="relative overflow-hidden px-3 pt-0 pb-10 sm:px-4 sm:pt-1 sm:pb-14 lg:pt-2 lg:pb-16"
+      className="relative overflow-hidden px-3 pt-3 pb-1 sm:px-4 sm:pt-4 sm:pb-3 lg:pt-4 lg:pb-2"
     >
       <div
         className="absolute inset-0 bg-gradient-to-b from-blue-200/80 via-blue-100 to-blue-50"
@@ -31,7 +33,7 @@ export function Hero({ images }: HeroProps) {
         aria-hidden
       />
 
-      <div className="relative mx-auto max-w-7xl">
+      <div className="relative mx-auto max-w-[86rem]">
         <HeroMarquees images={images}>
           <HeroCenterContent />
         </HeroMarquees>
@@ -42,18 +44,20 @@ export function Hero({ images }: HeroProps) {
 
 function HeroCenterContent() {
   return (
-    <div className="relative -mt-4 flex w-full flex-col items-center lg:-mt-12">
-      <div className="hero-logo-shell relative -mb-2 overflow-hidden sm:-mb-3 lg:-mb-5">
+    <div className="relative flex w-full flex-col items-center gap-1 sm:gap-1.5 lg:gap-1.5">
+      <div className="hero-logo-shell relative overflow-hidden">
         <Image
           src="/logo.png"
           alt="לוגו סקיצה אריזות"
           width={2560}
           height={1706}
+          placeholder="blur"
+          blurDataURL={BRAND_BLUR_DATA_URL}
           priority
           loading="eager"
           fetchPriority="high"
-          className="h-auto w-[340px] object-contain drop-shadow-[0_10px_22px_rgba(15,23,42,0.14)] sm:w-[390px] lg:w-[680px]"
-          sizes="(max-width: 640px) 340px, (max-width: 1024px) 390px, 680px"
+          className="h-auto w-[274px] object-contain drop-shadow-[0_10px_22px_rgba(15,23,42,0.14)] sm:w-[300px] lg:w-[390px]"
+          sizes="(max-width: 640px) 274px, (max-width: 1024px) 300px, 390px"
         />
         <div
           className="hero-logo-glint pointer-events-none absolute inset-y-[16%] -left-[45%] w-[26%] bg-gradient-to-r from-transparent via-white/45 to-transparent opacity-0 mix-blend-screen blur-[1px]"
@@ -65,9 +69,13 @@ function HeroCenterContent() {
         />
       </div>
 
-      <div className="relative -mt-2 w-full max-w-[325px] overflow-hidden rounded-3xl border border-white/70 bg-white/65 px-3 py-3 text-center shadow-[0_16px_36px_rgba(15,23,42,0.16)] sm:-mt-4 sm:max-w-[560px] sm:px-5 sm:py-4 lg:-mt-7 lg:max-w-[720px] lg:px-7 lg:py-5">
+      <p className="text-primary/90 inline-flex items-center rounded-full border border-white/75 bg-white/70 px-3 py-1 text-[10px] font-bold tracking-[0.15em] shadow-[0_6px_16px_rgba(15,23,42,0.08)] backdrop-blur-sm sm:text-[11px] lg:text-[12px]">
+        דפוס סקיצה אריזות
+      </p>
+
+      <div className="relative w-full max-w-[332px] overflow-hidden rounded-[1.35rem] border border-white/70 bg-white/66 px-3 py-2 text-center shadow-[0_10px_22px_rgba(15,23,42,0.12)] sm:max-w-[540px] sm:px-5 sm:py-2.5 lg:max-w-[610px] lg:px-6 lg:py-2">
         <h1
-          className="hero-heading-package mx-auto max-w-[300px] text-[26px] leading-[1.06] tracking-tight sm:max-w-[460px] sm:text-[40px] lg:max-w-[640px] lg:text-[58px]"
+          className="hero-heading-package mx-auto max-w-[292px] text-[22px] leading-[0.98] tracking-tight sm:max-w-[430px] sm:text-[30px] lg:max-w-[560px] lg:text-[36px]"
           aria-label="בית דפוס לאריזות קרטון ממותגות לעסקים"
         >
           <svg
@@ -108,20 +116,20 @@ function HeroCenterContent() {
             ממותגות לעסקים
           </span>
         </h1>
-        <p className="mt-2 text-[13px] font-semibold tracking-[0.01em] text-[#3E5771] sm:text-base lg:text-[22px]">
-          תכנון, עיצוב והפקת אריזות לעסקים במקום אחד
+        <p className="mx-auto mt-1 max-w-[430px] text-[11px] leading-5 font-semibold tracking-[0.01em] text-[#3E5771] sm:text-[12px] sm:leading-[1.55] lg:max-w-[520px] lg:text-[13px] lg:leading-[1.45]">
+          תכנון, עיצוב והפקת אריזות קרטון ממותגות לעסקים במקום אחד.
         </p>
         <div
-          className="from-accent-cyan to-primary mx-auto mt-3 h-1 w-28 rounded-full bg-gradient-to-l via-blue-500 sm:w-40"
+          className="from-accent-cyan to-primary mx-auto mt-1.5 h-0.5 w-12 rounded-full bg-gradient-to-l via-blue-500 sm:w-[4.5rem]"
           aria-hidden
         />
-        <div className="mt-4 flex items-center justify-center gap-2.5 sm:mt-5">
+        <div className="mt-2 flex items-center justify-center gap-2 sm:mt-2">
           <Link
             href="/gallery"
             data-track-event="cta_click"
             data-track-placement="hero"
             data-track-label="hero_gallery"
-            className="hero-button-readable border-primary/50 text-primary hover:border-primary inline-flex min-h-[42px] items-center justify-center rounded-xl border-2 bg-transparent px-4 py-2 text-sm font-semibold shadow-sm transition hover:bg-white/80 sm:min-h-[46px] sm:px-6 sm:text-base"
+            className="hero-button-readable border-primary/50 text-primary hover:border-primary inline-flex min-h-[36px] items-center justify-center rounded-xl border-2 bg-transparent px-3.5 py-2 text-[13px] font-semibold shadow-sm transition hover:bg-white/80 sm:min-h-[38px] sm:px-5 sm:text-sm lg:min-h-[36px] lg:px-4.5"
           >
             גלריה
           </Link>
@@ -130,12 +138,15 @@ function HeroCenterContent() {
             data-track-event="cta_click"
             data-track-placement="hero"
             data-track-label="hero_contact"
-            className="hero-button-readable hero-cta-sweep bg-primary inline-flex min-h-[42px] items-center justify-center gap-1 rounded-xl px-4 py-2 text-sm font-semibold text-white shadow-[0_12px_26px_rgba(30,58,95,0.35)] transition hover:brightness-110 sm:min-h-[46px] sm:px-6 sm:text-base"
+            className="hero-button-readable hero-cta-sweep bg-primary inline-flex min-h-[36px] items-center justify-center gap-1 rounded-xl px-3.5 py-2 text-[13px] font-semibold text-white shadow-[0_10px_22px_rgba(30,58,95,0.32)] transition hover:brightness-110 sm:min-h-[38px] sm:px-5 sm:text-sm lg:min-h-[36px] lg:px-4.5"
           >
             יצירת קשר
             <ArrowUpLeft className="h-4 w-4" aria-hidden />
           </Link>
         </div>
+        <p className="text-foreground/62 mt-1.5 text-[9px] font-medium sm:text-[10px] lg:text-[10px]">
+          למיתוג, ייצור וגימור במקום אחד.
+        </p>
       </div>
     </div>
   );

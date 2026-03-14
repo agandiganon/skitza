@@ -17,8 +17,27 @@ function getFirstHeaderValue(headerValue: string | null) {
   return headerValue?.split(',')[0]?.trim() || null;
 }
 
+function getAllowedOrigins() {
+  return new Set(
+    [
+      process.env.NEXT_PUBLIC_SITE_URL?.trim(),
+      process.env.NEXT_PUBLIC_BACKEND_ORIGIN?.trim(),
+    ].filter(Boolean),
+  );
+}
+
 export async function POST(request: Request) {
   try {
+    const allowedOrigins = getAllowedOrigins();
+    const origin = request.headers.get('origin');
+
+    if (origin && allowedOrigins.size > 0 && !allowedOrigins.has(origin)) {
+      return NextResponse.json(
+        { error: 'Origin not allowed' },
+        { status: 403, headers: API_HEADERS },
+      );
+    }
+
     const contentType = request.headers.get('content-type') || '';
     if (!contentType.toLowerCase().includes('application/json')) {
       return NextResponse.json(

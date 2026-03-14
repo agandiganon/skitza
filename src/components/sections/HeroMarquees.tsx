@@ -9,6 +9,7 @@ import { useInteractiveMarquee } from '@/lib/hooks/useInteractiveMarquee';
 type HeroGalleryImage = {
   src: string;
   alt: string;
+  blurDataUrl: string;
 };
 
 type HeroMarqueesProps = {
@@ -88,7 +89,7 @@ function VerticalMarqueeColumn({
     <aside
       ref={containerRef}
       {...bind}
-      className="hero-marquee hero-marquee--vertical relative hidden h-[620px] overflow-hidden lg:block"
+      className="hero-marquee hero-marquee--vertical relative hidden h-[458px] overflow-hidden lg:block xl:h-[468px]"
       aria-label="גלריית פרויקטים מתחלפת"
     >
       <div className="pointer-events-none absolute inset-x-0 top-0 z-10 h-20 bg-gradient-to-b from-blue-100/95 to-transparent" />
@@ -105,7 +106,7 @@ function VerticalMarqueeColumn({
               key={`${image.src}-${index}`}
               aria-hidden={isClone}
               onDragStart={preventNativeDrag}
-              className="hero-marquee-card group relative aspect-square w-full max-w-[230px] overflow-hidden rounded-3xl border border-white/85 bg-white/75 p-1 shadow-[0_14px_28px_rgba(15,23,42,0.16)] backdrop-blur-sm"
+              className="hero-marquee-card group relative aspect-square w-full max-w-[186px] overflow-hidden rounded-[1.45rem] border border-white/85 bg-white/75 p-1 shadow-[0_12px_24px_rgba(15,23,42,0.15)] backdrop-blur-sm"
             >
               <div className="relative h-full w-full overflow-hidden rounded-[1.15rem] border border-blue-100/60 bg-slate-50/80">
                 <Image
@@ -113,6 +114,8 @@ function VerticalMarqueeColumn({
                   alt={isClone ? '' : image.alt}
                   width={384}
                   height={384}
+                  placeholder="blur"
+                  blurDataURL={image.blurDataUrl}
                   draggable={false}
                   sizes="(max-width: 1279px) 0px, (max-width: 1536px) 220px, 250px"
                   className="h-full w-full object-contain p-1.5 transition-transform duration-500 ease-out group-hover:scale-[1.045]"
@@ -138,33 +141,22 @@ function HorizontalMarqueeRow({
   reduceMotion,
 }: HorizontalMarqueeRowProps) {
   const mobileItems = useMemo(() => [...images], [images]);
-  const { containerRef, trackRef, bind } = useInteractiveMarquee({
-    axis: 'x',
-    direction: 1,
-    speedPxPerSec: 28,
-    pauseAfterInteractionMs: 1500,
-    startDelayMs: 260,
-    enabled: !reduceMotion,
-    initialOffsetRatio: 0.28,
-  });
 
   return (
     <div
-      ref={containerRef}
-      {...bind}
-      className="hero-marquee hero-marquee--horizontal relative mt-4 overflow-hidden rounded-3xl border border-blue-200/80 bg-white/45 p-2 backdrop-blur-sm lg:hidden"
+      dir="ltr"
+      className="hero-marquee hero-marquee--horizontal relative mt-1 overflow-hidden rounded-[1.3rem] border border-blue-200/80 bg-white/45 px-0.5 py-0.5 backdrop-blur-sm lg:hidden"
       aria-label="גלריית פרויקטים מתחלפת"
     >
       <div
-        ref={trackRef}
-        className="hero-marquee-track flex w-max items-stretch pb-1"
+        className={`hero-marquee-track hero-mobile-marquee-track inline-flex items-stretch ${reduceMotion ? 'hero-mobile-marquee-track--static' : ''}`}
       >
         <div className="hero-mobile-marquee-group">
           {mobileItems.map((image, index) => (
             <article
               key={`group-a-${image.src}-${index}`}
               onDragStart={preventNativeDrag}
-              className="hero-marquee-card group relative h-[106px] w-[106px] shrink-0 overflow-hidden rounded-2xl border border-white/85 bg-white/85 p-1 shadow-[0_10px_22px_rgba(15,23,42,0.15)]"
+              className="hero-marquee-card group relative h-[68px] w-[68px] shrink-0 overflow-hidden rounded-[1rem] border border-white/85 bg-white/85 p-1 shadow-[0_8px_18px_rgba(15,23,42,0.14)]"
             >
               <div className="relative h-full w-full overflow-hidden rounded-xl border border-blue-100/60 bg-slate-50/80">
                 <Image
@@ -172,6 +164,8 @@ function HorizontalMarqueeRow({
                   alt={image.alt}
                   width={384}
                   height={384}
+                  placeholder="blur"
+                  blurDataURL={image.blurDataUrl}
                   draggable={false}
                   sizes="106px"
                   className="h-full w-full object-contain p-1 transition-transform duration-500 ease-out group-hover:scale-[1.05]"
@@ -192,7 +186,7 @@ function HorizontalMarqueeRow({
               <article
                 key={`group-b-${image.src}-${index}`}
                 onDragStart={preventNativeDrag}
-                className="hero-marquee-card group relative h-[106px] w-[106px] shrink-0 overflow-hidden rounded-2xl border border-white/85 bg-white/85 p-1 shadow-[0_10px_22px_rgba(15,23,42,0.15)]"
+                className="hero-marquee-card group relative h-[68px] w-[68px] shrink-0 overflow-hidden rounded-[1rem] border border-white/85 bg-white/85 p-1 shadow-[0_8px_18px_rgba(15,23,42,0.14)]"
               >
                 <div className="relative h-full w-full overflow-hidden rounded-xl border border-blue-100/60 bg-slate-50/80">
                   <Image
@@ -200,6 +194,8 @@ function HorizontalMarqueeRow({
                     alt=""
                     width={384}
                     height={384}
+                    placeholder="blur"
+                    blurDataURL={image.blurDataUrl}
                     draggable={false}
                     sizes="106px"
                     className="h-full w-full object-contain p-1 transition-transform duration-500 ease-out group-hover:scale-[1.05]"
@@ -269,19 +265,19 @@ export function HeroMarquees({ images, children }: HeroMarqueesProps) {
   );
 
   return (
-    <div className="flex flex-col items-center gap-4 lg:grid lg:grid-cols-[minmax(220px,1fr)_minmax(560px,1.6fr)_minmax(220px,1fr)] lg:items-center lg:gap-6">
+    <div className="flex flex-col items-center gap-2 lg:grid lg:grid-cols-[minmax(220px,1.18fr)_minmax(610px,1.12fr)_minmax(220px,1.18fr)] lg:items-start lg:gap-5">
       <VerticalMarqueeColumn
         images={leftColumnImages}
         reduceMotion={reduceMotion}
         direction={-1}
-        initialOffsetRatio={0.08}
+        initialOffsetRatio={0.01}
       />
       <div className="w-full">{children}</div>
       <VerticalMarqueeColumn
         images={rightColumnImages}
         reduceMotion={reduceMotion}
         direction={1}
-        initialOffsetRatio={0.56}
+        initialOffsetRatio={0.18}
       />
       <div className="w-full lg:hidden">
         <HorizontalMarqueeRow

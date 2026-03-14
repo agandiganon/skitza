@@ -69,7 +69,9 @@ export function LeadCta() {
                 className="text-primary focus:ring-primary inline-flex min-h-[46px] items-center justify-center gap-2 rounded-2xl border border-blue-100 bg-white/88 px-5 py-3 text-sm font-semibold transition hover:border-blue-200 hover:bg-white focus:ring-2 focus:ring-offset-2 focus:outline-none"
               >
                 <Phone className="h-4 w-4" aria-hidden />
-                <span dir="ltr">{PHONE_DISPLAY}</span>
+                <span dir="ltr">
+                  <bdi>{PHONE_DISPLAY}</bdi>
+                </span>
               </a>
             </div>
 

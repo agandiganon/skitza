@@ -69,12 +69,12 @@ export function Header() {
   }
 
   return (
-    <header className="sticky top-0 z-50 w-full border-b border-blue-100 bg-white shadow-sm">
+    <header className="sticky top-0 z-50 w-full border-b border-blue-100 bg-white/96 shadow-sm backdrop-blur-sm">
       <div
         className="from-accent-cyan to-primary absolute right-0 bottom-0 left-0 h-0.5 bg-gradient-to-l via-blue-500"
         aria-hidden
       />
-      <div className="relative mx-auto flex h-[5.4rem] max-w-7xl items-center justify-center gap-3 px-4 sm:h-[5.25rem] sm:gap-5 sm:px-6 md:justify-between lg:h-[5.5rem] lg:px-8">
+      <div className="relative mx-auto flex h-[4rem] max-w-7xl items-center justify-center gap-3 px-4 sm:h-[4.05rem] sm:gap-5 sm:px-6 md:justify-between lg:h-[4.1rem] lg:px-8">
         <button
           type="button"
           className="text-foreground absolute top-1/2 right-4 flex h-11 w-11 -translate-y-1/2 items-center justify-center rounded-lg transition hover:bg-blue-50 hover:text-blue-600 sm:right-6 md:hidden"
@@ -102,8 +102,8 @@ export function Header() {
               alt="סקיצה אריזות"
               width={1536}
               height={1024}
-              className="h-[4.9rem] w-auto object-contain transition duration-200 group-active:scale-[0.975] sm:h-[4.9rem] lg:h-[5.6rem]"
-              sizes="(max-width: 640px) 180px, (max-width: 1024px) 190px, 240px"
+              className="h-[3.35rem] w-auto object-contain transition duration-200 group-active:scale-[0.975] sm:h-[3.4rem] lg:h-[3.6rem]"
+              sizes="(max-width: 640px) 140px, (max-width: 1024px) 154px, 172px"
             />
           </Link>
         </div>
@@ -134,7 +134,7 @@ export function Header() {
               data-track-event="navigation_click"
               data-track-placement="header"
               data-track-label={href}
-              className={`min-h-[44px] shrink-0 rounded-xl px-3 py-2.5 text-base font-semibold transition sm:px-4 ${
+              className={`min-h-[36px] shrink-0 rounded-xl px-3 py-1 text-[14px] font-semibold transition sm:px-4 ${
                 pathname === href
                   ? 'bg-blue-50 text-blue-700'
                   : 'text-foreground hover:text-blue-600'
@@ -148,7 +148,7 @@ export function Header() {
             <button
               type="button"
               onClick={() => setServicesOpen((o) => !o)}
-              className={`flex min-h-[44px] shrink-0 items-center gap-1 rounded-xl px-3 py-2.5 text-base font-semibold transition sm:px-4 ${
+              className={`flex min-h-[36px] shrink-0 items-center gap-1 rounded-xl px-3 py-1 text-[14px] font-semibold transition sm:px-4 ${
                 isServicesRoute
                   ? 'bg-blue-50 text-blue-700'
                   : 'text-foreground hover:text-blue-600'
@@ -213,13 +213,13 @@ export function Header() {
           data-track-placement="header_top"
           data-track-label="header_phone"
           href={`tel:${PHONE_TEL}`}
-          className="bg-primary hidden min-h-[44px] shrink-0 items-center justify-center gap-2 rounded-xl px-3 py-2.5 text-[14px] font-semibold text-white shadow-md transition hover:opacity-90 focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 focus:outline-none sm:px-4 sm:text-base md:flex"
+          className="bg-primary hidden min-h-[36px] shrink-0 items-center justify-center gap-2 rounded-xl px-3 py-1 text-[14px] font-semibold text-white shadow-md transition hover:opacity-90 focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 focus:outline-none sm:px-4 sm:text-[15px] md:flex"
           aria-label="התקשר עכשיו"
         >
           <Phone className="h-4 w-4 shrink-0 sm:h-5 sm:w-5" aria-hidden />
           <span className="lg:hidden">התקשר</span>
           <span dir="ltr" className="hidden lg:inline">
-            {PHONE_DISPLAY}
+            <bdi>{PHONE_DISPLAY}</bdi>
           </span>
         </a>
       </div>
@@ -282,7 +282,9 @@ export function Header() {
             onClick={() => setMobileOpen(false)}
           >
             <Phone className="h-5 w-5" />
-            <span dir="ltr">{PHONE_DISPLAY}</span>
+            <span dir="ltr">
+              <bdi>{PHONE_DISPLAY}</bdi>
+            </span>
           </a>
         </nav>
       </div>

@@ -115,7 +115,7 @@ echo "[smoke] starting frontend on ${FRONTEND_ORIGIN}"
 npm run start -- --port "$FRONTEND_PORT" >"$FRONTEND_LOG" 2>&1 &
 FRONTEND_PID=$!
 
-wait_for_url "${FRONTEND_ORIGIN}"
+wait_for_url "${FRONTEND_ORIGIN}" 90 0.5
 
 echo "[smoke] security headers checks"
 assert_response_header "${FRONTEND_ORIGIN}/" "x-content-type-options"

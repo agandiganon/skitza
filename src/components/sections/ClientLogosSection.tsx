@@ -1,6 +1,7 @@
 import Link from 'next/link';
 import Image from 'next/image';
 import { CLIENT_LOGOS } from '@/lib/content/clientLogos';
+import { BRAND_BLUR_DATA_URL } from '@/lib/media/placeholders';
 
 const trustStatements = [
   'עבודה מול מותגים, קמעונאות ומוצרי צריכה',
@@ -65,6 +66,8 @@ export function ClientLogosSection() {
                       src={logo.src}
                       alt={logo.alt}
                       fill
+                      placeholder="blur"
+                      blurDataURL={BRAND_BLUR_DATA_URL}
                       sizes="(max-width: 640px) 42vw, (max-width: 1024px) 28vw, (max-width: 1440px) 17vw, 13vw"
                       className="partners-logo-mark object-contain"
                       loading="lazy"

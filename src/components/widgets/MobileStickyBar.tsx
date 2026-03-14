@@ -4,9 +4,10 @@ import { PHONE_TEL, WHATSAPP_CONTACT_URL } from '@/lib/constants';
 
 export function MobileStickyBar() {
   return (
-    <div className="fixed inset-x-0 bottom-0 z-[55] flex gap-2.5 border-t border-slate-200/85 bg-white/92 px-3 pt-2.5 pb-[calc(env(safe-area-inset-bottom)+0.55rem)] shadow-[0_-14px_32px_-24px_rgba(15,23,42,0.34)] backdrop-blur-xl sm:hidden">
+    <div className="mobile-sticky-bar fixed inset-x-0 bottom-0 z-[55] flex gap-2.5 border-t border-slate-200/85 bg-white/92 px-3 pt-2.5 pb-[calc(env(safe-area-inset-bottom)+0.55rem)] shadow-[0_-14px_32px_-24px_rgba(15,23,42,0.34)] backdrop-blur-xl sm:hidden">
       <a
         id="cta-call-mobile"
+        data-testid="mobile-call"
         data-track-event="click_to_call"
         data-track-placement="mobile_sticky_bar"
         data-track-label="mobile_call"
@@ -32,6 +33,7 @@ export function MobileStickyBar() {
       </a>
       <a
         id="cta-whatsapp-mobile"
+        data-testid="mobile-whatsapp"
         data-track-event="whatsapp_click"
         data-track-placement="mobile_sticky_bar"
         data-track-label="mobile_whatsapp"

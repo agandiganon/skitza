@@ -14,6 +14,7 @@ const quickLinks = [
   { label: 'גלריה', href: '/gallery' },
   { label: 'צור קשר', href: '/contact' },
   { label: 'מדיניות פרטיות', href: '/privacy' },
+  { label: 'הצהרת נגישות', href: '/accessibility' },
 ] as const;
 
 export function Footer() {
@@ -77,7 +78,7 @@ export function Footer() {
                     טלפון
                   </span>
                   <span dir="ltr" className="block text-base font-black">
-                    {PHONE_DISPLAY}
+                    <bdi>{PHONE_DISPLAY}</bdi>
                   </span>
                 </a>
                 <a

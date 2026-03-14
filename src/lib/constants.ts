@@ -174,5 +174,6 @@ export function getContactServiceValueFromQuery(
 export const COOKIE_CONSENT_TEXT =
   'האתר משתמש בקבצי קוקיז לצורך תפעול ומדידה. פרטים נוספים ב־';
 export const COOKIE_CONSENT_LINK_LABEL = 'מדיניות פרטיות';
-export const COOKIE_CONSENT_ACCEPT_BUTTON = 'הבנתי';
+export const COOKIE_CONSENT_ACCEPT_BUTTON = 'אישור למדידה';
+export const COOKIE_CONSENT_REJECT_BUTTON = 'רק חיוניים';
 export const COOKIE_CONSENT_STORAGE_KEY = 'skitza-cookie-consent';

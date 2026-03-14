@@ -7,10 +7,6 @@ import { Footer } from '@/components/layout/Footer';
 import { DeferredWidgets } from '@/components/layout/DeferredWidgets';
 import { ScrollToTopOnRouteChange } from '@/components/layout/ScrollToTopOnRouteChange';
 import { MobileStickyBar } from '@/components/widgets/MobileStickyBar';
-import {
-  GtmBodyFallback,
-  GtmHeadScript,
-} from '@/components/analytics/GtmScripts';
 import { AnalyticsGate } from '@/components/analytics/AnalyticsGate';
 import { InteractionTracker } from '@/components/analytics/InteractionTracker';
 import { JsonLd } from '@/components/seo/JsonLd';
@@ -39,11 +35,11 @@ function getMetadataBase() {
 export const metadata: Metadata = {
   metadataBase: getMetadataBase(),
   title: {
-    default: 'סקיצה אריזות | בית דפוס לאריזות בחולון',
+    default: 'סקיצה אריזות | בית דפוס בחולון לתכנון ועיצוב אריזות',
     template: '%s | סקיצה אריזות',
   },
   description:
-    'בית דפוס בחולון המתמחה בהדפסת אריזות, אריזות מותאמות אישית ופתרונות מיתוג לעסקים.',
+    'בית דפוס בחולון לתכנון, עיצוב והפקת אריזות קרטון לעסקים. צפו בגלריית עבודות, בחרו סוג פנייה, והשאירו פרטים לשיחה, ליווי מקצועי וקבלת הצעת מחיר מותאמת.',
   keywords: [
     'בית דפוס בחולון',
     'הדפסת אריזות',
@@ -58,9 +54,9 @@ export const metadata: Metadata = {
   },
   manifest: '/manifest.webmanifest',
   openGraph: {
-    title: 'סקיצה אריזות | בית דפוס לאריזות בחולון',
+    title: 'סקיצה אריזות | בית דפוס בחולון לתכנון ועיצוב אריזות',
     description:
-      'בית דפוס בחולון המתמחה בהדפסת אריזות, אריזות מותאמות אישית ופתרונות מיתוג לעסקים.',
+      'בית דפוס בחולון לתכנון, עיצוב והפקת אריזות קרטון לעסקים. צפו בגלריית עבודות, בחרו סוג פנייה, והשאירו פרטים לשיחה, ליווי מקצועי וקבלת הצעת מחיר מותאמת.',
     type: 'website',
     siteName: 'סקיצה אריזות',
     url: '/',
@@ -82,9 +78,9 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'סקיצה אריזות | בית דפוס לאריזות בחולון',
+    title: 'סקיצה אריזות | בית דפוס בחולון לתכנון ועיצוב אריזות',
     description:
-      'בית דפוס בחולון המתמחה בהדפסת אריזות, אריזות מותאמות אישית ופתרונות מיתוג לעסקים.',
+      'בית דפוס בחולון לתכנון, עיצוב והפקת אריזות קרטון לעסקים. צפו בגלריית עבודות, בחרו סוג פנייה, והשאירו פרטים לשיחה, ליווי מקצועי וקבלת הצעת מחיר מותאמת.',
     images: ['/opengraph-image'],
   },
 };
@@ -96,9 +92,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="he-IL" dir="rtl" suppressHydrationWarning>
-      <head>
-        <GtmHeadScript />
-      </head>
+      <head />
       <body
         className={`${heebo.variable} font-sans antialiased`}
         suppressHydrationWarning
@@ -109,7 +103,6 @@ export default function RootLayout({
         >
           דלג לתוכן הראשי
         </a>
-        <GtmBodyFallback />
         <JsonLd
           data={[
             buildLocalBusinessSchema({

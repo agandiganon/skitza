@@ -1,0 +1,4 @@
+Contact: mailto:info@skitza-pack.co.il
+Expires: 2027-03-10T00:00:00.000Z
+Preferred-Languages: he, en
+Canonical: https://skitza.vercel.app/.well-known/security.txt

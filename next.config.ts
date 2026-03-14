@@ -74,6 +74,7 @@ const createNextConfig = (phase: string): NextConfig => {
   ];
 
   return {
+    reactStrictMode: true,
     devIndicators: false,
     async headers() {
       if (isDev) {

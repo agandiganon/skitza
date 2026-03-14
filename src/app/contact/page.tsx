@@ -194,7 +194,7 @@ export default async function ContactPage({ searchParams }: ContactPageProps) {
                                   dir="ltr"
                                   className={`mt-1 block text-base font-black sm:text-lg ${tone.value}`}
                                 >
-                                  {card.value}
+                                  <bdi>{card.value}</bdi>
                                 </span>
                               ) : (
                                 <span

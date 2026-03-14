@@ -7,5 +7,6 @@ export type ProjectItem = {
   cardSrc: string;
   thumbSrc: string;
   lightboxSrc: string;
+  blurDataUrl: string;
   assetVersion: string;
 };

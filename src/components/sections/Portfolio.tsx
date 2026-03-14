@@ -107,6 +107,25 @@ function preloadLightboxAsset(
   image.src = sourcePath;
 }
 
+function preloadOriginalAsset(
+  sourcePath: string,
+  preloadedSourcesRef: RefObject<Set<string>>,
+) {
+  if (!sourcePath || typeof window === 'undefined') {
+    return;
+  }
+
+  if (preloadedSourcesRef.current?.has(sourcePath)) {
+    return;
+  }
+
+  preloadedSourcesRef.current?.add(sourcePath);
+
+  const image = new window.Image();
+  image.decoding = 'async';
+  image.src = sourcePath;
+}
+
 function isSmallViewport() {
   if (typeof window === 'undefined') {
     return false;
@@ -221,6 +240,7 @@ export function Portfolio({
   const dialogRef = useRef<HTMLDivElement | null>(null);
   const thumbnailRefs = useRef<(HTMLButtonElement | null)[]>([]);
   const preloadedLightboxSourcesRef = useRef<Set<string>>(new Set());
+  const preloadedOriginalSourcesRef = useRef<Set<string>>(new Set());
   const previousActiveIndexRef = useRef<number | null>(null);
   const touchStartRef = useRef<{ x: number; y: number } | null>(null);
 
@@ -451,6 +471,7 @@ export function Portfolio({
       setLoadedLightboxSources,
       setFailedLightboxSources,
     );
+    preloadOriginalAsset(project.originalSrc, preloadedOriginalSourcesRef);
     setActiveIndex(index);
     pushToDataLayer('gallery_lightbox_open', {
       placement: resolvedLightboxPlacement,
@@ -682,19 +703,15 @@ export function Portfolio({
                           type="button"
                           onClick={() => setActiveIndex(index)}
                           onMouseEnter={() =>
-                            preloadLightboxAsset(
-                              project.lightboxSrc,
-                              preloadedLightboxSourcesRef,
-                              setLoadedLightboxSources,
-                              setFailedLightboxSources,
+                            preloadOriginalAsset(
+                              project.originalSrc,
+                              preloadedOriginalSourcesRef,
                             )
                           }
                           onFocus={() =>
-                            preloadLightboxAsset(
-                              project.lightboxSrc,
-                              preloadedLightboxSourcesRef,
-                              setLoadedLightboxSources,
-                              setFailedLightboxSources,
+                            preloadOriginalAsset(
+                              project.originalSrc,
+                              preloadedOriginalSourcesRef,
                             )
                           }
                           aria-label={`עבור לתמונה ${index + 1}`}
@@ -710,6 +727,8 @@ export function Portfolio({
                             alt=""
                             width={160}
                             height={160}
+                            placeholder="blur"
+                            blurDataURL={project.blurDataUrl}
                             sizes="(max-width: 640px) 52px, (max-width: 1024px) 58px, 66px"
                             className="h-full w-full object-contain p-1.5"
                             loading="lazy"
@@ -782,19 +801,15 @@ export function Portfolio({
                       openLightbox(index, event.currentTarget)
                     }
                     onMouseEnter={() =>
-                      preloadLightboxAsset(
-                        project.lightboxSrc,
-                        preloadedLightboxSourcesRef,
-                        setLoadedLightboxSources,
-                        setFailedLightboxSources,
+                      preloadOriginalAsset(
+                        project.originalSrc,
+                        preloadedOriginalSourcesRef,
                       )
                     }
                     onFocus={() =>
-                      preloadLightboxAsset(
-                        project.lightboxSrc,
-                        preloadedLightboxSourcesRef,
-                        setLoadedLightboxSources,
-                        setFailedLightboxSources,
+                      preloadOriginalAsset(
+                        project.originalSrc,
+                        preloadedOriginalSourcesRef,
                       )
                     }
                     className={`${frameClassName} focus:ring-primary block w-full transition duration-200 focus:ring-2 focus:outline-none focus:ring-inset active:scale-[0.995]`}
@@ -804,6 +819,8 @@ export function Portfolio({
                       alt={project.imageAlt}
                       width={768}
                       height={768}
+                      placeholder="blur"
+                      blurDataURL={project.blurDataUrl}
                       sizes={
                         isHome
                           ? '(max-width: 640px) 46vw, (max-width: 1024px) 30vw, (max-width: 1280px) 18vw, 15vw'
@@ -822,6 +839,8 @@ export function Portfolio({
                       alt={project.imageAlt}
                       width={768}
                       height={768}
+                      placeholder="blur"
+                      blurDataURL={project.blurDataUrl}
                       sizes={
                         isHome
                           ? '(max-width: 640px) 46vw, (max-width: 1024px) 30vw, (max-width: 1280px) 18vw, 15vw'
